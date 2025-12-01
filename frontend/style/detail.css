@@ -1,29 +1,29 @@
-/* CSS Variables for Light/Dark Themes */
+/* CSS Variables for Light/Dark Themes - BLACK & GREY FUTURISTIC THEME */
 :root {
-    /* Light mode theme - Navy + Sky Blue */
-    --primary-light: #F4F7FA;
-    --secondary-light: #FFFFFF;
-    --accent-light: #1A237E;
-    --accent-secondary-light: #64B5F6;
-    --text-light: #1A1A1A;
-    --text-heading-light: #FFFFFF;
-    --text-muted-light: #666666;
-    --border-light: #D7DFEA;
-    --surface-light: #FFFFFF;
+    /* Light mode (Graphite + Soft Grey + Neon Blue Accent) */
+    --primary-light: #F2F3F5;        /* soft grey background */
+    --secondary-light: #FFFFFF;      /* card bg */
+    --accent-light: #2D2D2D;         /* graphite accent */
+    --accent-secondary-light: #1c303f; /* neon blue highlight */
+    --text-light: #111317;          
+    --text-heading-light: #000000;
+    --text-muted-light: #7A7A7A;
+    --border-light: #000000;
+    --surface-light: #bfbebe;
 
-    /* Dark mode theme - Navy + Sky Blue */
-    --primary-dark: #0A0F27;
-    --secondary-dark: #151A33;
-    --accent-dark: #303F9F;
-    --accent-secondary-dark: #90CAF9;
-    --text-dark: #E3E9FF;
+    /* Dark mode (Black + Steel Grey + Cyan/Blue neon accents) */
+    --primary-dark: #0B0B0D;         /* pure black-ish bg */
+    --secondary-dark: #151515;       /* deep grey card */
+    --accent-dark: #2F2F2F;          /* graphite */
+    --accent-secondary-dark: #00AEEF; /* neon cyan accent (modern AF) */
+    --text-dark: #E6E6E6;
     --text-heading-dark: #FFFFFF;
-    --text-muted-dark: #A8B2CC;
-    --border-dark: #262C4A;
-    --surface-dark: #151A33;
+    --text-muted-dark: #9A9A9A;
+    --border-dark: #2A2A2A;
+    --surface-dark: #151515;
 
     /* Apply light theme by default */
-    --primary: var(--primary-light);
+    --primary: linear-gradient(135deg, #d1d4da 0%, #887777 40%, #d3d3d3 100%);
     --secondary: var(--secondary-light);
     --accent: var(--accent-light);
     --accent-secondary: var(--accent-secondary-light);
@@ -37,13 +37,13 @@
     --border-radius: 8px;
     --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     --transition: all 0.3s ease;
-    --success-color: #2ecc71;
+    --success-color: #4caf50;
     --sidebar-width: 280px;
 }
 
 /* Apply dark theme when dark class is present */
 body.dark {
-    --primary: var(--primary-dark);
+    --primary: linear-gradient(135deg, #0b0b0d 0%, #111113 25%, #1a1a1d 50%, #0d0d10 100%);
     --secondary: var(--secondary-dark);
     --accent: var(--accent-dark);
     --accent-secondary: var(--accent-secondary-dark);
@@ -59,12 +59,13 @@ body.dark {
     padding: 0;
     box-sizing: border-box;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }
 
 body {
-    background-color: var(--primary);
+    background: var(--primary) !important;
     color: var(--text);
-    transition: var(--transition);
+    transition: background 0.6s ease;
     line-height: 1.6;
     min-height: 100vh;
     overflow-x: hidden;
@@ -97,6 +98,8 @@ body {
     position: relative;
     z-index: 100;
     height: 80px;
+    backdrop-filter: blur(10px);
+    border: 2px solid var(--border);
 }
 
 /* Logo Section */
@@ -110,19 +113,21 @@ body {
     width: 50px;
     height: 50px;
     border-radius: 8px;
-    background-color: var(--accent-secondary);
+    background-color: var(--accent);
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 24px;
     color: var(--text-heading);
     flex-shrink: 0;
+    border: 2px solid var(--accent-secondary);
 }
 
 .logo-text {
     font-size: 24px;
     font-weight: bold;
     white-space: nowrap;
+    color: var(--text-heading);
 }
 
 /* Menu Toggle Button (Hidden on Desktop) */
@@ -140,7 +145,8 @@ body {
 }
 
 .menu-toggle:hover {
-    background-color: rgba(255, 255, 255, 0.2);
+    background-color: rgba(255, 255, 255, 0.1);
+    transform: scale(1.05);
 }
 
 .top-controls {
@@ -153,8 +159,8 @@ body {
     background: var(--surface);
     border: 2px solid var(--border);
     border-radius: 50%;
-    width: 40px;
-    height: 40px;
+    width: 50px;
+    height: 50px;
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -162,6 +168,7 @@ body {
     font-size: 1.2rem;
     color: var(--text);
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
     transition: all 0.3s ease;
     flex-shrink: 0;
 }
@@ -200,6 +207,8 @@ body {
     height: calc(100vh - 100px);
     position: sticky;
     top: 88px;
+    border: 2px solid var(--border);
+    backdrop-filter: blur(10px);
 }
 
 /* Profile Picture Container */
@@ -228,6 +237,7 @@ body {
 
 .profile-picture:hover {
     transform: scale(1.05);
+    border-color: var(--text-heading);
 }
 
 .profile-picture img {
@@ -286,11 +296,14 @@ body {
     gap: 8px;
     width: 100%;
     font-size: 14px;
+    border: 2px solid transparent;
 }
 
 .profile-action-btn:hover {
     background-color: var(--accent-secondary);
     color: var(--text-heading);
+    transform: translateY(-2px);
+    border-color: var(--text-heading);
 }
 
 /* Profile Options (Sidebar Menu) */
@@ -315,6 +328,7 @@ body {
     font-size: 14px;
     border: none;
     text-align: left;
+    border: 2px solid transparent;
 }
 
 .profile-option i {
@@ -333,6 +347,7 @@ body {
 .profile-option:hover, .profile-option.active {
     background-color: var(--accent-secondary);
     transform: translateX(5px);
+    border-color: var(--text-heading);
 }
 
 /* Main Content Area (div3) */
@@ -345,6 +360,8 @@ body {
     padding: 20px;
     overflow-y: auto;
     height: calc(100vh - 100px);
+    border: 2px solid var(--border);
+    backdrop-filter: blur(10px);
 }
 
 .form-container {
@@ -355,7 +372,7 @@ body {
 
 .form-title {
     margin-bottom: 20px;
-    color: var(--accent);
+    color: var(--accent-secondary);
     border-bottom: 2px solid var(--accent-secondary);
     padding-bottom: 10px;
     display: flex;
@@ -366,6 +383,7 @@ body {
 
 .form-title i {
     font-size: 24px;
+    color: var(--accent-secondary);
 }
 
 .form-group {
@@ -385,7 +403,7 @@ body {
 .form-control {
     width: 100%;
     padding: 12px 15px;
-    border: 1px solid var(--border);
+    border: 2px solid var(--border);
     border-radius: var(--border-radius);
     background-color: var(--surface);
     color: var(--text);
@@ -395,8 +413,12 @@ body {
 
 .form-control:focus {
     outline: none;
-    border-color: var(--accent);
-    box-shadow: 0 0 0 2px rgba(26, 35, 126, 0.2);
+    border-color: var(--accent-secondary);
+    box-shadow: 0 0 0 3px rgba(0, 174, 239, 0.1);
+}
+
+body.dark .form-control:focus {
+    box-shadow: 0 0 0 3px rgba(0, 174, 239, 0.3);
 }
 
 .form-row {
@@ -429,6 +451,7 @@ body {
     flex: 1;
     min-width: 120px;
     justify-content: center;
+    border: 2px solid transparent;
 }
 
 .btn span {
@@ -443,22 +466,27 @@ body {
 .btn-primary:hover:not(:disabled) {
     background-color: var(--accent-secondary);
     transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 174, 239, 0.3);
 }
 
 .btn-secondary {
-    background-color: var(--border);
+    background-color: var(--surface);
     color: var(--text);
+    border: 2px solid var(--border);
 }
 
 .btn-secondary:hover {
-    background-color: var(--text-muted);
+    background-color: var(--accent);
+    color: var(--text-heading);
     transform: translateY(-2px);
+    border-color: var(--accent-secondary);
 }
 
 .btn:disabled {
     opacity: 0.6;
     cursor: not-allowed;
     transform: none !important;
+    box-shadow: none !important;
 }
 
 .designation-type-selector {
@@ -490,7 +518,7 @@ body {
     text-align: center;
     background-color: var(--surface);
     color: var(--text);
-    border: 1px solid var(--border);
+    border: 2px solid var(--border);
     border-radius: var(--border-radius);
     cursor: pointer;
     transition: var(--transition);
@@ -508,7 +536,8 @@ body {
 .designation-option:hover, .designation-option.active {
     background-color: var(--accent);
     color: var(--text-heading);
-    border-color: var(--accent);
+    border-color: var(--accent-secondary);
+    transform: translateY(-2px);
 }
 
 .designation-form {
@@ -531,6 +560,7 @@ body {
     display: flex;
     align-items: center;
     gap: 5px;
+    border: 1px solid var(--text-heading);
 }
 
 .tag-remove {
@@ -576,7 +606,7 @@ body {
 
 .progress {
     height: 100%;
-    background-color: var(--accent);
+    background-color: var(--accent-secondary);
     width: 0%;
     transition: width 0.5s ease;
 }
@@ -586,13 +616,13 @@ body {
     margin-top: 30px;
     padding: 20px;
     background-color: var(--surface);
-    border: 1px solid var(--border);
+    border: 2px solid var(--border);
     border-radius: var(--border-radius);
 }
 
 .section-title {
     margin-bottom: 20px;
-    color: var(--accent);
+    color: var(--accent-secondary);
     display: flex;
     align-items: center;
     gap: 10px;
@@ -626,9 +656,9 @@ body {
 .otp-verification {
     margin-top: 20px;
     padding: 15px;
-    background-color: rgba(100, 181, 246, 0.1);
+    background-color: rgba(0, 174, 239, 0.1);
     border-radius: var(--border-radius);
-    border: 1px dashed var(--accent-secondary);
+    border: 2px dashed var(--accent-secondary);
 }
 
 .otp-input-group {
@@ -646,6 +676,7 @@ body {
     letter-spacing: 5px;
     font-size: 18px;
     font-weight: bold;
+    background-color: var(--surface);
 }
 
 .otp-timer {
@@ -654,7 +685,7 @@ body {
     gap: 5px;
     padding: 8px 12px;
     background-color: var(--surface);
-    border: 1px solid var(--border);
+    border: 2px solid var(--border);
     border-radius: var(--border-radius);
     color: var(--text);
     font-weight: 500;
@@ -663,7 +694,7 @@ body {
 }
 
 .otp-timer i {
-    color: var(--accent);
+    color: var(--accent-secondary);
 }
 
 .otp-actions {
@@ -682,21 +713,21 @@ body {
 }
 
 .verification-status.success {
-    background-color: rgba(46, 204, 113, 0.1);
-    color: #27ae60;
-    border: 1px solid rgba(46, 204, 113, 0.3);
+    background-color: rgba(76, 175, 80, 0.1);
+    color: #4caf50;
+    border: 2px solid rgba(76, 175, 80, 0.3);
 }
 
 .verification-status.error {
-    background-color: rgba(231, 76, 60, 0.1);
-    color: #c0392b;
-    border: 1px solid rgba(231, 76, 60, 0.3);
+    background-color: rgba(244, 67, 54, 0.1);
+    color: #f44336;
+    border: 2px solid rgba(244, 67, 54, 0.3);
 }
 
 .verification-status.pending {
-    background-color: rgba(241, 196, 15, 0.1);
-    color: #f39c12;
-    border: 1px solid rgba(241, 196, 15, 0.3);
+    background-color: rgba(255, 152, 0, 0.1);
+    color: #ff9800;
+    border: 2px solid rgba(255, 152, 0, 0.3);
 }
 
 /* Avatar Selection Modal */
@@ -715,6 +746,7 @@ body {
     visibility: hidden;
     transition: var(--transition);
     padding: 20px;
+    backdrop-filter: blur(5px);
 }
 
 .modal-overlay.active {
@@ -731,7 +763,7 @@ body {
     max-height: 90vh;
     overflow-y: auto;
     padding: 20px;
-    border: 1px solid var(--border);
+    border: 2px solid var(--border);
 }
 
 .modal-header {
@@ -740,12 +772,12 @@ body {
     align-items: center;
     margin-bottom: 20px;
     padding-bottom: 10px;
-    border-bottom: 1px solid var(--border);
+    border-bottom: 2px solid var(--border);
 }
 
 .modal-title {
     font-size: 20px;
-    color: var(--accent);
+    color: var(--accent-secondary);
 }
 
 .close-modal {
@@ -759,6 +791,12 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
+    transition: var(--transition);
+}
+
+.close-modal:hover {
+    color: var(--accent-secondary);
+    transform: scale(1.1);
 }
 
 .modal-body {
@@ -810,7 +848,13 @@ select.form-control,
 textarea.form-control {
     background-color: var(--surface);
     color: var(--text);
-    border: 1px solid var(--border);
+    border: 2px solid var(--border);
+}
+
+select.form-control:focus,
+textarea.form-control:focus {
+    border-color: var(--accent-secondary);
+    box-shadow: 0 0 0 3px rgba(0, 174, 239, 0.1);
 }
 
 /* Sidebar Overlay */
@@ -821,15 +865,54 @@ textarea.form-control {
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, 0.7);
     z-index: 999;
     opacity: 0;
     transition: opacity 0.3s ease;
+    backdrop-filter: blur(3px);
 }
 
 .sidebar-overlay.active {
     display: block;
     opacity: 1;
+}
+
+/* Toast Container */
+#toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 999999;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.toast {
+    padding: 14px 20px;
+    border-radius: 8px;
+    color: #fff;
+    font-size: 15px;
+    animation: slideIn 0.4s ease, fadeOut 0.4s ease 2.5s forwards;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 230px;
+}
+
+.toast.success { background: #4caf50; }      /* green */
+.toast.error   { background: #f44336; }      /* red */
+.toast.info    { background: #2196f3; }      /* blue */
+.toast.warning { background: #ff9800; }      /* orange */
+
+@keyframes slideIn {
+    from { opacity: 0; transform: translateX(50px); }
+    to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes fadeOut {
+    to { opacity: 0; transform: translateX(50px); }
 }
 
 /* ============================================
@@ -878,13 +961,14 @@ textarea.form-control {
         transform: translateX(-100%);
         border-radius: 0;
         padding-top: 80px;
-        box-shadow: 5px 0 15px rgba(0, 0, 0, 0.1);
+        box-shadow: 5px 0 15px rgba(0, 0, 0, 0.2);
         overflow-y: auto;
         transition: transform 0.3s ease;
         grid-column: unset;
         grid-row: unset;
         height: 100vh;
         top: 0;
+        border-right: 2px solid var(--border);
     }
 
     .div2.active {
@@ -931,8 +1015,8 @@ textarea.form-control {
     }
 
     .theme-toggle {
-        width: 36px;
-        height: 36px;
+        width: 40px;
+        height: 40px;
         font-size: 1rem;
     }
 
@@ -1001,8 +1085,8 @@ textarea.form-control {
     }
 
     .theme-toggle {
-        width: 32px;
-        height: 32px;
+        width: 36px;
+        height: 36px;
         font-size: 0.9rem;
     }
 
@@ -1132,4 +1216,23 @@ textarea.form-control {
         background: white !important;
         color: black !important;
     }
+}
+
+/* Custom scrollbar for webkit browsers */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--surface);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--accent);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--accent-secondary);
 }
