@@ -1,0 +1,1135 @@
+/* CSS Variables for Light/Dark Themes */
+:root {
+    /* Light mode theme - Navy + Sky Blue */
+    --primary-light: #F4F7FA;
+    --secondary-light: #FFFFFF;
+    --accent-light: #1A237E;
+    --accent-secondary-light: #64B5F6;
+    --text-light: #1A1A1A;
+    --text-heading-light: #FFFFFF;
+    --text-muted-light: #666666;
+    --border-light: #D7DFEA;
+    --surface-light: #FFFFFF;
+
+    /* Dark mode theme - Navy + Sky Blue */
+    --primary-dark: #0A0F27;
+    --secondary-dark: #151A33;
+    --accent-dark: #303F9F;
+    --accent-secondary-dark: #90CAF9;
+    --text-dark: #E3E9FF;
+    --text-heading-dark: #FFFFFF;
+    --text-muted-dark: #A8B2CC;
+    --border-dark: #262C4A;
+    --surface-dark: #151A33;
+
+    /* Apply light theme by default */
+    --primary: var(--primary-light);
+    --secondary: var(--secondary-light);
+    --accent: var(--accent-light);
+    --accent-secondary: var(--accent-secondary-light);
+    --text: var(--text-light);
+    --text-heading: var(--text-heading-light);
+    --text-muted: var(--text-muted-light);
+    --border: var(--border-light);
+    --surface: var(--surface-light);
+
+    /* Common variables */
+    --border-radius: 8px;
+    --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --transition: all 0.3s ease;
+    --success-color: #2ecc71;
+    --sidebar-width: 280px;
+}
+
+/* Apply dark theme when dark class is present */
+body.dark {
+    --primary: var(--primary-dark);
+    --secondary: var(--secondary-dark);
+    --accent: var(--accent-dark);
+    --accent-secondary: var(--accent-secondary-dark);
+    --text: var(--text-dark);
+    --text-heading: var(--text-heading-dark);
+    --text-muted: var(--text-muted-dark);
+    --border: var(--border-dark);
+    --surface: var(--surface-dark);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: var(--primary);
+    color: var(--text);
+    transition: var(--transition);
+    line-height: 1.6;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+/* ============================================
+   DESKTOP LAYOUT (Default)
+   ============================================ */
+.parent {
+    display: grid;
+    grid-template-columns: minmax(250px, 300px) 1fr;
+    grid-template-rows: 80px 1fr;
+    gap: 8px;
+    min-height: 100vh;
+    padding: 8px;
+}
+
+/* Header (div1) */
+.div1 {
+    grid-column: 1 / -1;
+    grid-row: 1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+    background-color: var(--accent);
+    color: var(--text-heading);
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    position: relative;
+    z-index: 100;
+    height: 80px;
+}
+
+/* Logo Section */
+.logo-section {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.logo {
+    width: 50px;
+    height: 50px;
+    border-radius: 8px;
+    background-color: var(--accent-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    color: var(--text-heading);
+    flex-shrink: 0;
+}
+
+.logo-text {
+    font-size: 24px;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+/* Menu Toggle Button (Hidden on Desktop) */
+.menu-toggle {
+    display: none;
+    background: none;
+    border: none;
+    color: var(--text-heading);
+    font-size: 24px;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: var(--border-radius);
+    transition: var(--transition);
+    z-index: 1001;
+}
+
+.menu-toggle:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.top-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.theme-toggle {
+    background: var(--surface);
+    border: 2px solid var(--border);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    color: var(--text);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    flex-shrink: 0;
+}
+
+.theme-toggle:hover {
+    transform: scale(1.05);
+    border-color: var(--accent-secondary);
+}
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* Sidebar (div2) - Desktop */
+.div2 {
+    grid-column: 1;
+    grid-row: 2;
+    background-color: var(--surface);
+    color: var(--text);
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    overflow-y: auto;
+    height: calc(100vh - 100px);
+    position: sticky;
+    top: 88px;
+}
+
+/* Profile Picture Container */
+.profile-picture-container {
+    position: relative;
+    width: 150px;
+    height: 150px;
+    flex-shrink: 0;
+}
+
+.profile-picture {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background-color: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 60px;
+    overflow: hidden;
+    border: 3px solid var(--accent-secondary);
+    cursor: pointer;
+    transition: var(--transition);
+    color: var(--text-heading);
+}
+
+.profile-picture:hover {
+    transform: scale(1.05);
+}
+
+.profile-picture img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.profile-picture-input {
+    display: none;
+}
+
+.profile-picture-upload-btn {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: var(--accent-secondary);
+    border: 2px solid var(--text-heading);
+    color: var(--text-heading);
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+}
+
+.profile-picture-upload-btn:hover {
+    transform: scale(1.1);
+    background-color: var(--text-heading);
+    color: var(--accent);
+}
+
+/* Profile Actions */
+.profile-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+}
+
+.profile-action-btn {
+    padding: 12px;
+    background-color: var(--accent);
+    color: var(--text-heading);
+    border: none;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    font-size: 14px;
+}
+
+.profile-action-btn:hover {
+    background-color: var(--accent-secondary);
+    color: var(--text-heading);
+}
+
+/* Profile Options (Sidebar Menu) */
+.profile-options {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.profile-option {
+    padding: 15px;
+    background-color: var(--accent);
+    color: var(--text-heading);
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 14px;
+    border: none;
+    text-align: left;
+}
+
+.profile-option i {
+    font-size: 18px;
+    flex-shrink: 0;
+    min-width: 24px;
+}
+
+.option-text {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.profile-option:hover, .profile-option.active {
+    background-color: var(--accent-secondary);
+    transform: translateX(5px);
+}
+
+/* Main Content Area (div3) */
+.div3 {
+    grid-column: 2;
+    grid-row: 2;
+    background-color: var(--surface);
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    padding: 20px;
+    overflow-y: auto;
+    height: calc(100vh - 100px);
+}
+
+.form-container {
+    max-width: 800px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.form-title {
+    margin-bottom: 20px;
+    color: var(--accent);
+    border-bottom: 2px solid var(--accent-secondary);
+    padding-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.5rem;
+}
+
+.form-title i {
+    font-size: 24px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.form-control {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid var(--border);
+    border-radius: var(--border-radius);
+    background-color: var(--surface);
+    color: var(--text);
+    transition: var(--transition);
+    font-size: 16px;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px rgba(26, 35, 126, 0.2);
+}
+
+.form-row {
+    display: flex;
+    gap: 15px;
+}
+
+.form-row .form-group {
+    flex: 1;
+}
+
+.btn-group {
+    display: flex;
+    gap: 15px;
+    margin-top: 30px;
+    flex-wrap: wrap;
+}
+
+.btn {
+    padding: 12px 24px;
+    border: none;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    font-weight: 500;
+    transition: var(--transition);
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+    min-width: 120px;
+    justify-content: center;
+}
+
+.btn span {
+    white-space: nowrap;
+}
+
+.btn-primary {
+    background-color: var(--accent);
+    color: var(--text-heading);
+}
+
+.btn-primary:hover:not(:disabled) {
+    background-color: var(--accent-secondary);
+    transform: translateY(-2px);
+}
+
+.btn-secondary {
+    background-color: var(--border);
+    color: var(--text);
+}
+
+.btn-secondary:hover {
+    background-color: var(--text-muted);
+    transform: translateY(-2px);
+}
+
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+.designation-type-selector {
+    margin-bottom: 30px;
+}
+
+.designation-type-selector label {
+    display: block;
+    margin-bottom: 15px;
+    font-weight: 500;
+    color: var(--text);
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.designation-options {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.designation-option {
+    flex: 1;
+    min-width: 120px;
+    padding: 15px;
+    text-align: center;
+    background-color: var(--surface);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    flex-direction: column;
+}
+
+.designation-option i {
+    font-size: 24px;
+}
+
+.designation-option:hover, .designation-option.active {
+    background-color: var(--accent);
+    color: var(--text-heading);
+    border-color: var(--accent);
+}
+
+.designation-form {
+    margin-top: 20px;
+}
+
+.tag-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.tag {
+    background-color: var(--accent-secondary);
+    color: var(--text-heading);
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.tag-remove {
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.success-page {
+    text-align: center;
+    padding: 40px 20px;
+}
+
+.success-icon {
+    font-size: 80px;
+    color: var(--success-color);
+    margin-bottom: 20px;
+}
+
+.success-page h2 {
+    color: var(--success-color);
+    margin-bottom: 20px;
+    font-size: 2rem;
+}
+
+.success-page p {
+    font-size: 1.1rem;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.progress-bar {
+    height: 6px;
+    background-color: var(--border);
+    border-radius: 3px;
+    margin-bottom: 30px;
+    overflow: hidden;
+}
+
+.progress {
+    height: 100%;
+    background-color: var(--accent);
+    width: 0%;
+    transition: width 0.5s ease;
+}
+
+/* College Email Section */
+.college-email-section {
+    margin-top: 30px;
+    padding: 20px;
+    background-color: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--border-radius);
+}
+
+.section-title {
+    margin-bottom: 20px;
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 18px;
+}
+
+.email-input-group {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 5px;
+}
+
+.email-input-group .form-control {
+    flex: 1;
+}
+
+.btn-small {
+    padding: 10px 15px;
+    font-size: 14px;
+    white-space: nowrap;
+}
+
+.form-text {
+    display: block;
+    margin-top: 5px;
+    font-size: 13px;
+    color: var(--text-muted);
+}
+
+/* OTP Verification */
+.otp-verification {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: rgba(100, 181, 246, 0.1);
+    border-radius: var(--border-radius);
+    border: 1px dashed var(--accent-secondary);
+}
+
+.otp-input-group {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+}
+
+.otp-input-group .form-control {
+    flex: 1;
+    min-width: 200px;
+    text-align: center;
+    letter-spacing: 5px;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.otp-timer {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 8px 12px;
+    background-color: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--border-radius);
+    color: var(--text);
+    font-weight: 500;
+    min-width: 70px;
+    justify-content: center;
+}
+
+.otp-timer i {
+    color: var(--accent);
+}
+
+.otp-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+    flex-wrap: wrap;
+}
+
+.verification-status {
+    margin-top: 15px;
+    padding: 10px;
+    border-radius: var(--border-radius);
+    text-align: center;
+    font-weight: 500;
+}
+
+.verification-status.success {
+    background-color: rgba(46, 204, 113, 0.1);
+    color: #27ae60;
+    border: 1px solid rgba(46, 204, 113, 0.3);
+}
+
+.verification-status.error {
+    background-color: rgba(231, 76, 60, 0.1);
+    color: #c0392b;
+    border: 1px solid rgba(231, 76, 60, 0.3);
+}
+
+.verification-status.pending {
+    background-color: rgba(241, 196, 15, 0.1);
+    color: #f39c12;
+    border: 1px solid rgba(241, 196, 15, 0.3);
+}
+
+/* Avatar Selection Modal */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    opacity: 0;
+    visibility: hidden;
+    transition: var(--transition);
+    padding: 20px;
+}
+
+.modal-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.modal {
+    background-color: var(--surface);
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    width: 100%;
+    max-width: 500px;
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: 20px;
+    border: 1px solid var(--border);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+}
+
+.modal-title {
+    font-size: 20px;
+    color: var(--accent);
+}
+
+.close-modal {
+    background: none;
+    border: none;
+    font-size: 28px;
+    cursor: pointer;
+    color: var(--text);
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-body {
+    padding: 10px 0;
+}
+
+.avatar-instruction {
+    text-align: center;
+    margin-bottom: 20px;
+    color: var(--text);
+    font-size: 16px;
+}
+
+.avatar-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.avatar-option {
+    width: 100%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    background-color: var(--accent);
+    cursor: pointer;
+    transition: var(--transition);
+    border: 2px solid transparent;
+    color: var(--text-heading);
+}
+
+.avatar-option:hover {
+    transform: scale(1.1);
+    border-color: var(--accent-secondary);
+}
+
+.avatar-option.selected {
+    border-color: var(--accent-secondary);
+    transform: scale(1.1);
+    background-color: var(--accent-secondary);
+}
+
+/* Form elements styling */
+select.form-control,
+textarea.form-control {
+    background-color: var(--surface);
+    color: var(--text);
+    border: 1px solid var(--border);
+}
+
+/* Sidebar Overlay */
+.sidebar-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.sidebar-overlay.active {
+    display: block;
+    opacity: 1;
+}
+
+/* ============================================
+   RESPONSIVE DESIGN - TABLET (max-width: 1024px)
+   ============================================ */
+@media (max-width: 1024px) {
+    .parent {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto 1fr;
+        gap: 10px;
+    }
+
+    /* Header adjustments */
+    .div1 {
+        grid-column: 1;
+        grid-row: 1;
+        padding: 15px 20px;
+        height: auto;
+        min-height: 70px;
+    }
+
+    /* Show menu toggle button on mobile */
+    .menu-toggle {
+        display: block;
+        order: 1;
+    }
+
+    /* Move logo to left, theme toggle to right */
+    .logo-section {
+        order: 0;
+        flex: 1;
+    }
+
+    .top-controls {
+        order: 2;
+    }
+
+    /* Sidebar (div2) - Hidden by default on mobile */
+    .div2 {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100vh;
+        width: var(--sidebar-width);
+        z-index: 1000;
+        transform: translateX(-100%);
+        border-radius: 0;
+        padding-top: 80px;
+        box-shadow: 5px 0 15px rgba(0, 0, 0, 0.1);
+        overflow-y: auto;
+        transition: transform 0.3s ease;
+        grid-column: unset;
+        grid-row: unset;
+        height: 100vh;
+        top: 0;
+    }
+
+    .div2.active {
+        transform: translateX(0);
+    }
+
+    /* Main content area */
+    .div3 {
+        grid-column: 1;
+        grid-row: 2;
+        margin-left: 0;
+        transition: margin-left 0.3s ease;
+        min-height: calc(100vh - 90px);
+        height: auto;
+    }
+}
+
+/* ============================================
+   RESPONSIVE DESIGN - MOBILE (max-width: 768px)
+   ============================================ */
+@media (max-width: 768px) {
+    .parent {
+        padding: 5px;
+        gap: 5px;
+    }
+
+    .div1 {
+        padding: 12px 15px;
+    }
+
+    .logo {
+        width: 40px;
+        height: 40px;
+        font-size: 20px;
+    }
+
+    .logo-text {
+        font-size: 20px;
+    }
+
+    .menu-toggle {
+        font-size: 22px;
+        padding: 6px;
+    }
+
+    .theme-toggle {
+        width: 36px;
+        height: 36px;
+        font-size: 1rem;
+    }
+
+    /* Sidebar adjustments */
+    .div2 {
+        width: 85%;
+        max-width: 320px;
+        padding: 20px 15px;
+        padding-top: 80px;
+    }
+
+    .profile-picture-container {
+        width: 120px;
+        height: 120px;
+    }
+
+    .profile-picture {
+        font-size: 50px;
+    }
+
+    .profile-picture-upload-btn {
+        width: 35px;
+        height: 35px;
+        font-size: 14px;
+    }
+
+    .profile-option {
+        padding: 12px 15px;
+        font-size: 15px;
+    }
+
+    .div3 {
+        padding: 15px;
+    }
+
+    .form-title {
+        font-size: 1.3rem;
+    }
+
+    .btn span {
+        font-size: 14px;
+    }
+}
+
+/* ============================================
+   RESPONSIVE DESIGN - SMALL MOBILE (max-width: 480px)
+   ============================================ */
+@media (max-width: 480px) {
+    .div1 {
+        padding: 10px 12px;
+    }
+
+    .logo {
+        width: 35px;
+        height: 35px;
+        font-size: 18px;
+    }
+
+    .logo-text {
+        font-size: 18px;
+    }
+
+    .menu-toggle {
+        font-size: 20px;
+        padding: 5px;
+    }
+
+    .theme-toggle {
+        width: 32px;
+        height: 32px;
+        font-size: 0.9rem;
+    }
+
+    /* Sidebar adjustments */
+    .div2 {
+        width: 100%;
+        max-width: 100%;
+        padding: 20px 12px;
+        padding-top: 70px;
+    }
+
+    .profile-picture-container {
+        width: 100px;
+        height: 100px;
+    }
+
+    .profile-picture {
+        font-size: 40px;
+    }
+
+    .profile-picture-upload-btn {
+        width: 30px;
+        height: 30px;
+        font-size: 12px;
+    }
+
+    .profile-action-btn,
+    .profile-option {
+        font-size: 14px;
+        padding: 10px 12px;
+    }
+
+    .div3 {
+        padding: 12px;
+    }
+
+    .form-title {
+        font-size: 1.2rem;
+    }
+
+    .form-title i {
+        font-size: 20px;
+    }
+
+    .form-control {
+        padding: 10px 12px;
+        font-size: 15px;
+    }
+
+    .btn {
+        padding: 10px 15px;
+        font-size: 15px;
+        min-width: 100px;
+    }
+}
+
+/* ============================================
+   LANDSCAPE MODE (max-height: 600px)
+   ============================================ */
+@media (max-height: 600px) and (orientation: landscape) {
+    .div2 {
+        padding-top: 60px;
+        overflow-y: auto;
+    }
+
+    .profile-picture-container {
+        width: 80px;
+        height: 80px;
+    }
+
+    .profile-picture {
+        font-size: 35px;
+    }
+
+    .profile-picture-upload-btn {
+        width: 25px;
+        height: 25px;
+        font-size: 12px;
+        bottom: 5px;
+        right: 5px;
+    }
+
+    .profile-options {
+        gap: 8px;
+    }
+
+    .profile-option {
+        padding: 8px 12px;
+        font-size: 13px;
+    }
+
+    .profile-option i {
+        font-size: 16px;
+    }
+}
+
+/* ============================================
+   PRINT STYLES
+   ============================================ */
+@media print {
+    .theme-toggle,
+    .menu-toggle,
+    .profile-picture-upload-btn,
+    .skip-buttons,
+    .btn-secondary,
+    .sidebar-overlay {
+        display: none !important;
+    }
+
+    .div2 {
+        display: none !important;
+    }
+
+    .parent {
+        display: block;
+        padding: 0;
+    }
+
+    .div1,
+    .div3 {
+        box-shadow: none;
+        border: 1px solid #ccc;
+        margin-bottom: 20px;
+    }
+
+    body {
+        background: white !important;
+        color: black !important;
+    }
+}

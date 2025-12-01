@@ -1,14 +1,388 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>OTP Verification - College Platform</title>
-  <link rel="stylesheet" href="styles/login_signup_styles.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <meta name="theme-color" content="#1A237E" id="meta-theme-color">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile Setup</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style/detail.css">
 </head>
 <body>
-     your otp is verified
-    </body>
-    </html>
+    <meta name="theme-color" content="#1A237E" id="meta-theme-color">
 
+    <div class="parent">
+        <!-- Header -->
+        <div class="div1">
+            <div class="logo-section">
+                <div class="logo">
+                    <i class="fas fa-university"></i>
+                </div>
+                <span class="logo-text">UniProfile</span>
+            </div>
+            
+            <!-- Menu Toggle Button (Mobile) -->
+            <button class="menu-toggle" id="menuToggle" aria-label="Toggle sidebar menu" aria-expanded="false">
+                <i class="fas fa-bars" id="menuIcon"></i>
+            </button>
+            
+            <div class="top-controls">
+                <button id="themeToggle" class="theme-toggle" title="Toggle theme" aria-pressed="false">
+                    <i id="themeIcon" class="fas fa-moon"></i>
+                    <span class="sr-only">Toggle theme</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="div2">
+            
+            <div class="profile-picture-container">
+                <div class="profile-picture" id="profile-picture">
+                    <i class="fas fa-user"></i>
+                </div>
+                <input type="file" id="profile-picture-upload" class="profile-picture-input" accept="image/*">
+                <button type="button" class="profile-picture-upload-btn" id="profile-picture-upload-btn">
+                    <i class="fas fa-camera"></i>
+                </button>
+            </div>
+            <div class="profile-actions">
+                <button type="button" class="profile-action-btn" id="change-avatar-btn">
+                    <i class="fas fa-user-edit"></i> <span class="btn-text">Choose Avatar</span>
+                </button>
+            </div>
+            <div class="profile-options">
+                <div class="profile-option active" data-target="personal-info">
+                    <i class="fas fa-user-circle"></i>
+                    <span class="option-text">Personal Info</span>
+                </div>
+                <div class="profile-option" data-target="designation">
+                    <i class="fas fa-briefcase"></i>
+                    <span class="option-text">Designation</span>
+                </div>
+                <div class="profile-option" data-target="general-profile">
+                    <i class="fas fa-id-card"></i>
+                    <span class="option-text">General Profile</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="div3">
+            <div class="progress-bar">
+                <div class="progress" id="form-progress"></div>
+            </div>
+
+            <!-- Personal Info Form -->
+            <form id="personal-info" class="form-container">
+                <h2 class="form-title"><i class="fas fa-user-edit"></i> Personal Information</h2>
+                <div class="form-content">
+                    <div class="form-group">
+                        <label for="full-name"><i class="fas fa-signature"></i> Full Name *</label>
+                        <input type="text" id="full-name" name="full_name" class="form-control" required placeholder="Enter your full name">
+                    </div>
+                    <div class="form-group">
+                        <label for="username"><i class="fas fa-at"></i> Username *</label>
+                        <input type="text" id="username" name="username" class="form-control" required placeholder="Choose a username">
+                    </div>
+                    <div class="form-group">
+                        <label for="email"><i class="fas fa-envelope"></i> Email *</label>
+                        <input type="email" id="email" name="email" class="form-control" required placeholder="Enter your email address">
+                    </div>
+                    <div class="form-group">
+                        <label for="phone"><i class="fas fa-phone"></i> Phone No. (Optional)</label>
+                        <input type="tel" id="phone" name="phone" class="form-control" placeholder="Enter your phone number">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="age"><i class="fas fa-birthday-cake"></i> Age *</label>
+                            <input type="number" id="age" name="age" class="form-control" required min="1" max="120" placeholder="Your age">
+                        </div>
+                        <div class="form-group">
+                            <label for="gender"><i class="fas fa-venus-mars"></i> Gender *</label>
+                            <select id="gender" name="gender" class="form-control" required>
+                                <option value="">Select Gender</option>
+                                <option value="male">Male</option>
+                                <option value="female">Female</option>
+                                <option value="other">Rather not to say</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="btn-group">
+                        <button type="submit" class="btn btn-primary" id="personal-continue">
+                            <i class="fas fa-arrow-right"></i> <span>Continue</span>
+                        </button>
+                        <button type="button" class="btn btn-secondary" id="personal-skip">
+                            <i class="fas fa-forward"></i> <span>Skip for Now</span>
+                        </button>
+                    </div>
+                </div>
+            </form>
+
+            <!-- Designation Form -->
+            <form id="designation" class="form-container hidden">
+                <h2 class="form-title"><i class="fas fa-briefcase"></i> Designation</h2>
+                <div class="form-content">
+                    <div class="designation-type-selector">
+                        <label><i class="fas fa-user-tag"></i> Select Your Designation *</label>
+                        <div class="designation-options">
+                            <div class="designation-option active" data-option="student">
+                                <i class="fas fa-user-graduate"></i>
+                                <span class="option-text">Student</span>
+                            </div>
+                            <div class="designation-option" data-option="faculty">
+                                <i class="fas fa-chalkboard-teacher"></i>
+                                <span class="option-text">Faculty</span>
+                            </div>
+                            <div class="designation-option" data-option="alumni">
+                                <i class="fas fa-user-tie"></i>
+                                <span class="option-text">Alumni</span>
+                            </div>
+                        </div>
+                        <input type="hidden" id="designation-type" name="designation_type" value="student">
+                    </div>
+
+                    <!-- Student Form -->
+                    <div id="student-form" class="designation-form">
+                        <div class="form-group">
+                            <label for="registration-no"><i class="fas fa-id-card"></i> Registration No. *</label>
+                            <input type="text" id="registration-no" name="registration_no" class="form-control" required placeholder="Enter registration number">
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="program"><i class="fas fa-graduation-cap"></i> Program *</label>
+                                <select id="program" name="program" class="form-control" required>
+                                    <option value="">Select Program</option>
+                                    <option value="btech">B.Tech</option>
+                                    <option value="bba">BBA</option>
+                                    <option value="bca">BCA</option>
+                                    <option value="mba">MBA</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="department"><i class="fas fa-building"></i> Department *</label>
+                                <select id="department" name="department" class="form-control" required>
+                                    <option value="">Select Department</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="current-year"><i class="fas fa-calendar-alt"></i> Current Year *</label>
+                                <input type="number" id="current-year" name="current_year" class="form-control" required min="1" max="5" placeholder="Current year">
+                            </div>
+                            <div class="form-group">
+                                <label for="graduation-year"><i class="fas fa-calendar-check"></i> Graduation Year *</label>
+                                <input type="number" id="graduation-year" name="graduation_year" class="form-control" required min="2000" max="2030" placeholder="Graduation year">
+                            </div>
+                        </div>
+                        
+                        <!-- College Email with OTP Verification -->
+                        <div class="college-email-section">
+                            <h3 class="section-title"><i class="fas fa-envelope-open-text"></i> College Email Verification</h3>
+                            <div class="form-group">
+                                <label for="college-email"><i class="fas fa-university"></i> College Email Address *</label>
+                                <div class="email-input-group">
+                                    <input type="email" id="college-email" name="college_email" class="form-control" required placeholder="Enter your college email">
+                                    <button type="button" class="btn btn-small" id="send-otp-btn">
+                                        <i class="fas fa-paper-plane"></i> <span>Send OTP</span>
+                                    </button>
+                                </div>
+                                <small class="form-text">Your college email will be used for official communications</small>
+                            </div>
+                            
+                            <div class="otp-verification hidden" id="otp-verification">
+                                <div class="form-group">
+                                    <label for="otp-code"><i class="fas fa-shield-alt"></i> Enter OTP *</label>
+                                    <div class="otp-input-group">
+                                        <input type="text" id="otp-code" name="otp_code" class="form-control" maxlength="6" placeholder="Enter 6-digit OTP">
+                                        <div class="otp-timer" id="otp-timer">
+                                            <i class="fas fa-clock"></i> <span id="timer">02:00</span>
+                                        </div>
+                                    </div>
+                                    <div class="otp-actions">
+                                        <button type="button" class="btn btn-small btn-secondary" id="verify-otp-btn">
+                                            <i class="fas fa-check-circle"></i> <span>Verify OTP</span>
+                                        </button>
+                                        <button type="button" class="btn btn-small btn-secondary" id="resend-otp-btn">
+                                            <i class="fas fa-redo"></i> <span>Resend OTP</span>
+                                        </button>
+                                    </div>
+                                    <div class="verification-status" id="verification-status"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Faculty Form -->
+                    <div id="faculty-form" class="designation-form hidden">
+                        <div class="form-group">
+                            <label for="faculty-id"><i class="fas fa-id-badge"></i> ID *</label>
+                            <input type="text" id="faculty-id" name="faculty_id" class="form-control" required placeholder="Enter faculty ID">
+                        </div>
+                        <div class="form-group">
+                            <label for="faculty-department"><i class="fas fa-building"></i> Department *</label>
+                            <input type="text" id="faculty-department" name="faculty_department" class="form-control" required placeholder="Enter department">
+                        </div>
+                        <div class="form-group">
+                            <label for="post"><i class="fas fa-user-tie"></i> Post *</label>
+                            <input type="text" id="post" name="post" class="form-control" required placeholder="Enter your position">
+                        </div>
+                        <div class="form-group">
+                            <label for="courses-taught"><i class="fas fa-book"></i> Courses Taught *</label>
+                            <input type="text" id="courses-taught" name="courses_taught" class="form-control" required placeholder="Enter courses you teach">
+                        </div>
+                        <div class="form-group">
+                            <label for="office-location"><i class="fas fa-map-marker-alt"></i> Office Location *</label>
+                            <input type="text" id="office-location" name="office_location" class="form-control" required placeholder="Enter office location">
+                        </div>
+                        <div class="form-group">
+                            <label for="experience"><i class="fas fa-clock"></i> Years of Experience *</label>
+                            <input type="number" id="experience" name="experience" class="form-control" required min="0" max="50" placeholder="Years of experience">
+                        </div>
+                        <div class="form-group">
+                            <label for="research"><i class="fas fa-flask"></i> Research Done (Optional)</label>
+                            <textarea id="research" name="research" class="form-control" rows="3" placeholder="Describe your research"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Alumni Form -->
+                    <div id="alumni-form" class="designation-form hidden">
+                        <div class="form-group">
+                            <label for="alumni-graduation-year"><i class="fas fa-calendar-check"></i> Graduation Year *</label>
+                            <input type="number" id="alumni-graduation-year" name="graduation_year" class="form-control" required min="2000" max="2030" placeholder="Graduation year">
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="alumni-program"><i class="fas fa-graduation-cap"></i> Program *</label>
+                                <select id="alumni-program" name="program" class="form-control" required>
+                                    <option value="">Select Program</option>
+                                    <option value="btech">B.Tech</option>
+                                    <option value="bba">BBA</option>
+                                    <option value="bca">BCA</option>
+                                    <option value="mba">MBA</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="alumni-department"><i class="fas fa-building"></i> Department *</label>
+                                <select id="alumni-department" name="department" class="form-control" required>
+                                    <option value="">Select Department</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="job-title"><i class="fas fa-user-tie"></i> Current Job Title *</label>
+                            <input type="text" id="job-title" name="job_title" class="form-control" required placeholder="Enter your job title">
+                        </div>
+                        <div class="form-group">
+                            <label for="company-name"><i class="fas fa-building"></i> Company Name *</label>
+                            <input type="text" id="company-name" name="company_name" class="form-control" required placeholder="Enter company name">
+                        </div>
+                        <div class="form-group">
+                            <label for="linkedin"><i class="fab fa-linkedin"></i> LinkedIn Profile</label>
+                            <input type="url" id="linkedin" name="linkedin" class="form-control" placeholder="Enter LinkedIn profile URL">
+                        </div>
+                    </div>
+
+                    <div class="btn-group">
+                        <button type="submit" class="btn btn-primary" id="designation-continue">
+                            <i class="fas fa-arrow-right"></i> <span>Continue</span>
+                        </button>
+                        <button type="button" class="btn btn-secondary" id="designation-skip">
+                            <i class="fas fa-forward"></i> <span>Skip for Now</span>
+                        </button>
+                    </div>
+                </div>
+            </form>
+
+            <!-- General Profile Form -->
+            <form id="general-profile" class="form-container hidden">
+                <h2 class="form-title"><i class="fas fa-id-card"></i> General Profile</h2>
+                <div class="form-content">
+                    <div class="form-group">
+                        <label for="short-bio"><i class="fas fa-pen"></i> Short Bio *</label>
+                        <textarea id="short-bio" name="short_bio" class="form-control" required rows="4" placeholder="Tell us about yourself"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="skills"><i class="fas fa-tools"></i> Skills *</label>
+                        <input type="text" id="skills" name="skills" class="form-control" required placeholder="Add skills separated by commas">
+                        <div class="tag-container" id="skills-tags"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="interests"><i class="fas fa-heart"></i> Interests *</label>
+                        <input type="text" id="interests" name="interests" class="form-control" required placeholder="Add interests separated by commas">
+                        <div class="tag-container" id="interests-tags"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="general-linkedin"><i class="fab fa-linkedin"></i> LinkedIn</label>
+                        <input type="url" id="general-linkedin" name="linkedin" class="form-control" placeholder="Enter LinkedIn profile URL">
+                    </div>
+                    <div class="form-group">
+                        <label for="github"><i class="fab fa-github"></i> GitHub</label>
+                        <input type="url" id="github" name="github" class="form-control" placeholder="Enter GitHub profile URL">
+                    </div>
+                    <div class="form-group">
+                        <label for="portfolio"><i class="fas fa-globe"></i> Portfolio</label>
+                        <input type="url" id="portfolio" name="portfolio" class="form-control" placeholder="Enter portfolio website URL">
+                    </div>
+                    <div class="btn-group">
+                        <button type="submit" class="btn btn-primary" id="general-submit">
+                            <i class="fas fa-check-circle"></i> <span>Submit Profile</span>
+                        </button>
+                        <button type="button" class="btn btn-secondary" id="general-skip">
+                            <i class="fas fa-forward"></i> <span>Skip for Now</span>
+                        </button>
+                    </div>
+                </div>
+            </form>
+
+            <!-- Success Page -->
+            <div id="success-page" class="form-container hidden">
+                <div class="success-page">
+                    <div class="success-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <h2>Profile Setup Complete!</h2>
+                    <p>Your profile has been successfully created. You can now explore all the features of our platform.</p>
+                    <div class="btn-group" style="justify-content: center; margin-top: 30px;">
+                        <button type="button" class="btn btn-primary" id="view-profile">
+                            <i class="fas fa-eye"></i> <span>View Profile</span>
+                        </button>
+                        <button type="button" class="btn btn-secondary" id="go-home">
+                            <i class="fas fa-home"></i> <span>Go to Home</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Avatar Selection Modal -->
+    <div class="modal-overlay" id="avatar-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">Choose Your Avatar</h3>
+                <button class="close-modal" id="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p class="avatar-instruction">Select one of the avatars below:</p>
+                <div class="avatar-grid" id="avatar-grid">
+                    <!-- Avatar options populated by JS -->
+                </div>
+                <div class="btn-group" style="margin-top: 20px;">
+                    <button type="button" class="btn btn-primary" id="save-avatar">
+                        <i class="fas fa-save"></i> <span>Save Avatar</span>
+                    </button>
+                    <button type="button" class="btn btn-secondary" id="cancel-avatar">
+                        <i class="fas fa-times"></i> <span>Cancel</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <script src="script/detail.js"></script>
+</body>
+</html>
