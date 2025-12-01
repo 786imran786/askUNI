@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>College Portal - Login & Signup</title>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="style/login_signup_style.css">
+
+  <!-- theme color for mobile browsers (updated by JS) -->
+  <meta name="theme-color" content="#1A237E" id="meta-theme-color">
+</head>
+<body>
+  <div class="top-controls">
+    <button id="themeToggle" class="theme-toggle" title="Toggle theme" aria-pressed="false">
+      <i id="themeIcon" class="fas fa-moon" aria-hidden="true"></i>
+      <span class="sr-only">Toggle theme</span>
+    </button>
+  </div>
+
+  <div class="container" id="container" aria-live="polite">
+    <div class="card" id="card" role="region" aria-label="Authentication card">
+      <!-- FRONT: Login -->
+      <div class="card-face card-front" id="front-face">
+        <div class="img-box" aria-hidden="true">
+          <!-- <img src="https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=1400&q=80" alt="College Campus"> -->
+          <img id="modelogin" src="media/login3.jpeg" alt="login">
+
+          <div class="overlay">
+<h2>Back again? Let's vibe.</h2>
+<p>Dive into your uni space — study, connect, grow. The journey continues.</p>
+
+          </div>
+        </div>
+
+        <div class="form-box">
+          <div class="form login-form" aria-label="Login form">
+            <h2><img id="modelogo" src="media/logo.png" style="height:100px"></h2>
+            <h2>Login</h2>
+            <form id="loginForm" method="POST" action="/api/login" novalidate>
+              <div class="input-box">
+                <input type="text" name="username" id="login-username" required autocomplete="username">
+                <label for="login-username">Email or Username</label>
+                <span class="icon" aria-hidden="true"><i class="fas fa-user"></i></span>
+              </div>
+
+              <div class="input-box">
+                <input type="password" name="password" id="login-password" required autocomplete="current-password">
+                <label for="login-password">Password</label>
+                <span class="icon" aria-hidden="true"><i class="fas fa-lock"></i></span>
+              </div>
+
+              <div class="remember-forgot">
+                <label><input type="checkbox" name="remember" id="remember"> Remember me</label>
+                <a href="forget.html" class="muted">Forgot Password?</a>
+              </div>
+
+              <button type="submit" class="btn">Login</button>
+
+              <div class="divider" aria-hidden="true">
+                <div class="line"></div><span>or</span><div class="line"></div>
+              </div>
+
+              <a href="/auth/google" class="social-btn" id="googleLogin">
+                <i class="fab fa-google google-icon" aria-hidden="true"></i>
+                <span class="social-text">Login with Google</span>
+              </a>
+
+              <div class="login-register">
+                <p>Don't have an account? <a href="#" class="register-link">Sign Up</a></p>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- BACK: Signup -->
+      <div class="card-face card-back" id="back-face">
+        <div class="form-box">
+          <div class="form signup-form" aria-label="Sign up form">
+            <h2>
+              Sign Up</h2>
+            <form id="signupForm" method="POST" action="/api/register" novalidate>
+              <div class="input-box">
+                <input type="text" name="fullname" id="signup-fullname" required autocomplete="name">
+                <label for="signup-fullname">Full Name</label>
+                <span class="icon" aria-hidden="true"><i class="fas fa-user"></i></span>
+              </div>
+
+              <div class="input-box">
+                <input type="email" name="email" id="signup-email" required autocomplete="email">
+                <label for="signup-email">Email</label>
+                <span class="icon" aria-hidden="true"><i class="fas fa-envelope"></i></span>
+              </div>
+
+              <div class="input-box">
+                <input type="password" name="password" id="signup-password" required autocomplete="new-password" minlength="6">
+                <label for="signup-password">Password</label>
+                <span class="icon" aria-hidden="true"><i class="fas fa-lock"></i></span>
+              </div>
+
+              <div class="input-box">
+                <input type="password" name="confirmPassword" id="signup-confirmPassword" required autocomplete="new-password">
+                <label for="signup-confirmPassword">Confirm Password</label>
+                <span class="icon" aria-hidden="true"><i class="fas fa-lock"></i></span>
+              </div>
+
+              <div class="terms-agreement">
+                <label>
+                  <input type="checkbox" name="agreeTerms" required>
+                  I agree to the <a href="termofpolicy.html" class="muted">Terms of Service</a> and <a href="privacypolicy.html" class="muted">Privacy Policy</a>
+                </label>
+              </div>
+
+              <button type="submit" class="btn">Sign Up</button>
+
+              <div class="divider" aria-hidden="true">
+                <div class="line"></div><span>or</span><div class="line"></div>
+              </div>
+
+              <a href="/auth/google" class="social-btn" id="googleSignup">
+                <i class="fab fa-google google-icon" aria-hidden="true"></i>
+                <span class="social-text">Sign Up with Google</span>
+              </a>
+
+              <div class="login-register">
+                <p>Already have an account? <a href="#" class="login-link">Login</a></p>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <div class="img-box">
+          <div class="slideshow-container" aria-hidden="true">
+            <div class="slide active">
+              <!-- <img src="https://images.unsplash.com/photo-1523580494863-6f3031224c94?auto=format&fit=crop&w=1400&q=80" alt="College Students Studying"> -->
+              <img id="modeImage" src="media/signup.jpeg" alt="signup">
+
+              <div class="overlay">
+                <h2>Join the Crew</h2>
+<p>Step in, connect with smart minds, and unlock a world of resources built for your glow-up.</p>
+</div>
+            </div>
+            <!-- <div class="slide">
+              <img src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=1400&q=80" alt="College Library">
+              <div class="overlay">
+                <h2>Access Resources</h2>
+                <p>Get access to our extensive library, research materials, and academic databases.</p>
+              </div>
+            </div>
+            <div class="slide">
+              <img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1400&q=80" alt="College Collaboration">
+              <div class="overlay">
+                <h2>Collaborate & Learn</h2>
+                <p>Connect with fellow students and faculty to enhance your educational experience.</p>
+              </div>
+            </div> -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+<div id="toast-container"></div>
+
+  <script src="script/login_signup_script.js"></script>
+</body>
+</html>

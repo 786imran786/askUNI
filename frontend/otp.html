@@ -1,0 +1,136 @@
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OTP Verification - College Platform</title>
+  <link rel="stylesheet" href="style/otp_style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <meta name="theme-color" content="#1A237E" id="meta-theme-color">
+</head>
+<body>
+    <div class="top-controls">
+        <button id="themeToggle" class="theme-toggle" title="Toggle theme" aria-pressed="false">
+        <i id="themeIcon" class="fas fa-moon" aria-hidden="true"></i>
+        <span class="sr-only">Toggle theme</span>
+        </button>
+    </div>
+    
+    <div class="container" id="container" aria-live="polite">
+        <div class="card" id="card" role="region" aria-label="OTP Verification card">
+            <div class="card-face card-front" id="front-face">
+                <div class="img-box" aria-hidden="true">
+                    <img id="modeotp" src="media/otp_dark.jpeg" alt="College Library">
+                    <div class="overlay">
+                        <h2>Verify Your Identity</h2>
+                        <p>Enter the One-Time Password (OTP) sent to your registered email or phone number to proceed.</p>
+                    </div>
+                </div>
+                <div class="form-box">
+                    <div class="form otp-form" aria-label="OTP Verification form">
+                        <h2>OTP Verification</h2>
+                        <form id="otpForm" novalidate>
+
+                            <div class="input-box">
+                                <input type="text" name="otp" id="otp-input" required autocomplete="one-time-code" maxlength="6" pattern="\d{6}">
+                                <label for="otp-input">Enter OTP</label>
+                                <span class="icon" aria-hidden="true"><i class="fas fa-key"></i></span>
+                            </div>
+                            <button type="button" class="btn" onclick="verifyOTP()">Verify OTP</button>
+                            <div class="resend-otp">
+                                <p>Didn't receive the OTP? <button type="button" id="resendOtpBtn" class="muted new">Resend OTP</button></p>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+    <div id="toast-container"></div>
+
+    <script src="script/otp.js"></script>
+    <script >
+        
+        // BLOCK DIRECT ACCESS
+const pendingEmail = localStorage.getItem("pending_email");
+if (!pendingEmail) {
+    window.location.href = "login_signup.html";   // redirect back
+}
+
+// script.js
+function showToast(message, type = "info") {
+    const container = document.getElementById("toast-container");
+    const toast = document.createElement("div");
+    toast.className = `toast ${type}`;
+    toast.textContent = message;
+
+    container.appendChild(toast);
+
+    setTimeout(() => {
+        toast.remove();
+    }, 3000);
+}
+
+ // ============================
+// OTP VERIFICATION
+// ============================
+async function verifyOTP() {
+    const email = localStorage.getItem("pending_email");
+    const otp = document.getElementById("otp-input").value;
+
+    const payload = { email, otp };
+
+    const res = await fetch("http://127.0.0.1:5000/api/verify-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+    });
+
+    const data = await res.json();
+
+    if(data.success){
+        showToast("OTP verified!", "success");
+
+
+        // remove temp storage
+        localStorage.removeItem("pending_email");
+
+        // redirect to details
+        window.location.href = "detail.html";
+    } else {
+       showToast(data.message, "error");
+
+    }
+}
+
+// ============================
+// RESEND OTP FUNCTION
+// ============================
+document.getElementById("resendOtpBtn").addEventListener("click", async () => {
+    const email = localStorage.getItem("pending_email");
+
+    if (!email) {
+        alert("No email found. Please register again.");
+        return;
+    }
+
+    const res = await fetch("http://127.0.0.1:5000/api/resend-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+    });
+
+    const data = await res.json();
+
+    if (data.success) {
+        showToast("New OTP sent!", "success");
+
+    } else {
+        showToast("Failed to resend OTP", "error");
+
+    }
+});
+
+    </script>
+</body>
+</html>

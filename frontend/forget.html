@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Forgot Password</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <meta name="theme-color" content="#1A237E" id="meta-theme-color">
+
+  <style>
+    :root {
+      /* Light mode (Graphite + Soft Grey + Neon Blue Accent) */
+      --primary-light: #F2F3F5;        /* soft grey background */
+      --secondary-light: #FFFFFF;      /* card bg */
+      --accent-light: #2D2D2D;         /* graphite accent */
+      --accent-secondary-light: #1c303f; /* neon blue highlight */
+      --text-light: #111317;          
+      --text-heading-light: #000000;
+      --text-muted-light: #7A7A7A;
+      --border-light: #DDDDDD;
+      --surface-light:  #bfbebe;
+
+      /* Dark mode (Black + Steel Grey + Cyan/Blue neon accents) */
+      --primary-dark: #0B0B0D;         /* pure black-ish bg */
+      --secondary-dark: #151515;       /* deep grey card */
+      --accent-dark: #2F2F2F;          /* graphite */
+      --accent-secondary-dark: #00AEEF; /* neon cyan accent (modern AF) */
+      --text-dark: #E6E6E6;
+      --text-heading-dark: #FFFFFF;
+      --text-muted-dark: #9A9A9A;
+      --border-dark: #2A2A2A;
+      --surface-dark: #151515;
+    }
+
+    /* Light mode defaults */
+    :root {
+      --primary: var(--primary-light);
+      --secondary: var(--secondary-light);
+      --accent: var(--accent-light);
+      --accent-secondary: var(--accent-secondary-light);
+      --text: var(--text-light);
+      --text-heading: var(--text-heading-light);
+      --text-muted: var(--text-muted-light);
+      --border: var(--border-light);
+      --surface: var(--surface-light);
+    }
+
+    /* Dark mode swap */
+    :root.dark {
+      --primary: linear-gradient(
+          135deg,
+          #0b0b0d 0%,
+          #111113 25%,
+          #1a1a1d 50%,
+          #0d0d10 100%
+      );
+      --secondary: var(--secondary-dark);
+      --accent: var(--accent-dark);
+      --accent-secondary: var(--accent-secondary-dark);
+      --text: var(--text-dark);
+      --text-heading: var(--text-heading-dark);
+      --text-muted: var(--text-muted-dark);
+      --border: var(--border-dark);
+      --surface: var(--surface-dark);
+    }
+
+    :root.light body {
+      background: linear-gradient(
+          135deg,
+          #d1d4da 0%,
+          #887777 40%,
+          #d3d3d3 100%
+      ) !important;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Poppins", sans-serif;
+      transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+    }
+
+    body {
+      background: var(--primary) !important;
+      min-height: 100vh;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      overflow-x: hidden;
+    }
+
+    /* Theme toggle */
+    .top-controls {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 1000;
+    }
+
+    .theme-toggle {
+      background: var(--surface);
+      border: 2px solid var(--border);
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      color: var(--text);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      backdrop-filter: blur(10px);
+      transition: all 0.3s ease;
+    }
+
+    .theme-toggle:hover {
+      transform: scale(1.05);
+      border-color: var(--accent-secondary);
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    /* Container and card */
+    .container {
+      width: 100%;
+      max-width: 800px;
+      perspective: 1000px;
+    }
+
+    .card {
+      position: relative;
+      width: 100%;
+      height: 500px;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+      background: var(--surface);
+      display: flex;
+      flex-direction: row;
+    }
+
+    /* Image box styles */
+    .img-box {
+      position: relative;
+      width: 50%;
+      height: 100%;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .img-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      /* background: linear-gradient(135deg, rgba(26, 35, 126, 0.8) 0%, rgba(10, 15, 39, 0.6) 100%); */
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 20px;
+      color: white;
+    }
+
+    .overlay h2 {
+      font-size: 1.5rem;
+      margin-bottom: 10px;
+      font-weight: 600;
+    }
+
+    .overlay p {
+      font-size: 0.9rem;
+      opacity: 0.9;
+      line-height: 1.4;
+    }
+
+    /* Form box styles */
+    .form-box {
+      padding: 30px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 15px;
+      color: var(--text-heading);
+      font-weight: 700;
+    }
+
+    p {
+      text-align: center;
+      color: var(--text-muted);
+      margin-bottom: 25px;
+      font-size: 14px;
+    }
+
+    .input-box {
+      margin-bottom: 18px;
+      position: relative;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 10px;
+      border: 2px solid var(--border);
+      font-size: 15px;
+      outline: none;
+      transition: 0.3s;
+      background: var(--surface);
+      color: var(--text);
+    }
+
+    input:focus {
+      border-color: var(--accent-secondary);
+      box-shadow: 0 0 0 3px rgba(100, 181, 246, 0.1);
+    }
+
+    :root.dark input:focus {
+      box-shadow: 0 0 0 3px rgba(144, 202, 249, 0.3);
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background: var(--accent);
+      color: white;
+      font-size: 16px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      margin-top: 5px;
+      transition: all 0.3s ease;
+      font-weight: 600;
+    }
+
+    button:hover {
+      background: var(--accent-secondary);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(26, 35, 126, 0.3);
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    a {
+      text-decoration: none;
+      color: var(--accent-secondary);
+      display: block;
+      text-align: center;
+      margin-top: 12px;
+      font-weight: 600;
+      transition: color 0.3s ease;
+    }
+
+    a:hover {
+      color: var(--accent);
+    }
+
+    /* Toast notifications */
+    #toast-container {
+      position: fixed;
+      top: 0;
+      right: 20px;
+      z-index: 999999;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .toast {
+      padding: 14px 20px;
+      border-radius: 8px;
+      color: #fff;
+      font-size: 15px;
+      animation: slideIn 0.4s ease, fadeOut 0.4s ease 2.5s forwards;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 230px;
+    }
+
+    .toast.success { background: #4caf50; }      /* green */
+    .toast.error   { background: #f44336; }      /* red */
+    .toast.info    { background: #2196f3; }      /* blue */
+    .toast.warning { background: #ff9800; }      /* orange */
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateX(50px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+
+    @keyframes fadeOut {
+      to { opacity: 0; transform: translateX(50px); }
+    }
+
+    @keyframes fadeIn {
+      from { transform: scale(0.9); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    /* Responsive design */
+    @media (max-width: 767px) {
+      .card {
+        flex-direction: column;
+        height: auto;
+        max-width: 380px;
+      }
+      
+      .img-box {
+        width: 100%;
+        height: 180px;
+      }
+      
+      .form-box {
+        width: 100%;
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="top-controls">
+    <button id="themeToggle" class="theme-toggle" title="Toggle theme" aria-pressed="false">
+      <i id="themeIcon" class="fas fa-moon" aria-hidden="true"></i>
+      <span class="sr-only">Toggle theme</span>
+    </button>
+  </div>
+
+  <div class="container">
+    <div class="card">
+      <!-- Image Section -->
+      <div class="img-box" aria-hidden="true">
+        <img id="forgotPasswordImage" src="media/forget_dark.jpeg" alt="Password Recovery">
+        <div class="overlay">
+          <h2>Secure Password Recovery</h2>
+          <p>Follow the steps to securely reset your password and regain access to your account.</p>
+        </div>
+      </div>
+
+      <!-- Form Section -->
+      <div class="form-box">
+        <!-- STEP 1: ENTER EMAIL -->
+        <div id="step-email">
+          <h2>Forgot Password?</h2>
+          <p>Drop your email, and we'll send a reset code straight to you.</p>
+
+          <div class="input-box">
+            <input type="email" id="email" placeholder="Enter your email" required />
+          </div>
+
+          <button onclick="sendOTP()">Send OTP</button>
+        </div>
+
+        <!-- STEP 2: ENTER OTP -->
+        <div id="step-otp" class="hidden">
+          <h2>Verify OTP</h2>
+          <p>We've sent a code to your email. Enter it to continue.</p>
+
+          <div class="input-box">
+            <input type="text" id="otp" placeholder="Enter OTP" maxlength="6" />
+          </div>
+
+          <button onclick="verifyOTP()">Verify OTP</button>
+        </div>
+
+        <!-- STEP 3: RESET PASSWORD -->
+        <div id="step-reset" class="hidden">
+          <h2>Set New Password</h2>
+          <p>Almost there — lock your account with a fresh new password.</p>
+
+          <div class="input-box">
+            <input type="password" id="newPass" placeholder="New Password" />
+          </div>
+
+          <div class="input-box">
+            <input type="password" id="confirmPass" placeholder="Confirm Password" />
+          </div>
+
+          <button onclick="resetPassword()">Reset Password</button>
+        </div>
+
+        <a href="login_signup.html">Back to login</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast container -->
+  <div id="toast-container"></div>
+
+  <script>
+    // ============================
+    // THEME LOGIC
+    // ============================
+    const themeToggle = document.getElementById('themeToggle');
+    const themeIcon = document.getElementById('themeIcon');
+    const metaTheme = document.getElementById('meta-theme-color');
+    const forgotPasswordImage = document.getElementById('forgotPasswordImage');
+    const THEME_KEY = 'college_portal_theme_v3';
+
+    // Apply theme
+    function applyTheme(mode) {
+      document.documentElement.classList.remove('dark', 'light');
+      document.documentElement.classList.add(mode);
+
+      if (mode === 'dark') {
+        if (forgotPasswordImage) forgotPasswordImage.src = "media/forget_dark.jpeg";
+        themeIcon.className = 'fas fa-sun';
+        themeToggle.setAttribute('aria-pressed', 'true');
+        if (metaTheme) metaTheme.content = '#0A0F27';
+        localStorage.setItem(THEME_KEY, 'dark');
+      } else {
+        if (forgotPasswordImage) forgotPasswordImage.src = "media/forget_light.jpeg";
+        themeIcon.className = 'fas fa-moon';
+        themeToggle.setAttribute('aria-pressed', 'false');
+        if (metaTheme) metaTheme.content = '#1A237E';
+        localStorage.setItem(THEME_KEY, 'light');
+      }
+    }
+
+    // Initialize theme
+    (function initTheme() {
+      const saved = localStorage.getItem(THEME_KEY);
+
+      if (saved === 'dark' || saved === 'light') {
+        applyTheme(saved);
+      } else {
+        if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+          applyTheme('dark');
+        } else {
+          applyTheme('light');
+        }
+      }
+    })();
+
+    // Toggle theme
+    themeToggle.addEventListener('click', () => {
+      const current = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+      const next = current === 'dark' ? 'light' : 'dark';
+      applyTheme(next);
+    });
+
+    // Auto-detect system theme changes
+    if (window.matchMedia) {
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+        if (!localStorage.getItem(THEME_KEY)) {
+          applyTheme(e.matches ? 'dark' : 'light');
+        }
+      });
+    }
+
+    // ============================
+    // TOAST FUNCTION
+    // ============================
+    function showToast(message, type = "info") {
+      const container = document.getElementById("toast-container");
+      const toast = document.createElement("div");
+      toast.className = `toast ${type}`;
+      toast.textContent = message;
+
+      container.appendChild(toast);
+
+      setTimeout(() => {
+        toast.remove();
+      }, 3000);
+    }
+
+    // ============================
+    // FORGOT PASSWORD LOGIC (UNCHANGED)
+    // ============================
+    let globalEmail = "";
+
+    // STEP 1: SEND OTP
+    async function sendOTP() {
+      const email = document.getElementById("email").value.trim();
+      if (!email) return showToast("Enter your email!", "error");
+
+      globalEmail = email;
+
+      const res = await fetch("http://127.0.0.1:5000/api/forgot-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email })
+      });
+
+      const data = await res.json();
+      showToast(data.message, data.success ? "success" : "error");
+
+      if (data.success) {
+        document.getElementById("step-email").classList.add("hidden");
+        document.getElementById("step-otp").classList.remove("hidden");
+      }
+    }
+
+    // STEP 2: VERIFY OTP
+    async function verifyOTP() {
+      const otp = document.getElementById("otp").value.trim();
+      if (!otp) return showToast("Enter OTP!", "error");
+
+      const res = await fetch("http://127.0.0.1:5000/api/verify-reset-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: globalEmail, otp }),
+      });
+
+      const data = await res.json();
+      showToast(data.message, data.success ? "success" : "error");
+
+      if (data.success) {
+        document.getElementById("step-otp").classList.add("hidden");
+        document.getElementById("step-reset").classList.remove("hidden");
+      }
+    }
+
+    // STEP 3: RESET PASSWORD
+    async function resetPassword() {
+      const p1 = document.getElementById("newPass").value;
+      const p2 = document.getElementById("confirmPass").value;
+
+      if (!p1 || !p2) return showToast("Fill all fields!", "error");
+      if (p1 !== p2) return showToast("Passwords do not match!", "error");
+
+      const res = await fetch("http://127.0.0.1:5000/api/reset-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: globalEmail, new_password: p1 }),
+      });
+
+      const data = await res.json();
+      showToast(data.message, data.success ? "success" : "error");
+
+      if (data.success) {
+        setTimeout(() => {
+          window.location.href = "login_signup.html";
+        }, 1200);
+      }
+    }
+  </script>
+</body>
+</html>

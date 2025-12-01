@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>College Q&A Platform - Legal</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <meta name="theme-color" content="#1A237E" id="meta-theme-color">
+  <style>
+    :root {
+      /* Light mode (Graphite + Soft Grey + Neon Blue Accent) */
+      --primary-light: #F2F3F5;
+      --secondary-light: #FFFFFF;
+      --accent-light: #2D2D2D;
+      --accent-secondary-light: #4DB6FF;
+      --text-light: #111317;
+      --text-heading-light: #000000;
+      --text-muted-light: #7A7A7A;
+      --border-light: #DDDDDD;
+      --surface-light: #bfbebe;
+
+      /* Dark mode (Black + Steel Grey + Cyan/Blue neon accents) */
+      --primary-dark: #0B0B0D;
+      --secondary-dark: #151515;
+      --accent-dark: #2F2F2F;
+      --accent-secondary-dark: #00AEEF;
+      --text-dark: #E6E6E6;
+      --text-heading-dark: #FFFFFF;
+      --text-muted-dark: #9A9A9A;
+      --border-dark: #2A2A2A;
+      --surface-dark: #151515;
+    }
+
+    /* Light mode defaults */
+    :root {
+      --primary: var(--primary-light);
+      --secondary: var(--secondary-light);
+      --accent: var(--accent-light);
+      --accent-secondary: var(--accent-secondary-light);
+      --text: var(--text-light);
+      --text-heading: var(--text-heading-light);
+      --text-muted: var(--text-muted-light);
+      --border: var(--border-light);
+      --surface: var(--surface-light);
+    }
+
+    /* Dark mode swap */
+    :root.dark {
+      --primary: linear-gradient(
+          135deg,
+          #0b0b0d 0%,
+          #111113 25%,
+          #1a1a1d 50%,
+          #0d0d10 100%
+      );
+      --secondary: var(--secondary-dark);
+      --accent: var(--accent-dark);
+      --accent-secondary: var(--accent-secondary-dark);
+      --text: var(--text-dark);
+      --text-heading: var(--text-heading-dark);
+      --text-muted: var(--text-muted-dark);
+      --border: var(--border-dark);
+      --surface: var(--surface-dark);
+    }
+
+    :root.light body {
+      background: linear-gradient(
+          135deg,
+          #d1d4da 0%,
+          #887777 40%,
+          #d3d3d3 100%
+      ) !important;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+    }
+
+    html, body {
+      background: var(--primary) !important;
+      min-height: 100vh;
+      color: var(--text);
+      overflow-x: hidden;
+    }
+
+    /* Theme toggle */
+    .top-controls {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 1000;
+    }
+
+    .theme-toggle {
+      background: var(--surface);
+      border: 2px solid var(--border);
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      color: var(--text);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      backdrop-filter: blur(10px);
+      transition: all 0.3s ease;
+    }
+
+    .theme-toggle:hover {
+      transform: scale(1.05);
+      border-color: var(--accent-secondary);
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    /* Navigation */
+    .legal-nav {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 30px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-tab {
+      padding: 15px 30px;
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border-bottom: 3px solid transparent;
+    }
+
+    .nav-tab.active {
+      color: var(--accent-secondary);
+      border-bottom: 3px solid var(--accent-secondary);
+    }
+
+    .nav-tab:hover {
+      color: var(--accent-secondary);
+    }
+
+    /* Container */
+    .container {
+      max-width: 1000px;
+      margin: 80px auto 40px;
+      padding: 0 20px;
+    }
+
+    /* Content cards */
+    .content-card {
+      background: var(--surface);
+      border-radius: 15px;
+      padding: 40px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      border: 1px solid var(--border);
+      margin-bottom: 30px;
+    }
+
+    .content-header {
+      text-align: center;
+      margin-bottom: 40px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .content-header h1 {
+      color: var(--text-heading);
+      font-size: 2.5rem;
+      margin-bottom: 15px;
+    }
+
+    .content-header p {
+      color: var(--text-muted);
+      font-size: 1.1rem;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    .last-updated {
+      text-align: center;
+      color: var(--text-muted);
+      font-style: italic;
+      margin-bottom: 30px;
+    }
+
+    /* Content sections */
+    .content-section {
+      margin-bottom: 40px;
+    }
+
+    .content-section h2 {
+      color: var(--text-heading);
+      font-size: 1.8rem;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid var(--accent-secondary);
+    }
+
+    .content-section h3 {
+      color: var(--text-heading);
+      font-size: 1.4rem;
+      margin: 25px 0 15px;
+    }
+
+    .content-section p {
+      line-height: 1.7;
+      margin-bottom: 15px;
+      color: var(--text);
+    }
+
+    .content-section ul, .content-section ol {
+      margin: 15px 0 15px 30px;
+    }
+
+    .content-section li {
+      margin-bottom: 10px;
+      line-height: 1.6;
+    }
+
+    .content-section a {
+      color: var(--accent-secondary);
+      text-decoration: none;
+    }
+
+    .content-section a:hover {
+      text-decoration: underline;
+    }
+
+    .highlight-box {
+      background: var(--accent);
+      border-left: 4px solid var(--accent-secondary);
+      padding: 20px;
+      margin: 25px 0;
+      border-radius: 0 8px 8px 0;
+    }
+
+    /* Back button */
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 25px;
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      margin-top: 20px;
+    }
+
+    .back-btn:hover {
+      background: var(--accent-secondary);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(26, 35, 126, 0.3);
+    }
+
+    /* Responsive design */
+    @media (max-width: 768px) {
+      .container {
+        margin-top: 100px;
+        padding: 0 15px;
+      }
+      
+      .content-card {
+        padding: 25px;
+      }
+      
+      .content-header h1 {
+        font-size: 2rem;
+      }
+      
+      .content-section h2 {
+        font-size: 1.5rem;
+      }
+      
+      .content-section h3 {
+        font-size: 1.2rem;
+      }
+      
+      .nav-tab {
+        padding: 12px 20px;
+        font-size: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="top-controls">
+    <button id="themeToggle" class="theme-toggle" title="Toggle theme" aria-pressed="false">
+      <i id="themeIcon" class="fas fa-moon" aria-hidden="true"></i>
+      <span class="sr-only">Toggle theme</span>
+    </button>
+  </div>
+
+  <div class="container">
+    <div class="legal-nav">
+      <button class="nav-tab active" id="termsTab">Terms of Service</button>
+      <button class="nav-tab" id="privacyTab">Privacy Policy</button>
+    </div>
+
+    <!-- Terms of Service Content -->
+    <div class="content-card" id="termsContent">
+      <div class="content-header">
+        <h1>Terms of Service</h1>
+        <p>Welcome to College Q&A Platform. By using our service, you agree to these terms.</p>
+      </div>
+      
+      <div class="last-updated">Last updated: January 2024</div>
+      
+      <div class="content-section">
+        <h2>1. Acceptance of Terms</h2>
+        <p>By accessing or using the College Q&A Platform ("the Platform"), you agree to be bound by these Terms of Service and all applicable laws and regulations. If you do not agree with any of these terms, you are prohibited from using or accessing this Platform.</p>
+        
+        <div class="highlight-box">
+          <p><strong>Note:</strong> The Platform is exclusively for students, faculty, and staff of our college community.</p>
+        </div>
+      </div>
+      
+      <div class="content-section">
+        <h2>2. User Accounts</h2>
+        <h3>2.1 Account Creation</h3>
+        <p>To access certain features of the Platform, you must register for an account using your college email address. You agree to provide accurate, current, and complete information during the registration process.</p>
+        
+        <h3>2.2 Account Responsibility</h3>
+        <p>You are responsible for safeguarding your account password and for all activities that occur under your account. You must notify us immediately of any unauthorized use of your account.</p>
+        
+        <h3>2.3 Account Eligibility</h3>
+        <p>Accounts are available only to:</p>
+        <ul>
+          <li>Currently enrolled students of the college</li>
+          <li>Current faculty members</li>
+          <li>Administrative staff with valid college credentials</li>
+        </ul>
+      </div>
+      
+      <div class="content-section">
+        <h2>3. User Conduct</h2>
+        <p>You agree not to use the Platform to:</p>
+        <ul>
+          <li>Post content that is unlawful, harmful, threatening, abusive, harassing, defamatory, or otherwise objectionable</li>
+          <li>Impersonate any person or entity or falsely state your affiliation with a person or entity</li>
+          <li>Post confidential academic material without authorization</li>
+          <li>Engage in academic dishonesty, including posting answers to ongoing examinations</li>
+          <li>Harass other users or create a hostile environment</li>
+          <li>Violate any applicable laws or regulations</li>
+        </ul>
+      </div>
+      
+      <div class="content-section">
+        <h2>4. Content Guidelines</h2>
+        <h3>4.1 User Content</h3>
+        <p>You retain ownership of any content you post to the Platform. By posting content, you grant us a worldwide, non-exclusive, royalty-free license to use, display, and distribute your content on the Platform.</p>
+        
+        <h3>4.2 Prohibited Content</h3>
+        <p>Content that falls into the following categories is strictly prohibited:</p>
+        <ol>
+          <li>Plagiarized material</li>
+          <li>Commercial advertisements</li>
+          <li>Malicious code or links</li>
+          <li>Personally identifiable information of others without consent</li>
+          <li>Content that violates copyright or intellectual property rights</li>
+        </ol>
+      </div>
+      
+      <div class="content-section">
+        <h2>5. Intellectual Property</h2>
+        <p>The Platform and its original content, features, and functionality are owned by the College and are protected by international copyright, trademark, and other intellectual property laws.</p>
+        
+        <p>You may not reproduce, duplicate, copy, sell, resell, or exploit any portion of the Platform without express written permission from the College.</p>
+      </div>
+      
+      <div class="content-section">
+        <h2>6. Termination</h2>
+        <p>We may terminate or suspend your account immediately, without prior notice or liability, for any reason whatsoever, including without limitation if you breach the Terms.</p>
+        
+        <p>Upon termination, your right to use the Platform will immediately cease. All provisions of the Terms which by their nature should survive termination shall survive termination.</p>
+      </div>
+      
+      <div class="content-section">
+        <h2>7. Limitation of Liability</h2>
+        <p>In no event shall the College, its directors, employees, partners, agents, suppliers, or affiliates, be liable for any indirect, incidental, special, consequential or punitive damages, including without limitation, loss of profits, data, use, goodwill, or other intangible losses, resulting from your access to or use of or inability to access or use the Platform.</p>
+      </div>
+      
+      <div class="content-section">
+        <h2>8. Changes to Terms</h2>
+        <p>We reserve the right, at our sole discretion, to modify or replace these Terms at any time. We will provide notice of any changes by posting the new Terms on this page and updating the "last updated" date.</p>
+        
+        <p>By continuing to access or use our Platform after those revisions become effective, you agree to be bound by the revised terms.</p>
+      </div>
+      
+      <div class="content-section">
+        <h2>9. Contact Information</h2>
+        <p>If you have any questions about these Terms, please contact us at:</p>
+        <p>Email: <a href="mailto:support@collegeqa.edu">support@collegeqa.edu</a><br>
+        Office of Student Affairs<br>
+        College Administration Building</p>
+      </div>
+      
+      <a href="login_signup.html" class="back-btn">
+        <i class="fas fa-arrow-left"></i> Back to Platform
+      </a>
+    </div>
+
+    <!-- Privacy Policy Content -->
+    <div class="content-card" id="privacyContent" style="display: none;">
+      <div class="content-header">
+        <h1>Privacy Policy</h1>
+        <p>Your privacy is important to us. This policy explains how we collect, use, and protect your information.</p>
+      </div>
+      
+      <div class="last-updated">Last updated: January 2024</div>
+      
+      <div class="content-section">
+        <h2>1. Information We Collect</h2>
+        <h3>1.1 Personal Information</h3>
+        <p>When you register for an account, we collect information that can identify you, including:</p>
+        <ul>
+          <li>Your name</li>
+          <li>College email address</li>
+          <li>Academic department (for faculty)</li>
+          <li>Student ID number (for verification)</li>
+        </ul>
+        
+        <h3>1.2 Usage Information</h3>
+        <p>We automatically collect information about how you interact with the Platform, including:</p>
+        <ul>
+          <li>Questions you post</li>
+          <li>Answers and comments you provide</li>
+          <li>Content you upvote or downvote</li>
+          <li>Search queries</li>
+          <li>Time and duration of your visits</li>
+        </ul>
+      </div>
+      
+      <div class="content-section">
+        <h2>2. How We Use Your Information</h2>
+        <p>We use the information we collect for various purposes, including to:</p>
+        <ul>
+          <li>Provide, maintain, and improve our Platform</li>
+          <li>Verify your identity as a member of the college community</li>
+          <li>Personalize your experience and deliver content relevant to your academic interests</li>
+          <li>Monitor and analyze trends, usage, and activities in connection with our Platform</li>
+          <li>Detect, prevent, and address technical issues and prohibited activities</li>
+          <li>Communicate with you about updates, security alerts, and support messages</li>
+        </ul>
+        
+        <div class="highlight-box">
+          <p><strong>Important:</strong> We do not sell, trade, or otherwise transfer your personal information to outside parties without your consent, except as described in this Privacy Policy.</p>
+        </div>
+      </div>
+      
+      <div class="content-section">
+        <h2>3. Information Sharing and Disclosure</h2>
+        <h3>3.1 With College Administration</h3>
+        <p>We may share your information with college administration in limited circumstances, such as:</p>
+        <ul>
+          <li>To verify your enrollment or employment status</li>
+          <li>To address academic integrity concerns</li>
+          <li>To comply with college policies and procedures</li>
+        </ul>
+        
+        <h3>3.2 Legal Requirements</h3>
+        <p>We may disclose your information if required to do so by law or in response to valid requests by public authorities (e.g., a court or government agency).</p>
+        
+        <h3>3.3 Service Providers</h3>
+        <p>We may employ third-party companies and individuals to facilitate our Platform, provide the Platform on our behalf, or assist us in analyzing how our Platform is used. These third parties have access to your personal information only to perform these tasks on our behalf and are obligated not to disclose or use it for any other purpose.</p>
+      </div>
+      
+      <div class="content-section">
+        <h2>4. Data Security</h2>
+        <p>We implement appropriate technical and organizational security measures designed to protect your personal information against accidental or unlawful destruction, loss, alteration, unauthorized disclosure, or access.</p>
+        
+        <p>However, please note that no method of transmission over the Internet or electronic storage is 100% secure. While we strive to use commercially acceptable means to protect your personal information, we cannot guarantee its absolute security.</p>
+      </div>
+      
+      <div class="content-section">
+        <h2>5. Data Retention</h2>
+        <p>We retain your personal information only for as long as necessary to fulfill the purposes outlined in this Privacy Policy, unless a longer retention period is required or permitted by law.</p>
+        
+        <p>When you close your account, we will delete or anonymize your personal information, except where we need to keep it for legitimate academic or legal purposes.</p>
+      </div>
+      
+      <div class="content-section">
+        <h2>6. Your Rights</h2>
+        <p>You have the right to:</p>
+        <ul>
+          <li>Access and receive a copy of the personal information we hold about you</li>
+          <li>Correct any inaccurate or incomplete personal information</li>
+          <li>Request deletion of your personal information</li>
+          <li>Object to processing of your personal information</li>
+          <li>Request restriction of processing your personal information</li>
+          <li>Data portability</li>
+        </ul>
+        
+        <p>To exercise any of these rights, please contact us using the information provided in the "Contact Us" section.</p>
+      </div>
+      
+      <div class="content-section">
+        <h2>7. Cookies and Tracking Technologies</h2>
+        <p>We use cookies and similar tracking technologies to track activity on our Platform and hold certain information. Cookies are files with a small amount of data which may include an anonymous unique identifier.</p>
+        
+        <p>You can instruct your browser to refuse all cookies or to indicate when a cookie is being sent. However, if you do not accept cookies, you may not be able to use some portions of our Platform.</p>
+      </div>
+      
+      <div class="content-section">
+        <h2>8. Children's Privacy</h2>
+        <p>Our Platform is intended for use by college students, faculty, and staff, who are typically over the age of 18. We do not knowingly collect personal information from children under 16. If you are a parent or guardian and you are aware that your child has provided us with personal information, please contact us.</p>
+      </div>
+      
+      <div class="content-section">
+        <h2>9. Changes to This Privacy Policy</h2>
+        <p>We may update our Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page and updating the "last updated" date.</p>
+        
+        <p>You are advised to review this Privacy Policy periodically for any changes. Changes to this Privacy Policy are effective when they are posted on this page.</p>
+      </div>
+      
+      <div class="content-section">
+        <h2>10. Contact Us</h2>
+        <p>If you have any questions about this Privacy Policy, please contact us:</p>
+        <p>Email: <a href="mailto:privacy@collegeqa.edu">privacy@collegeqa.edu</a><br>
+        Data Protection Officer<br>
+        College Administration Building<br>
+        Phone: (555) 123-4567</p>
+      </div>
+      
+      <a href="login_signup.html" class="back-btn">
+        <i class="fas fa-arrow-left"></i> Back to Platform
+      </a>
+    </div>
+  </div>
+
+  <script>
+    // ============================
+    // THEME LOGIC
+    // ============================
+    const themeToggle = document.getElementById('themeToggle');
+    const themeIcon = document.getElementById('themeIcon');
+    const metaTheme = document.getElementById('meta-theme-color');
+    const THEME_KEY = 'college_portal_theme_v3';
+
+    // Apply theme
+    function applyTheme(mode) {
+      document.documentElement.classList.remove('dark', 'light');
+      document.documentElement.classList.add(mode);
+
+      if (mode === 'dark') {
+        themeIcon.className = 'fas fa-sun';
+        themeToggle.setAttribute('aria-pressed', 'true');
+        if (metaTheme) metaTheme.content = '#0A0F27';
+        localStorage.setItem(THEME_KEY, 'dark');
+      } else {
+        themeIcon.className = 'fas fa-moon';
+        themeToggle.setAttribute('aria-pressed', 'false');
+        if (metaTheme) metaTheme.content = '#1A237E';
+        localStorage.setItem(THEME_KEY, 'light');
+      }
+    }
+
+    // Initialize theme
+    (function initTheme() {
+      const saved = localStorage.getItem(THEME_KEY);
+
+      if (saved === 'dark' || saved === 'light') {
+        applyTheme(saved);
+      } else {
+        if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+          applyTheme('dark');
+        } else {
+          applyTheme('light');
+        }
+      }
+    })();
+
+    // Toggle theme
+    themeToggle.addEventListener('click', () => {
+      const current = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+      const next = current === 'dark' ? 'light' : 'dark';
+      applyTheme(next);
+    });
+
+    // Auto-detect system theme changes
+    if (window.matchMedia) {
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+        if (!localStorage.getItem(THEME_KEY)) {
+          applyTheme(e.matches ? 'dark' : 'light');
+        }
+      });
+    }
+
+    // ============================
+    // TAB SWITCHING LOGIC
+    // ============================
+    const termsTab = document.getElementById('termsTab');
+    const privacyTab = document.getElementById('privacyTab');
+    const termsContent = document.getElementById('termsContent');
+    const privacyContent = document.getElementById('privacyContent');
+
+    termsTab.addEventListener('click', () => {
+      termsTab.classList.add('active');
+      privacyTab.classList.remove('active');
+      termsContent.style.display = 'block';
+      privacyContent.style.display = 'none';
+    });
+
+    privacyTab.addEventListener('click', () => {
+      privacyTab.classList.add('active');
+      termsTab.classList.remove('active');
+      privacyContent.style.display = 'block';
+      termsContent.style.display = 'none';
+    });
+  </script>
+</body>
+</html>
