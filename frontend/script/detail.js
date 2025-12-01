@@ -1,4 +1,159 @@
 // ============================================
+// BACKEND API INTEGRATION
+// ============================================
+
+// JWT Token Management
+let authToken = localStorage.getItem('token');
+let currentUserId = null;
+
+// Get user ID from token (if exists)
+if (authToken) {
+    try {
+        const payload = JSON.parse(atob(authToken.split('.')[1]));
+        currentUserId = payload.user_id;
+    } catch (e) {
+        console.error('Error parsing token:', e);
+    }
+}
+
+// API Headers
+function getHeaders() {
+    const headers = {
+        'Content-Type': 'application/json',
+    };
+    if (authToken) {
+        headers['Authorization'] = `Bearer ${authToken}`;
+    }
+    return headers;
+}
+
+// Check if user is logged in
+function checkAuth() {
+    if (!authToken) {
+        // Redirect to login page if not authenticated
+        window.location.href = 'login.html';
+        return false;
+    }
+    return true;
+}
+
+// ============================================
+// SAVE DATA TO BACKEND
+// ============================================
+
+async function savePersonalInfo(data) {
+    try {
+        const response = await fetch(`https://imran1815.pythonanywhere.com/api/save-personal-info`, {
+            method: 'POST',
+            headers: getHeaders(),
+            body: JSON.stringify({
+                user_id: currentUserId,
+                ...data
+            })
+        });
+        
+        const result = await response.json();
+        if (result.success) {
+            console.log('Personal info saved:', result);
+            return true;
+        } else {
+            throw new Error(result.message || 'Failed to save personal info');
+        }
+    } catch (error) {
+        console.error('Error saving personal info:', error);
+        throw error;
+    }
+}
+
+async function saveDesignation(data) {
+    try {
+        const response = await fetch(`https://imran1815.pythonanywhere.com/api/save-designation`, {
+            method: 'POST',
+            headers: getHeaders(),
+            body: JSON.stringify({
+                user_id: currentUserId,
+                ...data
+            })
+        });
+        
+        const result = await response.json();
+        if (result.success) {
+            console.log('Designation saved:', result);
+            return true;
+        } else {
+            throw new Error(result.message || 'Failed to save designation');
+        }
+    } catch (error) {
+        console.error('Error saving designation:', error);
+        throw error;
+    }
+}
+
+async function saveGeneralProfile(data) {
+    try {
+        const response = await fetch(`https://imran1815.pythonanywhere.com/api/save-general-profile`, {
+            method: 'POST',
+            headers: getHeaders(),
+            body: JSON.stringify({
+                user_id: currentUserId,
+                ...data
+            })
+        });
+        
+        const result = await response.json();
+        if (result.success) {
+            console.log('General profile saved:', result);
+            return true;
+        } else {
+            throw new Error(result.message || 'Failed to save general profile');
+        }
+    } catch (error) {
+        console.error('Error saving general profile:', error);
+        throw error;
+    }
+}
+
+// College Email OTP Verification
+async function sendOTP(collegeEmail) {
+    try {
+        const response = await fetch(`https://imran1815.pythonanywhere.com/api/send-college-otp`, {
+            method: 'POST',
+            headers: getHeaders(),
+            body: JSON.stringify({
+                email: collegeEmail,
+                user_id: currentUserId
+            })
+        });
+        
+        const result = await response.json();
+        return result;
+    } catch (error) {
+        console.error('Error sending OTP:', error);
+        return { success: false, message: 'Failed to send OTP' };
+    }
+}
+
+async function verifyOTP(collegeEmail, otp) {
+    try {
+        const response = await fetch(`https://imran1815.pythonanywhere.com/api/verify-college-otp`, {
+            method: 'POST',
+            headers: getHeaders(),
+            body: JSON.stringify({
+                email: collegeEmail,
+                otp: otp,
+                user_id: currentUserId
+            })
+        });
+        
+        const result = await response.json();
+        return result;
+    } catch (error) {
+        console.error('Error verifying OTP:', error);
+        return { success: false, message: 'Failed to verify OTP' };
+    }
+}
+
+// ============================================
 // THEME TOGGLE FUNCTIONALITY
 // ============================================
 
@@ -9,10 +164,7 @@ const THEME_KEY = 'college_portal_theme_v3';
 
 // Apply theme: 'dark' or 'light'
 function applyTheme(mode) {
-    // Remove both classes first
     document.body.classList.remove('dark', 'light');
-    
-    // Add the selected class to body (not html)
     document.body.classList.add(mode);
 
     if (mode === 'dark') {
@@ -69,20 +221,14 @@ const menuIcon = document.getElementById('menuIcon');
 const sidebar = document.querySelector('.div2');
 const sidebarOverlay = document.getElementById('sidebarOverlay');
 
-// Only initialize sidebar functionality on mobile/tablet
 function initSidebar() {
-    // Check if we're on mobile/tablet
     if (window.innerWidth <= 1024) {
-        // Show menu toggle button
         if (menuToggle) menuToggle.style.display = 'block';
-        
-        // Remove active classes to ensure clean state
         if (sidebar) sidebar.classList.remove('active');
         if (sidebarOverlay) sidebarOverlay.classList.remove('active');
         if (menuIcon) menuIcon.className = 'fas fa-bars';
         document.body.style.overflow = '';
     } else {
-        // On desktop, hide menu toggle and ensure sidebar is visible
         if (menuToggle) menuToggle.style.display = 'none';
         if (sidebar) sidebar.classList.remove('active');
         if (sidebarOverlay) sidebarOverlay.classList.remove('active');
@@ -166,15 +312,13 @@ if (profilePictureUploadBtn && profilePictureUpload) {
     profilePictureUpload.addEventListener('change', function(e) {
         const file = e.target.files[0];
         if (file) {
-            // Validate file size (max 5MB)
             if (file.size > 5 * 1024 * 1024) {
-                alert('File size should be less than 5MB');
+                showNotification('File size should be less than 5MB', 'error');
                 return;
             }
 
-            // Validate file type
             if (!file.type.startsWith('image/')) {
-                alert('Please select an image file');
+                showNotification('Please select an image file', 'error');
                 return;
             }
 
@@ -186,8 +330,8 @@ if (profilePictureUploadBtn && profilePictureUpload) {
                 img.alt = 'Profile picture';
                 profilePicture.appendChild(img);
                 
-                // Store in localStorage for demo purposes
-                localStorage.setItem('profile_image', event.target.result);
+                // Save to backend (you'll need to implement this endpoint)
+                // uploadProfilePicture(event.target.result);
             };
             reader.readAsDataURL(file);
         }
@@ -205,7 +349,6 @@ const cancelAvatarBtn = document.getElementById('cancel-avatar');
 const saveAvatarBtn = document.getElementById('save-avatar');
 const avatarGrid = document.getElementById('avatar-grid');
 
-// Avatar options
 const avatarOptions = [
     'fas fa-user',
     'fas fa-user-tie',
@@ -248,12 +391,10 @@ if (avatarGrid) {
 }
 
 function selectAvatarOption(option) {
-    // Remove selected class from all options
     document.querySelectorAll('.avatar-option').forEach(opt => {
         opt.classList.remove('selected');
         opt.setAttribute('aria-selected', 'false');
     });
-    // Add selected class to clicked option
     option.classList.add('selected');
     option.setAttribute('aria-selected', 'true');
 }
@@ -270,7 +411,6 @@ if (changeAvatarBtn) {
 function closeAvatarModal() {
     avatarModal.classList.remove('active');
     document.body.style.overflow = '';
-    // Reset selections
     document.querySelectorAll('.avatar-option').forEach(opt => {
         opt.classList.remove('selected');
         opt.setAttribute('aria-selected', 'false');
@@ -307,12 +447,12 @@ if (saveAvatarBtn) {
         const selectedAvatar = document.querySelector('.avatar-option.selected');
         
         if (selectedAvatar) {
-            // Set selected avatar icon
             profilePicture.innerHTML = `<i class="${selectedAvatar.dataset.avatar}"></i>`;
-            
-            // Clear uploaded image if any
             localStorage.removeItem('profile_image');
             profilePictureUpload.value = '';
+            
+            // Save avatar to backend
+            // saveAvatarToBackend(selectedAvatar.dataset.avatar);
         }
         
         closeAvatarModal();
@@ -328,24 +468,16 @@ const formSections = document.querySelectorAll('.div3 > .form-container, .div3 >
 
 profileOptions.forEach(option => {
     option.addEventListener('click', function() {
-        // Remove active class from all options
         profileOptions.forEach(opt => opt.classList.remove('active'));
-        // Add active class to clicked option
         this.classList.add('active');
         
-        // Hide all form sections
         formSections.forEach(section => section.classList.add('hidden'));
         
-        // Show the selected form section
         const targetId = this.getAttribute('data-target');
         const targetSection = document.getElementById(targetId);
         if (targetSection) {
             targetSection.classList.remove('hidden');
-            
-            // Update progress bar
             updateProgressBar(targetId);
-            
-            // Focus on first input field for accessibility
             setTimeout(() => {
                 const firstInput = targetSection.querySelector('input, select, textarea');
                 if (firstInput) firstInput.focus();
@@ -365,21 +497,16 @@ const designationForms = document.querySelectorAll('.designation-form');
 if (designationOptions.length > 0) {
     designationOptions.forEach(option => {
         option.addEventListener('click', function() {
-            // Remove active class from all options
             designationOptions.forEach(opt => opt.classList.remove('active'));
-            // Add active class to clicked option
             this.classList.add('active');
             
-            // Update hidden input value
             const optionType = this.getAttribute('data-option');
             if (designationTypeInput) {
                 designationTypeInput.value = optionType;
             }
             
-            // Hide all designation forms
             designationForms.forEach(form => form.classList.add('hidden'));
             
-            // Show the selected designation form
             const targetForm = document.getElementById(`${optionType}-form`);
             if (targetForm) {
                 targetForm.classList.remove('hidden');
@@ -507,27 +634,21 @@ function updateProgressBar(currentSection) {
     }
 }
 
-// Navigation functions
 function navigateToSection(sectionId) {
-    // Hide all form sections
     formSections.forEach(section => section.classList.add('hidden'));
     
-    // Show the target section
     const targetSection = document.getElementById(sectionId);
     if (targetSection) {
         targetSection.classList.remove('hidden');
         
-        // Update active profile option
         profileOptions.forEach(opt => opt.classList.remove('active'));
         const targetOption = document.querySelector(`.profile-option[data-target="${sectionId}"]`);
         if (targetOption) {
             targetOption.classList.add('active');
         }
         
-        // Update progress bar
         updateProgressBar(sectionId);
         
-        // Focus on first input for accessibility
         setTimeout(() => {
             const firstInput = targetSection.querySelector('input, select, textarea');
             if (firstInput) firstInput.focus();
@@ -536,16 +657,13 @@ function navigateToSection(sectionId) {
 }
 
 function showSuccessPage() {
-    // Hide all form sections
     formSections.forEach(section => section.classList.add('hidden'));
     
-    // Show success page
     const successPage = document.getElementById('success-page');
     if (successPage) {
         successPage.classList.remove('hidden');
     }
     
-    // Update progress bar to 100%
     updateProgressBar('general-profile');
 }
 
@@ -561,20 +679,18 @@ function validatePersonalInfoForm() {
     const gender = document.getElementById('gender');
     
     if (!fullName || !username || !email || !age || !gender) {
-        return 'Please fill in all required fields (Full Name, Username, Email, Age, and Gender)';
+        return 'Please fill in all required fields';
     }
     
     if (!fullName.value.trim() || !username.value.trim() || !email.value.trim() || !age.value || !gender.value) {
-        return 'Please fill in all required fields (Full Name, Username, Email, Age, and Gender)';
+        return 'Please fill in all required fields';
     }
     
-    // Basic email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email.value.trim())) {
         return 'Please enter a valid email address';
     }
     
-    // Age validation
     if (parseInt(age.value) < 1 || parseInt(age.value) > 120) {
         return 'Please enter a valid age between 1 and 120';
     }
@@ -582,25 +698,291 @@ function validatePersonalInfoForm() {
     return null;
 }
 
+function validateDesignationForm() {
+    const designationType = document.getElementById('designation-type').value;
+    
+    if (!designationType) {
+        return 'Please select a designation type';
+    }
+    
+    // Validate based on designation type
+    if (designationType === 'student') {
+        const regNo = document.getElementById('registration-no');
+        const program = document.getElementById('program');
+        const department = document.getElementById('department');
+        const currentYear = document.getElementById('current-year');
+        const graduationYear = document.getElementById('graduation-year');
+        const collegeEmail = document.getElementById('college-email');
+        
+        if (!regNo.value.trim() || !program.value || !department.value || !currentYear.value || !graduationYear.value || !collegeEmail.value.trim()) {
+            return 'Please fill in all required student fields';
+        }
+        
+        // College email validation
+        const collegeEmailRegex = /^[a-zA-Z0-9._%+-]+@(students\.)?(lpu\.in|lpu\.co\.in)$/i;
+        if (!collegeEmailRegex.test(collegeEmail.value.trim())) {
+            return 'Please enter a valid LPU college email';
+        }
+        
+    } else if (designationType === 'faculty') {
+        // Validate faculty fields
+        const facultyId = document.getElementById('faculty-id');
+        const facultyDept = document.getElementById('faculty-department');
+        const post = document.getElementById('post');
+        const courses = document.getElementById('courses-taught');
+        const office = document.getElementById('office-location');
+        const experience = document.getElementById('experience');
+        
+        if (!facultyId.value.trim() || !facultyDept.value.trim() || !post.value.trim() || 
+            !courses.value.trim() || !office.value.trim() || !experience.value) {
+            return 'Please fill in all required faculty fields';
+        }
+        
+    } else if (designationType === 'alumni') {
+        // Validate alumni fields
+        const gradYear = document.getElementById('alumni-graduation-year');
+        const alumniProgram = document.getElementById('alumni-program');
+        const alumniDept = document.getElementById('alumni-department');
+        const jobTitle = document.getElementById('job-title');
+        const companyName = document.getElementById('company-name');
+        
+        if (!gradYear.value || !alumniProgram.value || !alumniDept.value || 
+            !jobTitle.value.trim() || !companyName.value.trim()) {
+            return 'Please fill in all required alumni fields';
+        }
+    }
+    
+    return null;
+}
+
+function validateGeneralProfileForm() {
+    const shortBio = document.getElementById('short-bio');
+    const skills = document.getElementById('skills');
+    const interests = document.getElementById('interests');
+    
+    if (!shortBio.value.trim() || !skills.value.trim() || !interests.value.trim()) {
+        return 'Please fill in all required fields (Bio, Skills, Interests)';
+    }
+    
+    if (shortBio.value.trim().length < 10) {
+        return 'Please write a more detailed bio (at least 10 characters)';
+    }
+    
+    return null;
+}
+
 // ============================================
-// FORM SUBMISSIONS
+// NOTIFICATION HELPER
+// ============================================
+
+function showNotification(message, type = 'info') {
+    // Remove existing notification
+    const existingNotification = document.querySelector('.notification');
+    if (existingNotification) {
+        existingNotification.remove();
+    }
+    
+    const notification = document.createElement('div');
+    notification.className = `notification ${type}`;
+    notification.innerHTML = `
+        <i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'}"></i>
+        <span>${message}</span>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Show notification
+    setTimeout(() => {
+        notification.classList.add('show');
+    }, 10);
+    
+    // Auto remove after 5 seconds
+    setTimeout(() => {
+        notification.classList.remove('show');
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.remove();
+            }
+        }, 300);
+    }, 5000);
+}
+
+// ============================================
+// FORM SUBMISSIONS WITH BACKEND INTEGRATION
 // ============================================
 
 const personalInfoForm = document.getElementById('personal-info');
 if (personalInfoForm) {
-    personalInfoForm.addEventListener('submit', function(e) {
+    personalInfoForm.addEventListener('submit', async function(e) {
         e.preventDefault();
+        
+        if (!checkAuth()) return;
         
         const validationError = validatePersonalInfoForm();
         if (validationError) {
-            alert(validationError);
+            showNotification(validationError, 'error');
             return false;
         }
         
-        // Here you would make an API call to save personal info
-        console.log('Personal info would be saved via API');
+        const formData = {
+            full_name: document.getElementById('full-name').value.trim(),
+            username: document.getElementById('username').value.trim(),
+            email: document.getElementById('email').value.trim(),
+            phone: document.getElementById('phone').value.trim() || null,
+            age: parseInt(document.getElementById('age').value),
+            gender: document.getElementById('gender').value
+        };
         
-        navigateToSection('designation');
+        try {
+            // Show loading state
+            const submitBtn = document.getElementById('personal-continue');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>Saving...</span>';
+            submitBtn.disabled = true;
+            
+            await savePersonalInfo(formData);
+            showNotification('Personal information saved successfully!', 'success');
+            navigateToSection('designation');
+            
+        } catch (error) {
+            showNotification(error.message || 'Failed to save personal information', 'error');
+        } finally {
+            // Reset button state
+            const submitBtn = document.getElementById('personal-continue');
+            submitBtn.innerHTML = '<i class="fas fa-arrow-right"></i> <span>Continue</span>';
+            submitBtn.disabled = false;
+        }
+    });
+}
+
+const designationForm = document.getElementById('designation');
+if (designationForm) {
+    designationForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        if (!checkAuth()) return;
+        
+        const validationError = validateDesignationForm();
+        if (validationError) {
+            showNotification(validationError, 'error');
+            return false;
+        }
+        
+        const designationType = document.getElementById('designation-type').value;
+        let formData = {
+            designation_type: designationType
+        };
+        
+        // Collect data based on designation type
+        if (designationType === 'student') {
+            formData = {
+                ...formData,
+                registration_no: document.getElementById('registration-no').value.trim(),
+                program: document.getElementById('program').value,
+                department: document.getElementById('department').value,
+                current_year: parseInt(document.getElementById('current-year').value),
+                graduation_year: parseInt(document.getElementById('graduation-year').value),
+                college_email: document.getElementById('college-email').value.trim(),
+                is_college_email_verified: isCollegeEmailVerified || false
+            };
+        } else if (designationType === 'faculty') {
+            formData = {
+                ...formData,
+                faculty_id: document.getElementById('faculty-id').value.trim(),
+                faculty_department: document.getElementById('faculty-department').value.trim(),
+                post: document.getElementById('post').value.trim(),
+                courses_taught: document.getElementById('courses-taught').value.trim(),
+                office_location: document.getElementById('office-location').value.trim(),
+                experience: parseInt(document.getElementById('experience').value),
+                research: document.getElementById('research').value.trim() || null
+            };
+        } else if (designationType === 'alumni') {
+            formData = {
+                ...formData,
+                graduation_year: parseInt(document.getElementById('alumni-graduation-year').value),
+                program: document.getElementById('alumni-program').value,
+                department: document.getElementById('alumni-department').value,
+                job_title: document.getElementById('job-title').value.trim(),
+                company_name: document.getElementById('company-name').value.trim(),
+                linkedin: document.getElementById('linkedin').value.trim() || null
+            };
+        }
+        
+        try {
+            // Show loading state
+            const submitBtn = document.getElementById('designation-continue');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>Saving...</span>';
+            submitBtn.disabled = true;
+            
+            await saveDesignation(formData);
+            showNotification('Designation information saved successfully!', 'success');
+            navigateToSection('general-profile');
+            
+        } catch (error) {
+            showNotification(error.message || 'Failed to save designation information', 'error');
+        } finally {
+            // Reset button state
+            const submitBtn = document.getElementById('designation-continue');
+            submitBtn.innerHTML = '<i class="fas fa-arrow-right"></i> <span>Continue</span>';
+            submitBtn.disabled = false;
+        }
+    });
+}
+
+const generalProfileForm = document.getElementById('general-profile');
+if (generalProfileForm) {
+    generalProfileForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        if (!checkAuth()) return;
+        
+        const validationError = validateGeneralProfileForm();
+        if (validationError) {
+            showNotification(validationError, 'error');
+            return false;
+        }
+        
+        // Collect skills tags
+        const skillsTags = Array.from(skillsTagsContainer.querySelectorAll('.tag')).map(tag => 
+            tag.textContent.replace('×', '').trim()
+        );
+        const skillsValue = skillsTags.length > 0 ? skillsTags.join(', ') : document.getElementById('skills').value.trim();
+        
+        // Collect interests tags
+        const interestsTags = Array.from(interestsTagsContainer.querySelectorAll('.tag')).map(tag => 
+            tag.textContent.replace('×', '').trim()
+        );
+        const interestsValue = interestsTags.length > 0 ? interestsTags.join(', ') : document.getElementById('interests').value.trim();
+        
+        const formData = {
+            short_bio: document.getElementById('short-bio').value.trim(),
+            skills: skillsValue,
+            interests: interestsValue,
+            linkedin: document.getElementById('general-linkedin').value.trim() || null,
+            github: document.getElementById('github').value.trim() || null,
+            portfolio: document.getElementById('portfolio').value.trim() || null
+        };
+        
+        try {
+            // Show loading state
+            const submitBtn = document.getElementById('general-submit');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>Saving...</span>';
+            submitBtn.disabled = true;
+            
+            await saveGeneralProfile(formData);
+            showNotification('Profile setup complete!', 'success');
+            showSuccessPage();
+            
+        } catch (error) {
+            showNotification(error.message || 'Failed to save profile information', 'error');
+        } finally {
+            // Reset button state
+            const submitBtn = document.getElementById('general-submit');
+            submitBtn.innerHTML = '<i class="fas fa-check-circle"></i> <span>Submit Profile</span>';
+            submitBtn.disabled = false;
+        }
     });
 }
 
@@ -611,6 +993,7 @@ if (personalInfoForm) {
 const personalSkipBtn = document.getElementById('personal-skip');
 if (personalSkipBtn) {
     personalSkipBtn.addEventListener('click', function() {
+        if (!checkAuth()) return;
         navigateToSection('designation');
     });
 }
@@ -618,6 +1001,7 @@ if (personalSkipBtn) {
 const designationSkipBtn = document.getElementById('designation-skip');
 if (designationSkipBtn) {
     designationSkipBtn.addEventListener('click', function() {
+        if (!checkAuth()) return;
         navigateToSection('general-profile');
     });
 }
@@ -625,6 +1009,7 @@ if (designationSkipBtn) {
 const generalSkipBtn = document.getElementById('general-skip');
 if (generalSkipBtn) {
     generalSkipBtn.addEventListener('click', function() {
+        if (!checkAuth()) return;
         showSuccessPage();
     });
 }
@@ -636,14 +1021,14 @@ if (generalSkipBtn) {
 const viewProfileBtn = document.getElementById('view-profile');
 if (viewProfileBtn) {
     viewProfileBtn.addEventListener('click', function() {
-        alert('Profile view functionality would be implemented with backend integration.');
+        window.location.href = 'profile.html';
     });
 }
 
 const goHomeBtn = document.getElementById('go-home');
 if (goHomeBtn) {
     goHomeBtn.addEventListener('click', function() {
-        alert('Navigation to home page would be implemented with backend integration.');
+        window.location.href = 'home.html';
     });
 }
 
@@ -654,8 +1039,8 @@ if (goHomeBtn) {
 let otpTimer = null;
 let otpTimeLeft = 120;
 let generatedOTP = '';
+let isCollegeEmailVerified = false;
 
-// DOM elements for OTP
 const collegeEmailInput = document.getElementById('college-email');
 const sendOtpBtn = document.getElementById('send-otp-btn');
 const otpVerificationSection = document.getElementById('otp-verification');
@@ -665,25 +1050,21 @@ const resendOtpBtn = document.getElementById('resend-otp-btn');
 const otpTimerElement = document.getElementById('timer');
 const verificationStatus = document.getElementById('verification-status');
 
-// Generate random 6-digit OTP
 function generateOTP() {
     return Math.floor(100000 + Math.random() * 900000).toString();
 }
 
-// Validate college email format
 function isValidCollegeEmail(email) {
+    // Accept LPU college emails
     const collegeEmailPatterns = [
-        /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.edu$/i,
-        /^[a-zA-Z0-9._%+-]+@college\.[a-zA-Z]{2,}$/i,
-        /^[a-zA-Z0-9._%+-]+@university\.[a-zA-Z]{2,}$/i,
-        /^[a-zA-Z0-9._%+-]+@ac\.[a-zA-Z]{2,}$/i,
-        /^[a-zA-Z0-9._%+-]+@ac\.in$/i
+        /^[a-zA-Z0-9._%+-]+@lpu\.in$/i,
+        /^[a-zA-Z0-9._%+-]+@students\.lpu\.in$/i,
+        /^[a-zA-Z0-9._%+-]+@lpu\.co\.in$/i
     ];
     
     return collegeEmailPatterns.some(pattern => pattern.test(email));
 }
 
-// Start OTP timer
 function startOTPTimer() {
     clearInterval(otpTimer);
     otpTimeLeft = 120;
@@ -700,11 +1081,11 @@ function startOTPTimer() {
             showVerificationStatus('OTP has expired. Please request a new one.', 'error');
             if (verifyOtpBtn) verifyOtpBtn.disabled = true;
             if (resendOtpBtn) resendOtpBtn.disabled = false;
+            isCollegeEmailVerified = false;
         }
     }, 1000);
 }
 
-// Update timer display
 function updateTimerDisplay() {
     if (otpTimerElement) {
         const minutes = Math.floor(otpTimeLeft / 60);
@@ -719,7 +1100,6 @@ function updateTimerDisplay() {
     }
 }
 
-// Show verification status message
 function showVerificationStatus(message, type = 'info') {
     if (verificationStatus) {
         verificationStatus.textContent = message;
@@ -737,118 +1117,174 @@ function showVerificationStatus(message, type = 'info') {
 // Initialize OTP functionality if elements exist
 if (sendOtpBtn && collegeEmailInput) {
     // Send OTP button click handler
-    sendOtpBtn.addEventListener('click', function() {
+    sendOtpBtn.addEventListener('click', async function() {
         const email = collegeEmailInput.value.trim();
         
         if (!email) {
-            showVerificationStatus('Please enter your college email address', 'error');
+            showNotification('Please enter your college email address', 'error');
             return;
         }
         
         if (!isValidCollegeEmail(email)) {
-            showVerificationStatus('Please enter a valid college email address', 'error');
+            showNotification('Please enter a valid LPU college email', 'error');
             return;
         }
         
-        // Generate OTP
-        generatedOTP = generateOTP();
-        
-        // For demo purposes - show OTP in alert
-        alert(`OTP sent to ${email}\nDemo OTP: ${generatedOTP}\n\nNote: In production, this OTP would be sent to your email.`);
-        
-        // Show OTP verification section
-        if (otpVerificationSection) {
-            otpVerificationSection.classList.remove('hidden');
-        }
-        
-        // Reset OTP input
-        if (otpCodeInput) {
-            otpCodeInput.value = '';
-            otpCodeInput.disabled = false;
-        }
-        
-        // Start timer
-        startOTPTimer();
-        
-        // Show success message
-        showVerificationStatus('OTP has been sent to your college email. Please check your inbox.', 'success');
-        
-        // Enable verify button
-        if (verifyOtpBtn) verifyOtpBtn.disabled = false;
-        if (resendOtpBtn) resendOtpBtn.disabled = true;
-        
-        // Disable send OTP button temporarily
-        sendOtpBtn.disabled = true;
-        setTimeout(() => {
+        try {
+            // Disable button and show loading
+            sendOtpBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>Sending...</span>';
+            sendOtpBtn.disabled = true;
+            
+            // Send OTP via backend
+            const result = await sendOTP(email);
+            
+            if (result.success) {
+                // For demo purposes - show OTP in alert
+                alert(`OTP sent to ${email}\nDemo OTP: ${result.otp || '123456'}\n\nNote: In production, this OTP would be sent to your email.`);
+                
+                // Store generated OTP
+                generatedOTP = result.otp || '123456';
+                
+                // Show OTP verification section
+                if (otpVerificationSection) {
+                    otpVerificationSection.classList.remove('hidden');
+                }
+                
+                // Reset OTP input
+                if (otpCodeInput) {
+                    otpCodeInput.value = '';
+                    otpCodeInput.disabled = false;
+                }
+                
+                // Start timer
+                startOTPTimer();
+                
+                // Show success message
+                showNotification('OTP has been sent to your college email. Please check your inbox.', 'success');
+                
+                // Enable verify button
+                if (verifyOtpBtn) verifyOtpBtn.disabled = false;
+                if (resendOtpBtn) resendOtpBtn.disabled = true;
+                
+            } else {
+                showNotification(result.message || 'Failed to send OTP', 'error');
+            }
+            
+        } catch (error) {
+            showNotification('Failed to send OTP. Please try again.', 'error');
+        } finally {
+            // Reset button state
+            sendOtpBtn.innerHTML = '<i class="fas fa-paper-plane"></i> <span>Send OTP</span>';
             sendOtpBtn.disabled = false;
-        }, 30000);
+        }
     });
 
     // Verify OTP button click handler
     if (verifyOtpBtn) {
-        verifyOtpBtn.addEventListener('click', function() {
+        verifyOtpBtn.addEventListener('click', async function() {
             const enteredOTP = otpCodeInput.value.trim();
             
             if (!enteredOTP) {
-                showVerificationStatus('Please enter the OTP', 'error');
+                showNotification('Please enter the OTP', 'error');
                 return;
             }
             
             if (enteredOTP.length !== 6) {
-                showVerificationStatus('OTP must be 6 digits', 'error');
+                showNotification('OTP must be 6 digits', 'error');
                 return;
             }
             
-            if (enteredOTP === generatedOTP) {
-                // Stop timer
-                clearInterval(otpTimer);
-                
-                // Show success
-                showVerificationStatus('Email verified successfully! ✓', 'success');
-                
-                // Disable OTP input
-                if (otpCodeInput) otpCodeInput.disabled = true;
+            try {
+                // Disable button and show loading
+                verifyOtpBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>Verifying...</span>';
                 verifyOtpBtn.disabled = true;
                 
-                // Enable resend button
-                if (resendOtpBtn) resendOtpBtn.disabled = false;
-            } else {
-                showVerificationStatus('Invalid OTP. Please try again.', 'error');
+                // Verify OTP via backend
+                const result = await verifyOTP(collegeEmailInput.value.trim(), enteredOTP);
+                
+                if (result.success) {
+                    // Stop timer
+                    clearInterval(otpTimer);
+                    
+                    // Show success
+                    showNotification('College email verified successfully!', 'success');
+                    
+                    // Disable OTP input
+                    if (otpCodeInput) otpCodeInput.disabled = true;
+                    verifyOtpBtn.disabled = true;
+                    
+                    // Enable resend button
+                    if (resendOtpBtn) resendOtpBtn.disabled = false;
+                    
+                    // Set verification flag
+                    isCollegeEmailVerified = true;
+                    
+                } else {
+                    showNotification(result.message || 'Invalid OTP. Please try again.', 'error');
+                }
+                
+            } catch (error) {
+                showNotification('Failed to verify OTP. Please try again.', 'error');
+            } finally {
+                // Reset button state
+                verifyOtpBtn.innerHTML = '<i class="fas fa-check-circle"></i> <span>Verify OTP</span>';
+                verifyOtpBtn.disabled = false;
             }
         });
     }
 
     // Resend OTP button click handler
     if (resendOtpBtn) {
-        resendOtpBtn.addEventListener('click', function() {
+        resendOtpBtn.addEventListener('click', async function() {
             const email = collegeEmailInput.value.trim();
             
             if (!email) {
-                showVerificationStatus('Please enter your college email address', 'error');
+                showNotification('Please enter your college email address', 'error');
                 return;
             }
             
-            // Generate new OTP
-            generatedOTP = generateOTP();
-            
-            // For demo purposes
-            alert(`New OTP sent to ${email}\nDemo OTP: ${generatedOTP}`);
-            
-            // Reset OTP input
-            if (otpCodeInput) {
-                otpCodeInput.value = '';
-                otpCodeInput.disabled = false;
+            try {
+                // Disable button and show loading
+                resendOtpBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>Resending...</span>';
+                resendOtpBtn.disabled = true;
+                
+                // Resend OTP via backend
+                const result = await sendOTP(email);
+                
+                if (result.success) {
+                    // Generate new OTP for demo
+                    generatedOTP = result.otp || Math.floor(100000 + Math.random() * 900000).toString();
+                    
+                    // For demo purposes
+                    alert(`New OTP sent to ${email}\nDemo OTP: ${generatedOTP}`);
+                    
+                    // Reset OTP input
+                    if (otpCodeInput) {
+                        otpCodeInput.value = '';
+                        otpCodeInput.disabled = false;
+                    }
+                    
+                    // Restart timer
+                    startOTPTimer();
+                    
+                    // Show success message
+                    showNotification('New OTP has been sent to your college email.', 'success');
+                    
+                    // Enable verify button
+                    if (verifyOtpBtn) verifyOtpBtn.disabled = false;
+                    if (resendOtpBtn) resendOtpBtn.disabled = true;
+                    
+                } else {
+                    showNotification(result.message || 'Failed to resend OTP', 'error');
+                }
+                
+            } catch (error) {
+                showNotification('Failed to resend OTP. Please try again.', 'error');
+            } finally {
+                // Reset button state
+                resendOtpBtn.innerHTML = '<i class="fas fa-redo"></i> <span>Resend OTP</span>';
+                resendOtpBtn.disabled = false;
             }
-            
-            // Restart timer
-            startOTPTimer();
-            
-            // Show success message
-            showVerificationStatus('New OTP has been sent to your college email.', 'success');
-            
-            // Enable verify button
-            if (verifyOtpBtn) verifyOtpBtn.disabled = false;
-            if (resendOtpBtn) resendOtpBtn.disabled = true;
         });
     }
 
@@ -859,6 +1295,7 @@ if (sendOtpBtn && collegeEmailInput) {
         if (verificationStatus) verificationStatus.classList.add('hidden');
         clearInterval(otpTimer);
         if (otpCodeInput) otpCodeInput.value = '';
+        isCollegeEmailVerified = false;
     });
 }
 
@@ -869,8 +1306,13 @@ if (sendOtpBtn && collegeEmailInput) {
 // Initialize progress bar
 updateProgressBar('personal-info');
 
-// Load saved profile image if exists
+// Check authentication on page load
 window.addEventListener('load', function() {
+    if (!checkAuth()) {
+        return;
+    }
+    
+    // Load saved profile image if exists
     const savedImage = localStorage.getItem('profile_image');
     if (savedImage && profilePicture) {
         profilePicture.innerHTML = '';
@@ -880,6 +1322,9 @@ window.addEventListener('load', function() {
         profilePicture.appendChild(img);
     }
     
+    // Load any previously saved data from backend (you can implement this)
+    // loadSavedData();
+    
     // Set initial focus for accessibility
     const firstInput = document.querySelector('input, select, textarea');
     if (firstInput) firstInput.focus();
@@ -887,3 +1332,52 @@ window.addEventListener('load', function() {
     // Initialize sidebar
     initSidebar();
 });
+
+// Add CSS for notifications
+const style = document.createElement('style');
+style.textContent = `
+    .notification {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 15px 20px;
+        border-radius: 8px;
+        color: white;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        z-index: 10000;
+        opacity: 0;
+        transform: translateY(-20px);
+        transition: opacity 0.3s, transform 0.3s;
+        max-width: 350px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+    
+    .notification.show {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    
+    .notification.success {
+        background: linear-gradient(135deg, #2ecc71, #27ae60);
+        border-left: 4px solid #27ae60;
+    }
+    
+    .notification.error {
+        background: linear-gradient(135deg, #e74c3c, #c0392b);
+        border-left: 4px solid #c0392b;
+    }
+    
+    .notification.info {
+        background: linear-gradient(135deg, #3498db, #2980b9);
+        border-left: 4px solid #2980b9;
+    }
+    
+    .notification i {
+        font-size: 1.2em;
+    }
+`;
+
+document.head.appendChild(style);
