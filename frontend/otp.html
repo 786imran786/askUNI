@@ -80,7 +80,7 @@ async function verifyOTP() {
 
     const payload = { email, otp };
 
-    const res = await fetch("http://127.0.0.1:5000/api/verify-otp", {
+    const res = await fetch("https://imran1815.pythonanywhere.com/api/verify-otp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -114,7 +114,7 @@ document.getElementById("resendOtpBtn").addEventListener("click", async () => {
         return;
     }
 
-    const res = await fetch("http://127.0.0.1:5000/api/resend-otp", {
+    const res = await fetch("https://imran1815.pythonanywhere.com/api/resend-otp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
