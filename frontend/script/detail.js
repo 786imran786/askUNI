@@ -2,17 +2,40 @@
 // BACKEND API INTEGRATION
 // ============================================
 
+const API_BASE_URL = window.location.hostname === 'localhost' 
+    ? 'http://localhost:5000' 
+    : 'https://imran1815.pythonanywhere.com'; // Update with your Render/backend URL
+
 // JWT Token Management
-let authToken = localStorage.getItem('token');
+let authToken = null;
 let currentUserId = null;
 
-// Get user ID from token (if exists)
-if (authToken) {
+// Token management functions
+function getTokenFromURL() {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get('token');
+}
+
+function saveToken(token) {
+    authToken = token;
+    localStorage.setItem('token', token);
+}
+
+function clearToken() {
+    authToken = null;
+    localStorage.removeItem('token');
+}
+
+function parseToken() {
+    if (!authToken) return null;
+    
     try {
         const payload = JSON.parse(atob(authToken.split('.')[1]));
         currentUserId = payload.user_id;
+        return payload;
     } catch (e) {
         console.error('Error parsing token:', e);
+        return null;
     }
 }
 
@@ -30,11 +53,70 @@ function getHeaders() {
 // Check if user is logged in
 function checkAuth() {
     if (!authToken) {
-        // Redirect to login page if not authenticated
         window.location.href = 'login.html';
         return false;
     }
     return true;
+}
+
+// ============================================
+// INITIAL AUTHENTICATION
+// ============================================
+
+async function initAuth() {
+    // Check for token in URL (from Google auth)
+    const urlToken = getTokenFromURL();
+    if (urlToken) {
+        saveToken(urlToken);
+        
+        // Clean URL
+        const url = new URL(window.location);
+        url.searchParams.delete('token');
+        if (url.searchParams.get('new_user') === 'true') {
+            url.searchParams.delete('new_user');
+            showNotification('Welcome! Please complete your profile setup.', 'info');
+        }
+        window.history.replaceState({}, document.title, url.toString());
+    } else {
+        // Fall back to localStorage
+        authToken = localStorage.getItem('token');
+    }
+    
+    // Verify token
+    if (authToken) {
+        const payload = parseToken();
+        if (payload) {
+            await verifyTokenWithBackend();
+        } else {
+            clearToken();
+            window.location.href = 'login.html';
+        }
+    } else {
+        window.location.href = 'login.html';
+    }
+}
+
+async function verifyTokenWithBackend() {
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/verify-token`, {
+            method: 'POST',
+            headers: getHeaders(),
+            body: JSON.stringify({ token: authToken })
+        });
+        
+        const result = await response.json();
+        if (result.success) {
+            console.log('User authenticated:', currentUserId);
+            await loadSavedData();
+        } else {
+            clearToken();
+            window.location.href = 'login.html';
+        }
+    } catch (error) {
+        console.error('Token verification failed:', error);
+        // Continue with local token if backend unreachable
+        showNotification('Connected in offline mode. Changes will sync when connection is restored.', 'info');
+    }
 }
 
 // ============================================
@@ -43,7 +125,7 @@ function checkAuth() {
 
 async function savePersonalInfo(data) {
     try {
-        const response = await fetch(`https://imran1815.pythonanywhere.com/api/save-personal-info`, {
+        const response = await fetch(`${API_BASE_URL}/api/save-personal-info`, {
             method: 'POST',
             headers: getHeaders(),
             body: JSON.stringify({
@@ -67,7 +149,7 @@ async function savePersonalInfo(data) {
 
 async function saveDesignation(data) {
     try {
-        const response = await fetch(`https://imran1815.pythonanywhere.com/api/save-designation`, {
+        const response = await fetch(`${API_BASE_URL}/api/save-designation`, {
             method: 'POST',
             headers: getHeaders(),
             body: JSON.stringify({
@@ -91,7 +173,7 @@ async function saveDesignation(data) {
 
 async function saveGeneralProfile(data) {
     try {
-        const response = await fetch(`https://imran1815.pythonanywhere.com/api/save-general-profile`, {
+        const response = await fetch(`${API_BASE_URL}/api/save-general-profile`, {
             method: 'POST',
             headers: getHeaders(),
             body: JSON.stringify({
@@ -113,43 +195,112 @@ async function saveGeneralProfile(data) {
     }
 }
 
-// College Email OTP Verification
-async function sendOTP(collegeEmail) {
+async function loadSavedData() {
+    if (!currentUserId) return;
+    
     try {
-        const response = await fetch(`https://imran1815.pythonanywhere.com/api/send-college-otp`, {
-            method: 'POST',
-            headers: getHeaders(),
-            body: JSON.stringify({
-                email: collegeEmail,
-                user_id: currentUserId
-            })
+        const response = await fetch(`${API_BASE_URL}/api/get-profile-data`, {
+            method: 'GET',
+            headers: getHeaders()
         });
         
         const result = await response.json();
-        return result;
+        if (result.success) {
+            populateForms(result);
+        }
     } catch (error) {
-        console.error('Error sending OTP:', error);
-        return { success: false, message: 'Failed to send OTP' };
+        console.error('Error loading saved data:', error);
+        // Continue without saved data
     }
 }
 
-async function verifyOTP(collegeEmail, otp) {
-    try {
-        const response = await fetch(`https://imran1815.pythonanywhere.com/api/verify-college-otp`, {
-            method: 'POST',
-            headers: getHeaders(),
-            body: JSON.stringify({
-                email: collegeEmail,
-                otp: otp,
-                user_id: currentUserId
-            })
-        });
+function populateForms(data) {
+    // Populate personal info
+    if (data.personal_info) {
+        const personal = data.personal_info;
+        const fullName = document.getElementById('full-name');
+        const username = document.getElementById('username');
+        const email = document.getElementById('email');
+        const phone = document.getElementById('phone');
+        const age = document.getElementById('age');
+        const gender = document.getElementById('gender');
         
-        const result = await response.json();
-        return result;
-    } catch (error) {
-        console.error('Error verifying OTP:', error);
-        return { success: false, message: 'Failed to verify OTP' };
+        if (fullName && personal.full_name) fullName.value = personal.full_name;
+        if (username && personal.username) username.value = personal.username;
+        if (email && personal.email) email.value = personal.email;
+        if (phone && personal.phone) phone.value = personal.phone;
+        if (age && personal.age) age.value = personal.age;
+        if (gender && personal.gender) gender.value = personal.gender;
+    }
+    
+    // Populate designation
+    if (data.designation) {
+        const designation = data.designation;
+        const designationType = document.getElementById('designation-type');
+        
+        if (designationType && designation.designation_type) {
+            designationType.value = designation.designation_type;
+            
+            // Activate corresponding option
+            const option = document.querySelector(`.designation-option[data-option="${designation.designation_type}"]`);
+            if (option) {
+                option.click();
+            }
+            
+            // Populate form based on type
+            if (designation.designation_type === 'student') {
+                const registrationNo = document.getElementById('registration-no');
+                const program = document.getElementById('program');
+                const department = document.getElementById('department');
+                const currentYear = document.getElementById('current-year');
+                const graduationYear = document.getElementById('graduation-year');
+                const collegeEmail = document.getElementById('college-email');
+                
+                if (registrationNo && designation.registration_no) registrationNo.value = designation.registration_no;
+                if (program && designation.program) program.value = designation.program;
+                if (department && designation.department) department.value = designation.department;
+                if (currentYear && designation.current_year) currentYear.value = designation.current_year;
+                if (graduationYear && designation.graduation_year) graduationYear.value = designation.graduation_year;
+                if (collegeEmail && designation.college_email) {
+                    collegeEmail.value = designation.college_email;
+                    // If email is verified, set flag
+                    if (designation.is_college_email_verified) {
+                        isCollegeEmailVerified = true;
+                        showVerificationStatus('College email already verified ✓', 'success');
+                    }
+                }
+            }
+        }
+    }
+    
+    // Populate general profile
+    if (data.general_profile) {
+        const general = data.general_profile;
+        const shortBio = document.getElementById('short-bio');
+        const skills = document.getElementById('skills');
+        const interests = document.getElementById('interests');
+        const linkedin = document.getElementById('general-linkedin');
+        const github = document.getElementById('github');
+        const portfolio = document.getElementById('portfolio');
+        
+        if (shortBio && general.short_bio) shortBio.value = general.short_bio;
+        if (skills && general.skills) {
+            // Parse and create tags
+            general.skills.split(',').forEach(skill => {
+                const trimmed = skill.trim();
+                if (trimmed) createTag(trimmed, skillsTagsContainer);
+            });
+        }
+        if (interests && general.interests) {
+            // Parse and create tags
+            general.interests.split(',').forEach(interest => {
+                const trimmed = interest.trim();
+                if (trimmed) createTag(trimmed, interestsTagsContainer);
+            });
+        }
+        if (linkedin && general.linkedin) linkedin.value = general.linkedin;
+        if (github && general.github) github.value = general.github;
+        if (portfolio && general.portfolio) portfolio.value = general.portfolio;
     }
 }
 
@@ -330,8 +481,8 @@ if (profilePictureUploadBtn && profilePictureUpload) {
                 img.alt = 'Profile picture';
                 profilePicture.appendChild(img);
                 
-                // Save to backend (you'll need to implement this endpoint)
-                // uploadProfilePicture(event.target.result);
+                // Save to localStorage for demo
+                localStorage.setItem('profile_image', event.target.result);
             };
             reader.readAsDataURL(file);
         }
@@ -451,8 +602,8 @@ if (saveAvatarBtn) {
             localStorage.removeItem('profile_image');
             profilePictureUpload.value = '';
             
-            // Save avatar to backend
-            // saveAvatarToBackend(selectedAvatar.dataset.avatar);
+            // In a real app, save to backend here
+            // await saveAvatarToBackend(selectedAvatar.dataset.avatar);
         }
         
         closeAvatarModal();
@@ -468,6 +619,8 @@ const formSections = document.querySelectorAll('.div3 > .form-container, .div3 >
 
 profileOptions.forEach(option => {
     option.addEventListener('click', function() {
+        if (!checkAuth()) return;
+        
         profileOptions.forEach(opt => opt.classList.remove('active'));
         this.classList.add('active');
         
@@ -572,7 +725,7 @@ function createTag(text, container) {
     const tag = document.createElement('div');
     tag.className = 'tag';
     tag.innerHTML = `
-        ${text}
+        <span class="tag-text">${text}</span>
         <span class="tag-remove" role="button" tabindex="0" aria-label="Remove tag">×</span>
     `;
     
@@ -635,6 +788,8 @@ function updateProgressBar(currentSection) {
 }
 
 function navigateToSection(sectionId) {
+    if (!checkAuth()) return;
+    
     formSections.forEach(section => section.classList.add('hidden'));
     
     const targetSection = document.getElementById(sectionId);
@@ -725,7 +880,6 @@ function validateDesignationForm() {
         }
         
     } else if (designationType === 'faculty') {
-        // Validate faculty fields
         const facultyId = document.getElementById('faculty-id');
         const facultyDept = document.getElementById('faculty-department');
         const post = document.getElementById('post');
@@ -739,7 +893,6 @@ function validateDesignationForm() {
         }
         
     } else if (designationType === 'alumni') {
-        // Validate alumni fields
         const gradYear = document.getElementById('alumni-graduation-year');
         const alumniProgram = document.getElementById('alumni-program');
         const alumniDept = document.getElementById('alumni-department');
@@ -760,7 +913,14 @@ function validateGeneralProfileForm() {
     const skills = document.getElementById('skills');
     const interests = document.getElementById('interests');
     
-    if (!shortBio.value.trim() || !skills.value.trim() || !interests.value.trim()) {
+    // Check if we have tags or input value
+    const skillsTags = Array.from(skillsTagsContainer.querySelectorAll('.tag-text')).map(tag => tag.textContent);
+    const interestsTags = Array.from(interestsTagsContainer.querySelectorAll('.tag-text')).map(tag => tag.textContent);
+    
+    const hasSkills = skillsTags.length > 0 || skills.value.trim().length > 0;
+    const hasInterests = interestsTags.length > 0 || interests.value.trim().length > 0;
+    
+    if (!shortBio.value.trim() || !hasSkills || !hasInterests) {
         return 'Please fill in all required fields (Bio, Skills, Interests)';
     }
     
@@ -834,9 +994,8 @@ if (personalInfoForm) {
         };
         
         try {
-            // Show loading state
             const submitBtn = document.getElementById('personal-continue');
-            const originalText = submitBtn.innerHTML;
+            const originalHTML = submitBtn.innerHTML;
             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>Saving...</span>';
             submitBtn.disabled = true;
             
@@ -847,7 +1006,6 @@ if (personalInfoForm) {
         } catch (error) {
             showNotification(error.message || 'Failed to save personal information', 'error');
         } finally {
-            // Reset button state
             const submitBtn = document.getElementById('personal-continue');
             submitBtn.innerHTML = '<i class="fas fa-arrow-right"></i> <span>Continue</span>';
             submitBtn.disabled = false;
@@ -909,9 +1067,8 @@ if (designationForm) {
         }
         
         try {
-            // Show loading state
             const submitBtn = document.getElementById('designation-continue');
-            const originalText = submitBtn.innerHTML;
+            const originalHTML = submitBtn.innerHTML;
             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>Saving...</span>';
             submitBtn.disabled = true;
             
@@ -922,7 +1079,6 @@ if (designationForm) {
         } catch (error) {
             showNotification(error.message || 'Failed to save designation information', 'error');
         } finally {
-            // Reset button state
             const submitBtn = document.getElementById('designation-continue');
             submitBtn.innerHTML = '<i class="fas fa-arrow-right"></i> <span>Continue</span>';
             submitBtn.disabled = false;
@@ -944,15 +1100,11 @@ if (generalProfileForm) {
         }
         
         // Collect skills tags
-        const skillsTags = Array.from(skillsTagsContainer.querySelectorAll('.tag')).map(tag => 
-            tag.textContent.replace('×', '').trim()
-        );
+        const skillsTags = Array.from(skillsTagsContainer.querySelectorAll('.tag-text')).map(tag => tag.textContent);
         const skillsValue = skillsTags.length > 0 ? skillsTags.join(', ') : document.getElementById('skills').value.trim();
         
         // Collect interests tags
-        const interestsTags = Array.from(interestsTagsContainer.querySelectorAll('.tag')).map(tag => 
-            tag.textContent.replace('×', '').trim()
-        );
+        const interestsTags = Array.from(interestsTagsContainer.querySelectorAll('.tag-text')).map(tag => tag.textContent);
         const interestsValue = interestsTags.length > 0 ? interestsTags.join(', ') : document.getElementById('interests').value.trim();
         
         const formData = {
@@ -965,9 +1117,8 @@ if (generalProfileForm) {
         };
         
         try {
-            // Show loading state
             const submitBtn = document.getElementById('general-submit');
-            const originalText = submitBtn.innerHTML;
+            const originalHTML = submitBtn.innerHTML;
             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>Saving...</span>';
             submitBtn.disabled = true;
             
@@ -978,7 +1129,6 @@ if (generalProfileForm) {
         } catch (error) {
             showNotification(error.message || 'Failed to save profile information', 'error');
         } finally {
-            // Reset button state
             const submitBtn = document.getElementById('general-submit');
             submitBtn.innerHTML = '<i class="fas fa-check-circle"></i> <span>Submit Profile</span>';
             submitBtn.disabled = false;
@@ -1050,19 +1200,9 @@ const resendOtpBtn = document.getElementById('resend-otp-btn');
 const otpTimerElement = document.getElementById('timer');
 const verificationStatus = document.getElementById('verification-status');
 
-function generateOTP() {
-    return Math.floor(100000 + Math.random() * 900000).toString();
-}
-
 function isValidCollegeEmail(email) {
-    // Accept LPU college emails
-    const collegeEmailPatterns = [
-        /^[a-zA-Z0-9._%+-]+@lpu\.in$/i,
-        /^[a-zA-Z0-9._%+-]+@students\.lpu\.in$/i,
-        /^[a-zA-Z0-9._%+-]+@lpu\.co\.in$/i
-    ];
-    
-    return collegeEmailPatterns.some(pattern => pattern.test(email));
+    const collegeEmailRegex = /^[a-zA-Z0-9._%+-]+@(students\.)?(lpu\.in|lpu\.co\.in)$/i;
+    return collegeEmailRegex.test(email);
 }
 
 function startOTPTimer() {
@@ -1114,6 +1254,46 @@ function showVerificationStatus(message, type = 'info') {
     }
 }
 
+// College Email OTP Backend Functions
+async function sendCollegeOTP(email) {
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/send-college-otp`, {
+            method: 'POST',
+            headers: getHeaders(),
+            body: JSON.stringify({
+                email: email,
+                user_id: currentUserId
+            })
+        });
+        
+        const result = await response.json();
+        return result;
+    } catch (error) {
+        console.error('Error sending college OTP:', error);
+        return { success: false, message: 'Failed to send OTP' };
+    }
+}
+
+async function verifyCollegeOTP(email, otp) {
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/verify-college-otp`, {
+            method: 'POST',
+            headers: getHeaders(),
+            body: JSON.stringify({
+                email: email,
+                otp: otp,
+                user_id: currentUserId
+            })
+        });
+        
+        const result = await response.json();
+        return result;
+    } catch (error) {
+        console.error('Error verifying college OTP:', error);
+        return { success: false, message: 'Failed to verify OTP' };
+    }
+}
+
 // Initialize OTP functionality if elements exist
 if (sendOtpBtn && collegeEmailInput) {
     // Send OTP button click handler
@@ -1131,38 +1311,29 @@ if (sendOtpBtn && collegeEmailInput) {
         }
         
         try {
-            // Disable button and show loading
             sendOtpBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>Sending...</span>';
             sendOtpBtn.disabled = true;
             
-            // Send OTP via backend
-            const result = await sendOTP(email);
+            const result = await sendCollegeOTP(email);
             
             if (result.success) {
-                // For demo purposes - show OTP in alert
+                // For demo, show OTP in alert
                 alert(`OTP sent to ${email}\nDemo OTP: ${result.otp || '123456'}\n\nNote: In production, this OTP would be sent to your email.`);
                 
-                // Store generated OTP
                 generatedOTP = result.otp || '123456';
                 
-                // Show OTP verification section
                 if (otpVerificationSection) {
                     otpVerificationSection.classList.remove('hidden');
                 }
                 
-                // Reset OTP input
                 if (otpCodeInput) {
                     otpCodeInput.value = '';
                     otpCodeInput.disabled = false;
                 }
                 
-                // Start timer
                 startOTPTimer();
-                
-                // Show success message
                 showNotification('OTP has been sent to your college email. Please check your inbox.', 'success');
                 
-                // Enable verify button
                 if (verifyOtpBtn) verifyOtpBtn.disabled = false;
                 if (resendOtpBtn) resendOtpBtn.disabled = true;
                 
@@ -1173,7 +1344,6 @@ if (sendOtpBtn && collegeEmailInput) {
         } catch (error) {
             showNotification('Failed to send OTP. Please try again.', 'error');
         } finally {
-            // Reset button state
             sendOtpBtn.innerHTML = '<i class="fas fa-paper-plane"></i> <span>Send OTP</span>';
             sendOtpBtn.disabled = false;
         }
@@ -1195,28 +1365,20 @@ if (sendOtpBtn && collegeEmailInput) {
             }
             
             try {
-                // Disable button and show loading
                 verifyOtpBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>Verifying...</span>';
                 verifyOtpBtn.disabled = true;
                 
-                // Verify OTP via backend
-                const result = await verifyOTP(collegeEmailInput.value.trim(), enteredOTP);
+                const result = await verifyCollegeOTP(collegeEmailInput.value.trim(), enteredOTP);
                 
                 if (result.success) {
-                    // Stop timer
                     clearInterval(otpTimer);
-                    
-                    // Show success
                     showNotification('College email verified successfully!', 'success');
                     
-                    // Disable OTP input
                     if (otpCodeInput) otpCodeInput.disabled = true;
                     verifyOtpBtn.disabled = true;
                     
-                    // Enable resend button
                     if (resendOtpBtn) resendOtpBtn.disabled = false;
                     
-                    // Set verification flag
                     isCollegeEmailVerified = true;
                     
                 } else {
@@ -1226,7 +1388,6 @@ if (sendOtpBtn && collegeEmailInput) {
             } catch (error) {
                 showNotification('Failed to verify OTP. Please try again.', 'error');
             } finally {
-                // Reset button state
                 verifyOtpBtn.innerHTML = '<i class="fas fa-check-circle"></i> <span>Verify OTP</span>';
                 verifyOtpBtn.disabled = false;
             }
@@ -1244,33 +1405,24 @@ if (sendOtpBtn && collegeEmailInput) {
             }
             
             try {
-                // Disable button and show loading
                 resendOtpBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>Resending...</span>';
                 resendOtpBtn.disabled = true;
                 
-                // Resend OTP via backend
-                const result = await sendOTP(email);
+                const result = await sendCollegeOTP(email);
                 
                 if (result.success) {
-                    // Generate new OTP for demo
                     generatedOTP = result.otp || Math.floor(100000 + Math.random() * 900000).toString();
                     
-                    // For demo purposes
                     alert(`New OTP sent to ${email}\nDemo OTP: ${generatedOTP}`);
                     
-                    // Reset OTP input
                     if (otpCodeInput) {
                         otpCodeInput.value = '';
                         otpCodeInput.disabled = false;
                     }
                     
-                    // Restart timer
                     startOTPTimer();
-                    
-                    // Show success message
                     showNotification('New OTP has been sent to your college email.', 'success');
                     
-                    // Enable verify button
                     if (verifyOtpBtn) verifyOtpBtn.disabled = false;
                     if (resendOtpBtn) resendOtpBtn.disabled = true;
                     
@@ -1281,7 +1433,6 @@ if (sendOtpBtn && collegeEmailInput) {
             } catch (error) {
                 showNotification('Failed to resend OTP. Please try again.', 'error');
             } finally {
-                // Reset button state
                 resendOtpBtn.innerHTML = '<i class="fas fa-redo"></i> <span>Resend OTP</span>';
                 resendOtpBtn.disabled = false;
             }
@@ -1290,7 +1441,6 @@ if (sendOtpBtn && collegeEmailInput) {
 
     // College email input change handler
     collegeEmailInput.addEventListener('input', function() {
-        // If email changes, reset verification
         if (otpVerificationSection) otpVerificationSection.classList.add('hidden');
         if (verificationStatus) verificationStatus.classList.add('hidden');
         clearInterval(otpTimer);
@@ -1306,31 +1456,34 @@ if (sendOtpBtn && collegeEmailInput) {
 // Initialize progress bar
 updateProgressBar('personal-info');
 
-// Check authentication on page load
-window.addEventListener('load', function() {
-    if (!checkAuth()) {
-        return;
+// Main initialization
+window.addEventListener('load', async function() {
+    try {
+        await initAuth();
+        
+        // Load saved profile image if exists
+        const savedImage = localStorage.getItem('profile_image');
+        if (savedImage && profilePicture) {
+            profilePicture.innerHTML = '';
+            const img = document.createElement('img');
+            img.src = savedImage;
+            img.alt = 'Profile picture';
+            profilePicture.appendChild(img);
+        }
+        
+        initTheme();
+        initSidebar();
+        
+        // Set initial focus for accessibility
+        setTimeout(() => {
+            const firstInput = document.querySelector('input, select, textarea');
+            if (firstInput) firstInput.focus();
+        }, 100);
+        
+    } catch (error) {
+        console.error('Initialization error:', error);
+        showNotification('Failed to initialize application', 'error');
     }
-    
-    // Load saved profile image if exists
-    const savedImage = localStorage.getItem('profile_image');
-    if (savedImage && profilePicture) {
-        profilePicture.innerHTML = '';
-        const img = document.createElement('img');
-        img.src = savedImage;
-        img.alt = 'Profile picture';
-        profilePicture.appendChild(img);
-    }
-    
-    // Load any previously saved data from backend (you can implement this)
-    // loadSavedData();
-    
-    // Set initial focus for accessibility
-    const firstInput = document.querySelector('input, select, textarea');
-    if (firstInput) firstInput.focus();
-    
-    // Initialize sidebar
-    initSidebar();
 });
 
 // Add CSS for notifications
