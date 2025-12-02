@@ -196,7 +196,8 @@ async function saveGeneralProfile(data) {
 
 async function loadSavedData() {
     if (!currentUserId) return;
-    
+    window.loadedProfileData = result;
+
     try {
         const response = await fetch(`${API_BASE_URL}/api/get-profile-data`, {
             method: 'GET',
@@ -1500,17 +1501,17 @@ window.addEventListener('load', async function() {
         await initAuth();
         
         // Load saved profile image if exists
-        const savedImage = localStorage.getItem('profile_image');
-        if (savedImage && profilePicture) {
-            if (data.personal_info && data.personal_info.profile_photo) {
-    profilePicture.innerHTML = '';
-    const img = document.createElement('img');
-    img.src = data.personal_info.profile_photo;
-    img.alt = 'Profile picture';
-    profilePicture.appendChild(img);
+if (profilePicture && window.loadedProfileData) {
+    const photo = window.loadedProfileData.personal_info?.profile_photo;
+    if (photo) {
+        profilePicture.innerHTML = '';
+        const img = document.createElement('img');
+        img.src = photo;
+        img.alt = 'Profile picture';
+        profilePicture.appendChild(img);
+    }
 }
-        }
-        
+
         initTheme();
         initSidebar();
         
