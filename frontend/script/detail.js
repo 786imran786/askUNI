@@ -648,24 +648,38 @@ const designationTypeInput = document.getElementById('designation-type');
 const designationForms = document.querySelectorAll('.designation-form');
 
 if (designationOptions.length > 0) {
-    designationOptions.forEach(option => {
-        option.addEventListener('click', function() {
-            designationOptions.forEach(opt => opt.classList.remove('active'));
-            this.classList.add('active');
-            
-            const optionType = this.getAttribute('data-option');
-            if (designationTypeInput) {
-                designationTypeInput.value = optionType;
-            }
-            
-            designationForms.forEach(form => form.classList.add('hidden'));
-            
-            const targetForm = document.getElementById(`${optionType}-form`);
-            if (targetForm) {
-                targetForm.classList.remove('hidden');
-            }
+  designationOptions.forEach(option => {
+    option.addEventListener('click', function() {
+        
+        // Remove active from all
+        designationOptions.forEach(opt => opt.classList.remove('active'));
+        this.classList.add('active');
+
+        const optionType = this.getAttribute('data-option');
+
+        // Update hidden input
+        designationTypeInput.value = optionType;
+
+        // Hide all forms + remove required fields
+        designationForms.forEach(form => {
+            form.classList.add('hidden');
+            form.querySelectorAll('[required]').forEach(input => {
+                input.dataset.wasRequired = "true";
+                input.removeAttribute('required');
+            });
         });
+
+        // Show selected form + restore required fields
+        const targetForm = document.getElementById(`${optionType}-form`);
+        if (targetForm) {
+            targetForm.classList.remove('hidden');
+            targetForm.querySelectorAll('[data-was-required="true"]').forEach(input => {
+                input.setAttribute('required', 'required');
+            });
+        }
     });
+});
+
 }
 
 // ============================================
