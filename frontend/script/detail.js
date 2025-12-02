@@ -1359,24 +1359,39 @@ if (sendOtpBtn && collegeEmailInput) {
             
 if (result.success) {
 
-    // Remove this in production (only for demo) 👇
-    alert(`OTP sent to ${email}\n\nDemo OTP: ${result.otp}`);
+    // 🔥 Already verified? No need to show OTP box
+    if (result.already_verified) {
+        showNotification("This email is already verified ✓", "success");
+        isCollegeEmailVerified = true;
+
+        // Disable input + buttons
+        collegeEmailInput.disabled = true;
+        sendOtpBtn.disabled = true;
+
+        otpVerificationSection.classList.add("hidden");
+        verificationStatus.textContent = "Already verified ✓";
+        verificationStatus.className = "verification-status success";
+        verificationStatus.classList.remove("hidden");
+        return;
+    }
+
+    // ---- Normal OTP Flow ----
+    alert(`OTP sent to ${email}\nDemo OTP: ${result.otp}`);
 
     generatedOTP = result.otp;
 
     otpVerificationSection.classList.remove('hidden');
 
-    otpCodeInput.value = '';
+    otpCodeInput.value = "";
     otpCodeInput.disabled = false;
 
     startOTPTimer();
-
-    showNotification('OTP has been sent to your college email. Please check your inbox.', 'success');
+    showNotification('OTP has been sent to your college email.', 'success');
 
     verifyOtpBtn.disabled = false;
     resendOtpBtn.disabled = true;
-
-} else {
+}
+else {
     showNotification(result.message || 'Failed to send OTP', 'error');
 }
 
