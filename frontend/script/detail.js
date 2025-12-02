@@ -482,11 +482,35 @@ if (profilePictureUploadBtn && profilePictureUpload) {
                 profilePicture.appendChild(img);
                 
                 // Save to localStorage for demo
-                localStorage.setItem('profile_image', event.target.result);
+               saveProfilePhotoToBackend(event.target.result);
+
             };
             reader.readAsDataURL(file);
         }
     });
+}
+async function saveProfilePhotoToBackend(base64Image) {
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/save-profile-photo`, {
+            method: "POST",
+            headers: getHeaders(),
+            body: JSON.stringify({
+                photo: base64Image
+            })
+        });
+
+        const result = await response.json();
+
+        if (!result.success) {
+            showNotification(result.message || "Failed to save photo", "error");
+        } else {
+            showNotification("Profile photo updated!", "success");
+        }
+
+    } catch (err) {
+        console.error("Photo upload error:", err);
+        showNotification("Failed to upload photo!", "error");
+    }
 }
 
 // ============================================
@@ -1478,11 +1502,13 @@ window.addEventListener('load', async function() {
         // Load saved profile image if exists
         const savedImage = localStorage.getItem('profile_image');
         if (savedImage && profilePicture) {
-            profilePicture.innerHTML = '';
-            const img = document.createElement('img');
-            img.src = savedImage;
-            img.alt = 'Profile picture';
-            profilePicture.appendChild(img);
+            if (data.personal_info && data.personal_info.profile_photo) {
+    profilePicture.innerHTML = '';
+    const img = document.createElement('img');
+    img.src = data.personal_info.profile_photo;
+    img.alt = 'Profile picture';
+    profilePicture.appendChild(img);
+}
         }
         
         initTheme();
