@@ -1453,7 +1453,8 @@ if (result.success) {
                 if (result.success) {
                     generatedOTP = result.otp || Math.floor(100000 + Math.random() * 900000).toString();
                     
-                    alert(`New OTP sent to ${email}\nDemo OTP: ${generatedOTP}`);
+                    showNotification("OTP has been sent to your college email.", "success");
+
                     
                     if (otpCodeInput) {
                         otpCodeInput.value = '';
