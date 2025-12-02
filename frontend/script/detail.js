@@ -1357,30 +1357,29 @@ if (sendOtpBtn && collegeEmailInput) {
             
             const result = await sendCollegeOTP(email);
             
-            if (result.success) {
-                // For demo, show OTP in alert
-                alert(`OTP sent to ${email}\nDemo OTP: ${result.otp || '123456'}\n\nNote: In production, this OTP would be sent to your email.`);
-                
-                generatedOTP = result.otp || '123456';
-                
-                if (otpVerificationSection) {
-                    otpVerificationSection.classList.remove('hidden');
-                }
-                
-                if (otpCodeInput) {
-                    otpCodeInput.value = '';
-                    otpCodeInput.disabled = false;
-                }
-                
-                startOTPTimer();
-                showNotification('OTP has been sent to your college email. Please check your inbox.', 'success');
-                
-                if (verifyOtpBtn) verifyOtpBtn.disabled = false;
-                if (resendOtpBtn) resendOtpBtn.disabled = true;
-                
-            } else {
-                showNotification(result.message || 'Failed to send OTP', 'error');
-            }
+if (result.success) {
+
+    // Remove this in production (only for demo) 👇
+    alert(`OTP sent to ${email}\n\nDemo OTP: ${result.otp}`);
+
+    generatedOTP = result.otp;
+
+    otpVerificationSection.classList.remove('hidden');
+
+    otpCodeInput.value = '';
+    otpCodeInput.disabled = false;
+
+    startOTPTimer();
+
+    showNotification('OTP has been sent to your college email. Please check your inbox.', 'success');
+
+    verifyOtpBtn.disabled = false;
+    resendOtpBtn.disabled = true;
+
+} else {
+    showNotification(result.message || 'Failed to send OTP', 'error');
+}
+
             
         } catch (error) {
             showNotification('Failed to send OTP. Please try again.', 'error');
