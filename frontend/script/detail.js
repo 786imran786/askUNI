@@ -1360,8 +1360,7 @@ if (sendOtpBtn && collegeEmailInput) {
 if (result.success) {
 
     // Remove this in production (only for demo) 👇
-    alert(`OTP sent to ${email}\n\nDemo OTP: ${result.otp}`);
-
+   
     generatedOTP = result.otp;
 
     otpVerificationSection.classList.remove('hidden');
