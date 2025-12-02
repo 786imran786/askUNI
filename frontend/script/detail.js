@@ -331,7 +331,7 @@ function applyTheme(mode) {
 }
 
 // Initialize theme
-(function initTheme() {
+function initTheme() {
     const saved = localStorage.getItem(THEME_KEY);
     if (saved === 'dark' || saved === 'light') {
         applyTheme(saved);
@@ -342,7 +342,8 @@ function applyTheme(mode) {
             applyTheme('light');
         }
     }
-})();
+}
+
 
 // Theme toggle event listener
 if (themeToggle) {
