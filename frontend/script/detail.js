@@ -193,26 +193,28 @@ async function saveGeneralProfile(data) {
         throw error;
     }
 }
-
 async function loadSavedData() {
     if (!currentUserId) return;
-
 
     try {
         const response = await fetch(`${API_BASE_URL}/api/get-profile-data`, {
             method: 'GET',
             headers: getHeaders()
         });
-           window.loadedProfileData = result;
+
         const result = await response.json();
+
         if (result.success) {
+            // 🔥 Save profile data globally so we can use it elsewhere
+            window.loadedProfileData = result;
+
             populateForms(result);
         }
     } catch (error) {
         console.error('Error loading saved data:', error);
-        // Continue without saved data
     }
 }
+
 
 function populateForms(data) {
     // Populate personal info
