@@ -4,7 +4,7 @@
 
 const API_BASE_URL = window.location.hostname === 'localhost' 
     ? 'http://localhost:5000' 
-    : 'https://imran1815.pythonanywhere.com'; // Update with your Render/backend URL
+    : 'http://127.0.0.1:5000'; // Update with your Render/backend URL
 
 // JWT Token Management
 let authToken = null;
@@ -103,7 +103,6 @@ async function verifyTokenWithBackend() {
             headers: getHeaders(),
             body: JSON.stringify({ token: authToken })
         });
-        
         const result = await response.json();
         if (result.success) {
             console.log('User authenticated:', currentUserId);
