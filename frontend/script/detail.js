@@ -196,14 +196,14 @@ async function saveGeneralProfile(data) {
 
 async function loadSavedData() {
     if (!currentUserId) return;
-    window.loadedProfileData = result;
+
 
     try {
         const response = await fetch(`${API_BASE_URL}/api/get-profile-data`, {
             method: 'GET',
             headers: getHeaders()
         });
-        
+           window.loadedProfileData = result;
         const result = await response.json();
         if (result.success) {
             populateForms(result);
