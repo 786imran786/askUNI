@@ -53,7 +53,7 @@ function getHeaders() {
 // Check if user is logged in
 function checkAuth() {
     if (!authToken) {
-        window.location.href = 'login.html';
+        window.location.href = 'login_signup.html';
         return false;
     }
     return true;
@@ -89,10 +89,10 @@ async function initAuth() {
             await verifyTokenWithBackend();
         } else {
             clearToken();
-            window.location.href = 'login.html';
+            window.location.href = 'login_signup.html';
         }
     } else {
-        window.location.href = 'login.html';
+        window.location.href = 'login_signup.html';
     }
 }
 
@@ -109,7 +109,7 @@ async function verifyTokenWithBackend() {
             await loadSavedData();
         } else {
             clearToken();
-            window.location.href = 'login.html';
+            window.location.href = 'login_signup.html';
         }
     } catch (error) {
         console.error('Token verification failed:', error);
