@@ -1316,22 +1316,32 @@ function showVerificationStatus(message, type = 'info') {
 // College Email OTP Backend Functions
 async function sendCollegeOTP(email) {
     try {
+        const token = localStorage.getItem("token"); // or cookie-based method
+
         const response = await fetch(`${API_BASE_URL}/api/send-college-otp`, {
             method: 'POST',
-            headers: getHeaders(),
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+            },
+            credentials: "include", // important for cookie auth
             body: JSON.stringify({
                 email: email,
                 user_id: currentUserId
             })
         });
-        
-        const result = await response.json();
+
+        const text = await response.text(); 
+        console.log("Raw response:", text);
+
+        const result = JSON.parse(text);
         return result;
     } catch (error) {
-        console.error('Error sending college OTP:', error);
-        return { success: false, message: 'Failed to send OTP' };
+        console.error("Error sending college OTP:", error);
+        return { success: false, message: "Failed to send OTP" };
     }
 }
+
 
 async function verifyCollegeOTP(email, otp) {
     try {
