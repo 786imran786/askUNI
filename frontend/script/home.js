@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", () => {
 async function initHomePageAuth() {
     try {
         // Call backend to check if user is logged in (Cookie-based)
-        const res = await fetch("http://127.0.0.1:5000/api/verify-token", {
+        const res = await fetch("https://askunibackend.onrender.com/api/verify-token", {
             method: "POST",
             credentials: "include"
         });

@@ -201,7 +201,7 @@ if(signupForm){
         submitBtn.style.opacity = '0.7';
         submitBtn.style.cursor = 'not-allowed';
 
-const res = await fetch("http://127.0.0.1:5000/api/register", {
+const res = await fetch("https://askunibackend.onrender.com/api/register", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
@@ -267,7 +267,7 @@ async function verifyOTP() {
 
     const payload = { email, otp };
 
-const res = await fetch("http://127.0.0.1:5000/api/verify-otp", {
+const res = await fetch("https://askunibackend.onrender.com/api/verify-otp", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
@@ -332,7 +332,7 @@ loginForm.addEventListener("submit", async function (e) {
         submitBtn.style.opacity = '0.7';
         submitBtn.style.cursor = 'not-allowed';
 
-  const res = await fetch("http://127.0.0.1:5000/api/login", {
+  const res = await fetch("https://askunibackend.onrender.com/api/login", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
@@ -373,23 +373,23 @@ const googleBtn2 = document.getElementById("googleSignup");
 
 if(googleBtn1){
     googleBtn1.addEventListener("click", () => {
-        window.location.href = "http://127.0.0.1:5000/auth/google";
+        window.location.href = "https://askunibackend.onrender.com/auth/google";
     });
 }
 
 if(googleBtn2){
     googleBtn2.addEventListener("click", () => {
-        window.location.href = "http://127.0.0.1:5000/auth/google";
+        window.location.href = "https://askunibackend.onrender.com/auth/google";
     });
 }
 document.getElementById("googleLogin").addEventListener("click", (e) => {
     e.preventDefault();
-    window.location.href = "http://127.0.0.1:5000/auth/google";
+    window.location.href = "https://askunibackend.onrender.com/auth/google";
 });
 
 document.getElementById("googleSignup").addEventListener("click", (e) => {
     e.preventDefault();
-    window.location.href = "http://127.0.0.1:5000/auth/google";
+    window.location.href = "https://askunibackend.onrender.com/auth/google";
 });
 
 
