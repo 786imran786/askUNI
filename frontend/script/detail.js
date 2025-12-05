@@ -449,6 +449,24 @@ document.addEventListener('keydown', function(e) {
 // Initialize sidebar on load and resize
 window.addEventListener('load', initSidebar);
 window.addEventListener('resize', initSidebar);
+window.addEventListener("DOMContentLoaded", () => {
+    const url = new URL(window.location.href);
+    const token = url.searchParams.get("token");
+
+    if (token) {
+        // Save token to localStorage
+        localStorage.setItem("token", token);
+
+        // OPTIONAL: clean URL
+        url.searchParams.delete("token");
+        window.history.replaceState({}, "", url.toString());
+    }
+
+    const savedToken = localStorage.getItem("token");
+    if (!savedToken) {
+        window.location.href = "login_signup.html";
+    }
+});
 
 // ============================================
 // PROFILE PICTURE UPLOAD FUNCTIONALITY
