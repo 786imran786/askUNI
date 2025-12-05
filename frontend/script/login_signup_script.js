@@ -201,11 +201,12 @@ if(signupForm){
         submitBtn.style.opacity = '0.7';
         submitBtn.style.cursor = 'not-allowed';
 
-        const res = await fetch("http://127.0.0.1:5000/api/register", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload),
-        });
+const res = await fetch("http://127.0.0.1:5000/api/register", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+    credentials: "include"
+});
 
         const data = await res.json();
         if (data.success) {
@@ -266,11 +267,13 @@ async function verifyOTP() {
 
     const payload = { email, otp };
 
-    const res = await fetch("http://127.0.0.1:5000/api/verify-otp", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-    });
+const res = await fetch("http://127.0.0.1:5000/api/verify-otp", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+    credentials: "include"
+});
+
 
     const data = await res.json();
 
@@ -329,17 +332,19 @@ loginForm.addEventListener("submit", async function (e) {
         submitBtn.style.opacity = '0.7';
         submitBtn.style.cursor = 'not-allowed';
 
-        const res = await fetch("http://127.0.0.1:5000/api/login", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload),
-        });
+  const res = await fetch("http://127.0.0.1:5000/api/login", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+    credentials: "include"
+});
+
 
         const data = await res.json();
 
         if(data.success){
             showToast("Login successful!", "success");
-            localStorage.setItem("token", data.token);
+        
             setTimeout(() => window.location.href = "home.html", 600);
         } else {
             showToast(data.message, "error");
