@@ -928,15 +928,19 @@ function validateDesignationForm() {
         const graduationYear = document.getElementById('graduation-year');
         const collegeEmail = document.getElementById('college-email');
         
-        if (!regNo.value.trim() || !program.value || !department.value || !currentYear.value || !graduationYear.value || !collegeEmail.value.trim()) {
-            return 'Please fill in all required student fields';
-        }
-        
+        if (!regNo.value.trim() || !program.value || !department.value ||
+    !currentYear.value || !graduationYear.value) {
+    return 'Please fill in all required student fields';
+}
+
         // College email validation
         const collegeEmailRegex = /^[a-zA-Z0-9._%+-]+@(students\.)?(lpu\.in|lpu\.co\.in)$/i;
-        if (!collegeEmailRegex.test(collegeEmail.value.trim())) {
-            return 'Please enter a valid LPU college email';
-        }
+        if (collegeEmail.value.trim().length > 0) {
+    if (!collegeEmailRegex.test(collegeEmail.value.trim())) {
+        return 'Please enter a valid LPU college email';
+    }
+}
+
         
     } else if (designationType === 'faculty') {
         const facultyId = document.getElementById('faculty-id');
@@ -966,6 +970,13 @@ function validateDesignationForm() {
     
     return null;
 }
+
+collegeEmailInput.addEventListener("input", () => {
+    if (collegeEmailInput.value.trim() === "") {
+        otpVerificationSection.classList.add("hidden");
+    }
+});
+
 
 function validateGeneralProfileForm() {
     const shortBio = document.getElementById('short-bio');
@@ -1092,17 +1103,27 @@ if (designationForm) {
         
         // Collect data based on designation type
         if (designationType === 'student') {
-            formData = {
-                ...formData,
-                registration_no: document.getElementById('registration-no').value.trim(),
-                program: document.getElementById('program').value,
-                department: document.getElementById('department').value,
-                current_year: parseInt(document.getElementById('current-year').value),
-                graduation_year: parseInt(document.getElementById('graduation-year').value),
-                college_email: document.getElementById('college-email').value.trim(),
-                is_college_email_verified: isCollegeEmailVerified || false
-            };
-        } else if (designationType === 'faculty') {
+
+    // First create base student data
+    formData = {
+        ...formData,
+        registration_no: document.getElementById('registration-no').value.trim(),
+        program: document.getElementById('program').value,
+        department: document.getElementById('department').value,
+        current_year: parseInt(document.getElementById('current-year').value),
+        graduation_year: parseInt(document.getElementById('graduation-year').value)
+    };
+
+    // Now handle optional college email
+    const collegeEmailValue = document.getElementById('college-email').value.trim();
+
+    // Only add email fields if user actually entered it
+    if (collegeEmailValue.length > 0) {
+        formData.college_email = collegeEmailValue;
+        formData.is_college_email_verified = isCollegeEmailVerified === true;
+    }
+}
+ else if (designationType === 'faculty') {
             formData = {
                 ...formData,
                 faculty_id: document.getElementById('faculty-id').value.trim(),
