@@ -718,6 +718,7 @@ if (designationOptions.length > 0) {
         });
 
         // Show selected form + restore required fields
+
         const targetForm = document.getElementById(`${optionType}-form`);
         if (targetForm) {
             targetForm.classList.remove('hidden');
@@ -977,11 +978,7 @@ function validateDesignationForm() {
     return null;
 }
 
-collegeEmailInput.addEventListener("input", () => {
-    if (collegeEmailInput.value.trim() === "") {
-        otpVerificationSection.classList.add("hidden");
-    }
-});
+
 
 
 function validateGeneralProfileForm() {
@@ -1368,7 +1365,11 @@ async function sendCollegeOTP(email) {
         return { success: false, message: "Failed to send OTP" };
     }
 }
-
+collegeEmailInput.addEventListener("input", () => {
+    if (collegeEmailInput.value.trim() === "") {
+        otpVerificationSection.classList.add("hidden");
+    }
+});
 
 async function verifyCollegeOTP(email, otp) {
     try {
