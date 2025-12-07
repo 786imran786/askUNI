@@ -709,9 +709,12 @@ if (designationOptions.length > 0) {
         designationForms.forEach(form => {
             form.classList.add('hidden');
             form.querySelectorAll('[required]').forEach(input => {
-                input.dataset.wasRequired = "true";
-                input.removeAttribute('required');
-            });
+    if (input.id !== 'college-email') {   // 🚀 do NOT touch email
+        input.dataset.wasRequired = "true";
+        input.removeAttribute('required');
+    }
+});
+
         });
 
         // Show selected form + restore required fields
@@ -719,8 +722,11 @@ if (designationOptions.length > 0) {
         if (targetForm) {
             targetForm.classList.remove('hidden');
             targetForm.querySelectorAll('[data-was-required="true"]').forEach(input => {
-                input.setAttribute('required', 'required');
-            });
+    if (input.id !== 'college-email') {   // 🚀 skip email field
+        input.setAttribute('required', 'required');
+    }
+});
+
         }
     });
 });
