@@ -24,7 +24,7 @@ async function initializePage() {
 
 async function loadQuestions() {
     try {
-        const response = await fetch('http://127.0.0.1:5000/api/questions', {
+        const response = await fetch('https://askunibackend.onrender.com/api/questions', {
             headers: {
                 'Authorization': `Bearer ${getToken()}`
             }
@@ -51,7 +51,7 @@ async function loadQuestions() {
 
 async function loadPopularTags() {
     try {
-        const response = await fetch('http://127.0.0.1:5000/api/tags');
+        const response = await fetch('https://askunibackend.onrender.com/api/tags');
         const data = await response.json();
 
         if (data.success && data.tags) {
@@ -169,7 +169,7 @@ async function toggleAnswers(questionId) {
 
 async function loadAnswers(questionId) {
     try {
-        const response = await fetch(`http://127.0.0.1:5000/api/questions/${questionId}`, {
+        const response = await fetch(`https://askunibackend.onrender.com/api/questions/${questionId}`, {
             headers: {
                 'Authorization': `Bearer ${getToken()}`
             }
@@ -229,7 +229,7 @@ async function handleVote(targetType, targetId, voteType) {
             return;
         }
 
-        const response = await fetch('http://127.0.0.1:5000/api/vote', {
+        const response = await fetch('https://askunibackend.onrender.com/api/vote', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -278,7 +278,7 @@ async function submitAnswer(event, questionId) {
             return;
         }
 
-        const response = await fetch(`http://127.0.0.1:5000/api/questions/${questionId}/answers`, {
+        const response = await fetch(`https://askunibackend.onrender.com/api/questions/${questionId}/answers`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -318,7 +318,7 @@ document.getElementById('askQuestionForm')?.addEventListener('submit', async fun
             return;
         }
 
-        const response = await fetch('http://127.0.0.1:5000/api/questions', {
+        const response = await fetch('https://askunibackend.onrender.com/api/questions', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
