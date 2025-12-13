@@ -303,13 +303,24 @@ async function submitAnswer(event, questionId) {
     }
 }
 
-// Ask Question form submission
-document.getElementById('askQuestionForm')?.addEventListener('submit', async function (e) {
+// ===============================
+// ASK QUESTION
+// ===============================
+document.getElementById('askQuestionForm')?.addEventListener('submit', async e => {
     e.preventDefault();
 
-    const title = document.getElementById('questionTitle').value;
-    const details = document.getElementById('questionDetails').value;
-    const tags = document.getElementById('questionTags').value.split(',').map(tag => tag.trim()).filter(tag => tag);
+    const titleInput = document.getElementById('questionTitle');
+    const detailsInput = document.getElementById('questionDetails');
+    const tagsInput = document.getElementById('questionTags');
+
+    const title = titleInput?.value;
+    const content = detailsInput?.value;
+    const tags = tagsInput?.value.split(',').map(t => t.trim()).filter(Boolean);
+
+    if (!title || !content) {
+        alert('Please fill in title and details');
+        return;
+    }
 
     try {
         const token = getToken();
@@ -318,32 +329,31 @@ document.getElementById('askQuestionForm')?.addEventListener('submit', async fun
             return;
         }
 
-        const response = await fetch('https://askunibackend.onrender.com/api/questions', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify({
-                title,
-                content: details,
-                tags
-            })
-        });
+        const res = await fetch(
+            'https://askunibackend.onrender.com/api/questions',
+            {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ title, content, tags })
+            }
+        );
 
-        const data = await response.json();
-
+        const data = await res.json();
         if (data.success) {
-            alert('Question posted successfully!');
+            // Close modal
             closeAskModal();
-            // Reload questions
-            await loadQuestions();
+            e.target.reset(); // Reset form
+            loadQuestions();
+            alert('Question posted successfully!');
         } else {
-            alert(data.message || 'Failed to post question');
+            alert(data.message || 'Error posting question');
         }
-    } catch (error) {
-        console.error('Error posting question:', error);
-        alert('Failed to post question. Please try again.');
+    } catch (err) {
+        console.error(err);
+        alert('Failed to connect to server');
     }
 });
 
@@ -390,3 +400,256 @@ function filterByTag(tagName) {
 
 // Keep all your existing functions (adjustViewport, detectTouchDevice, etc.)
 // ... rest of your existing JavaScript code ...
+
+async function initializePage() {
+    const savedTheme = localStorage.getItem('collegeQATheme');
+    if (savedTheme === 'dark') {
+        document.body.classList.add('dark-mode');
+        const desktopThemeToggle = document.getElementById('themeToggleHeader');
+        const mobileThemeToggle = document.getElementById('themeToggleHeaderMobile');
+        if (desktopThemeToggle) desktopThemeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+        if (mobileThemeToggle) mobileThemeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+    }
+
+    adjustViewport();
+    detectTouchDevice();
+    adjustForScreenHeight();
+
+    await showWelcomeMessage();
+}
+
+async function showWelcomeMessage() {
+    return new Promise(resolve => {
+        setTimeout(() => {
+            console.log("College Q&A Forum loaded successfully!");
+            resolve();
+        }, 500);
+    });
+}
+
+// Viewport meta tag adjustment for mobile
+function adjustViewport() {
+    const viewport = document.querySelector('meta[name="viewport"]');
+    if (viewport) {
+        // For mobile devices, ensure proper scaling
+        if (window.innerWidth <= 767) {
+            viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes');
+        } else {
+            viewport.setAttribute('content', 'width=device-width, initial-scale=1.0');
+        }
+    }
+}
+
+// Touch device detection and enhancements
+function detectTouchDevice() {
+    if ('ontouchstart' in window || navigator.maxTouchPoints) {
+        document.body.classList.add('touch-device');
+
+        // Increase tap target sizes for mobile
+        const smallElements = document.querySelectorAll('.tag, .vote-btn, .comment-btn, .profile-link');
+        smallElements.forEach(el => {
+            el.style.minHeight = '44px';
+            el.style.minWidth = '44px';
+            el.style.display = 'inline-flex';
+            el.style.alignItems = 'center';
+            el.style.justifyContent = 'center';
+        });
+    } else {
+        document.body.classList.add('no-touch-device');
+    }
+}
+
+// Adjust layout based on available screen height
+function adjustForScreenHeight() {
+    const vh = window.innerHeight * 0.01;
+    document.documentElement.style.setProperty('--vh', `${vh}px`);
+
+    // Adjust questions container height on mobile landscape
+    if (window.innerWidth <= 767 && window.innerHeight < 500) {
+        document.querySelector('.div4').style.maxHeight = 'calc(var(--vh, 1vh) * 60)';
+        document.querySelector('.div4').style.overflowY = 'auto';
+    } else {
+        const div4 = document.querySelector('.div4');
+        if (div4) {
+            div4.style.maxHeight = 'none';
+            div4.style.overflowY = 'visible';
+        }
+    }
+}
+
+
+
+// Theme toggle
+function toggleTheme() {
+    const body = document.body;
+    const desktopThemeToggle = document.getElementById('themeToggleHeader');
+    const mobileThemeToggle = document.getElementById('themeToggleHeaderMobile');
+    const isDarkMode = body.classList.toggle('dark-mode');
+
+    if (isDarkMode) {
+        if (desktopThemeToggle) desktopThemeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+        if (mobileThemeToggle) mobileThemeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+        localStorage.setItem('collegeQATheme', 'dark');
+    } else {
+        if (desktopThemeToggle) desktopThemeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+        if (mobileThemeToggle) mobileThemeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+        localStorage.setItem('collegeQATheme', 'light');
+    }
+}
+
+
+
+
+
+// Update small text when images selected for answers
+function handleAnswerImageChange(event) {
+    const input = event.currentTarget;
+    const files = input.files ? Array.from(input.files) : [];
+    const answerAttachments = input.closest('.answer-attachments');
+    if (!answerAttachments) return;
+
+    const infoSpan = answerAttachments.querySelector('.answer-file-info');
+    if (!infoSpan) return;
+
+    if (files.length === 0) {
+        infoSpan.textContent = '';
+    } else if (files.length === 1) {
+        infoSpan.textContent = files[0].name;
+    } else {
+        infoSpan.textContent = `${files.length} images selected`;
+    }
+}
+
+// Ask Question modal helpers
+function openAskModal() {
+    document.getElementById('askQuestionModal').classList.remove('hidden');
+}
+
+function closeAskModal() {
+    document.getElementById('askQuestionModal').classList.add('hidden');
+}
+
+function handleAskQuestion() {
+    openAskModal();
+}
+
+function updateQuestionFileInfo() {
+    const imgInput = document.getElementById('questionImages');
+    const fileInput = document.getElementById('questionFiles');
+    const infoSpan = document.getElementById('questionFileInfo');
+
+    const imgs = imgInput.files ? Array.from(imgInput.files) : [];
+    const files = fileInput.files ? Array.from(fileInput.files) : [];
+    const total = imgs.length + files.length;
+
+    if (total === 0) {
+        infoSpan.textContent = '';
+    } else {
+        const parts = [];
+        if (imgs.length) parts.push(`${imgs.length} image(s)`);
+        if (files.length) parts.push(`${files.length} file(s)`);
+        infoSpan.textContent = parts.join(', ') + " selected";
+    }
+}
+
+
+
+// Login / other simple handlers
+
+
+
+
+// Mobile sidebar functions
+function openMobileSidebar() {
+    document.getElementById('mobileSidebar').classList.add('active');
+    document.getElementById('mobileSidebarOverlay').classList.add('active');
+    document.body.style.overflow = 'hidden'; // Prevent scrolling when sidebar is open
+}
+
+function closeMobileSidebar() {
+    document.getElementById('mobileSidebar').classList.remove('active');
+    document.getElementById('mobileSidebarOverlay').classList.remove('active');
+    document.body.style.overflow = ''; // Restore scrolling
+}
+
+// DOMContentLoaded
+document.addEventListener('DOMContentLoaded', () => {
+    initializePage();
+
+    // Theme toggle for both desktop and mobile
+    document.getElementById('themeToggleHeader').addEventListener('click', toggleTheme);
+    document.getElementById('themeToggleHeaderMobile').addEventListener('click', toggleTheme);
+
+    // Voting
+
+
+    // Answer submission
+
+
+    // Image upload for answers
+    document.querySelectorAll('.answer-image-input').forEach(input => {
+        input.addEventListener('change', handleAnswerImageChange);
+    });
+
+    // Ask question buttons (desktop and mobile)
+    document.getElementById('askQuestionBtn').addEventListener('click', handleAskQuestion);
+    document.getElementById('askQuestionBtnMobile').addEventListener('click', handleAskQuestion);
+
+    // Modal controls
+    document.getElementById('closeAskModal').addEventListener('click', closeAskModal);
+    document.getElementById('cancelAskBtn').addEventListener('click', closeAskModal);
+    document.getElementById('askQuestionModal').addEventListener('click', (e) => {
+        if (e.target.id === 'askQuestionModal') closeAskModal();
+    });
+
+
+    document.getElementById('questionImages').addEventListener('change', updateQuestionFileInfo);
+    document.getElementById('questionFiles').addEventListener('change', updateQuestionFileInfo);
+
+
+
+    // Notifications (desktop and mobile)
+    document.getElementById('notificationBtn').addEventListener('click', function () {
+        alert("Notifications panel would open here.");
+    });
+
+    document.getElementById('notificationBtnMobile').addEventListener('click', function () {
+        alert("Notifications panel would open here.");
+    });
+
+    // Tags
+    document.querySelectorAll('.tag').forEach(tag => {
+        tag.addEventListener('click', function () {
+            const tagName = this.textContent;
+            console.log(`Filtering by tag: ${tagName}`);
+        });
+    });
+
+    // Mobile sidebar controls
+    document.getElementById('mobileMenuBtn').addEventListener('click', openMobileSidebar);
+    document.getElementById('closeSidebar').addEventListener('click', closeMobileSidebar);
+    document.getElementById('mobileSidebarOverlay').addEventListener('click', closeMobileSidebar);
+
+    // Add responsive event listeners
+    window.addEventListener('resize', function () {
+        adjustViewport();
+        adjustForScreenHeight();
+    });
+
+    window.addEventListener('orientationchange', function () {
+        setTimeout(function () {
+            adjustViewport();
+            adjustForScreenHeight();
+        }, 100);
+    });
+
+    // Prevent zoom on double-tap for mobile
+    let lastTouchEnd = 0;
+    document.addEventListener('touchend', function (event) {
+        const now = (new Date()).getTime();
+        if (now - lastTouchEnd <= 300) {
+            event.preventDefault();
+        }
+        lastTouchEnd = now;
+    }, false);
+});
