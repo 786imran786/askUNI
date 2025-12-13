@@ -24,17 +24,21 @@ async function initializePage() {
 
 async function loadQuestions() {
     try {
+        console.log("Fetching questions from backend...");
         const response = await fetch('https://askunibackend.onrender.com/api/questions', {
             headers: {
                 'Authorization': `Bearer ${getToken()}`
             }
         });
 
+        console.log("Response status:", response.status);
+
         if (!response.ok) {
-            throw new Error('Failed to load questions');
+            throw new Error(`Failed to load questions: ${response.status} ${response.statusText}`);
         }
 
         const data = await response.json();
+        console.log("Questions data received:", data);
 
         if (data.success) {
             renderQuestions(data.questions);
