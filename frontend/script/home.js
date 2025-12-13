@@ -282,7 +282,10 @@ async function submitAnswer(event, questionId) {
             return;
         }
 
-        const response = await fetch(`https://askunibackend.onrender.com/api/questions/${questionId}/answers`, {
+        const response = await fetch(`https://askunibackend.onrender.com/api/questions/${questionId
+
+
+            }/answers`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -405,22 +408,7 @@ function filterByTag(tagName) {
 // Keep all your existing functions (adjustViewport, detectTouchDevice, etc.)
 // ... rest of your existing JavaScript code ...
 
-async function initializePage() {
-    const savedTheme = localStorage.getItem('collegeQATheme');
-    if (savedTheme === 'dark') {
-        document.body.classList.add('dark-mode');
-        const desktopThemeToggle = document.getElementById('themeToggleHeader');
-        const mobileThemeToggle = document.getElementById('themeToggleHeaderMobile');
-        if (desktopThemeToggle) desktopThemeToggle.innerHTML = '<i class="fas fa-sun"></i>';
-        if (mobileThemeToggle) mobileThemeToggle.innerHTML = '<i class="fas fa-sun"></i>';
-    }
 
-    adjustViewport();
-    detectTouchDevice();
-    adjustForScreenHeight();
-
-    await showWelcomeMessage();
-}
 
 async function showWelcomeMessage() {
     return new Promise(resolve => {
