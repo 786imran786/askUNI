@@ -1,19 +1,278 @@
-<html>
-    <head>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>home - College Platform</title>
-    <link rel="stylesheet" href="style/login_signup_style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/
-5.15.4/css/all.min.css">
-      <meta name="theme-color" content="#1A237E" id="meta-theme-color">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <title>College Q&A Forum</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="script/home.css" , rel="stylesheet">
 </head>
-<body>
-    welcome to college portal home page is where you get all the information about your college, courses, and more.
-    i want to add more content here later.
-    say hi to otp page
-    sjkdhfhbgvh
-    jhgfghbnj
-    </body>
+
+<body class="light-mode">
+    <!-- Mobile Sidebar -->
+    <div class="mobile-sidebar-overlay" id="mobileSidebarOverlay"></div>
+    <div class="mobile-sidebar" id="mobileSidebar">
+        <div class="mobile-sidebar-header">
+            <h3 class="mobile-sidebar-title">Menu</h3>
+            <button class="close-sidebar" id="closeSidebar">&times;</button>
+        </div>
+
+        <!-- Profile in sidebar -->
+        <div class="div3 mobile-sidebar-profile">
+            <h3 class="profile-title">Your Profile</h3>
+            <div class="profile-info">
+                <div class="profile-avatar">
+                    <i class="fas fa-user-graduate"></i>
+                </div>
+                <div class="profile-name">Student User</div>
+                <div class="profile-status">Computer Science, 3rd Year</div>
+                <div class="profile-stats">
+
+                </div>
+            </div>
+            <div class="profile-links">
+                <a href="#" class="profile-link"><i class="fas fa-user-circle"></i> View Profile</a>
+                <a href="#" class="profile-link"><i class="fas fa-cog"></i> Account Settings</a>
+                <a href="#" class="profile-link" id="loginLinkMobile"><i class="fas fa-sign-in-alt"></i> Login / Sign
+                    Up</a>
+                <ul class="nav-links">
+                    <li><a href="#"><span class="nav-icon"><i class="fas fa-home"></i></span> Home</a></li>
+                    <li><a href="#"><span class="nav-icon"><i class="fas fa-question-circle"></i></span> My
+                            Questions</a></li>
+                    <li><a href="#"><span class="nav-icon"><i class="fas fa-comments"></i></span> My Answers</a></li>
+                    <li><a href="#"><span class="nav-icon"><i class="fas fa-book"></i></span> Courses</a></li>
+                    <li><a href="#"><span class="nav-icon"><i class="fas fa-calendar-alt"></i></span> Events</a></li>
+                    <li><a href="#"><span class="nav-icon"><i class="fas fa-graduation-cap"></i></span> Resources</a>
+                    </li>
+                    <li><a href="#"><span class="nav-icon"><i class="fas fa-chart-line"></i></span> Rankings</a></li>
+                </ul>
+            </div>
+        </div>
+
+
+    </div>
+
+    <div class="parent">
+        <!-- Header -->
+        <div class="div1">
+            <!-- Desktop Header -->
+            <div class="desktop-header">
+                <div class="logo-container">
+                    <div class="logo">CQ</div>
+                    <div class="site-name">College Q&A</div>
+                </div>
+
+                <div class="search-container">
+                    <form action="/search" method="GET">
+                        <input type="text" name="q" class="search-bar"
+                            placeholder="Search questions, courses, or topics...">
+                    </form>
+                </div>
+
+                <!-- Desktop right side -->
+                <div class="header-right">
+                    <button class="btn btn-primary" id="askQuestionBtn">
+                        <i class="fas fa-plus-circle"></i> Ask Question
+                    </button>
+                    <div class="notification-container">
+                        <button class="icon-btn" id="notificationBtn">
+                            <i class="fas fa-bell"></i>
+                        </button>
+                        <span class="notification-badge">3</span>
+                    </div>
+                    <button class="theme-toggle-header" id="themeToggleHeader">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Mobile Header -->
+            <div class="mobile-header">
+                <div class="mobile-header-top">
+                    <div class="mobile-header-left">
+                        <div class="logo-container">
+                            <div class="logo">CQ</div>
+                            <div class="site-name">College Q&A</div>
+                        </div>
+                    </div>
+
+                    <div class="mobile-header-right">
+                        <button class="btn btn-primary" id="askQuestionBtnMobile">
+                            <i class="fas fa-plus-circle"></i> Ask
+                        </button>
+                        <div class="notification-container">
+                            <button class="icon-btn" id="notificationBtnMobile">
+                                <i class="fas fa-bell"></i>
+                            </button>
+                            <span class="notification-badge">3</span>
+                        </div>
+                        <button class="theme-toggle-header" id="themeToggleHeaderMobile">
+                            <i class="fas fa-moon"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="mobile-search-container">
+                    <div class="mobile-search-wrapper">
+                        <button class="mobile-menu-btn" id="mobileMenuBtn">
+                            <i class="fas fa-bars"></i>
+                        </button>
+                        <form action="/search" method="GET" style="flex: 1;">
+                            <input type="text" name="q" class="search-bar"
+                                placeholder="Search questions, courses, or topics...">
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Layout -->
+        <div class="layout">
+            <!-- LEFT: Navigation + Popular Tags (Hidden on mobile) -->
+            <div class="left-column">
+                <div class="div2">
+                    <h3 class="nav-title">Navigation</h3>
+                    <ul class="nav-links">
+                        <li><a href="#"><span class="nav-icon"><i class="fas fa-home"></i></span> Home</a></li>
+                        <li><a href="#"><span class="nav-icon"><i class="fas fa-question-circle"></i></span> My
+                                Questions</a></li>
+                        <li><a href="#"><span class="nav-icon"><i class="fas fa-comments"></i></span> My Answers</a>
+                        </li>
+                        <li><a href="#"><span class="nav-icon"><i class="fas fa-book"></i></span> Courses</a></li>
+                        <li><a href="#"><span class="nav-icon"><i class="fas fa-calendar-alt"></i></span> Events</a>
+                        </li>
+                        <li><a href="#"><span class="nav-icon"><i class="fas fa-graduation-cap"></i></span>
+                                Resources</a></li>
+                        <li><a href="#"><span class="nav-icon"><i class="fas fa-chart-line"></i></span> Rankings</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="div5">
+                    <h3 class="tags-title">Popular Tags</h3>
+                    <div class="tags-container">
+                        <span class="tag">Computer Science</span>
+                        <span class="tag">Mathematics</span>
+                        <span class="tag">Engineering</span>
+                        <span class="tag">Physics</span>
+                        <span class="tag">Calculus</span>
+                        <span class="tag">Programming</span>
+                        <span class="tag">Data Structures</span>
+                        <span class="tag">Algorithms</span>
+                        <span class="tag">Chemistry</span>
+                        <span class="tag">Biology</span>
+                        <span class="tag">Economics</span>
+                        <span class="tag">Literature</span>
+                        <span class="tag">Psychology</span>
+                        <span class="tag">Statistics</span>
+                        <span class="tag">Linear Algebra</span>
+                        <span class="tag">Database</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MIDDLE: Q&A (Main content on mobile) -->
+            <!-- MIDDLE: Q&A (Main content on mobile) -->
+            <div class="middle-column">
+                <div class="div4">
+                    <!-- Questions will be loaded dynamically here -->
+                </div>
+            </div>
+            <!-- RIGHT: Profile + Notifications (Hidden on mobile) -->
+            <div class="right-column">
+                <div class="div3">
+                    <h3 class="profile-title">Your Profile</h3>
+                    <div class="profile-info">
+                        <div class="profile-avatar">
+                            <i class="fas fa-user-graduate"></i>
+                        </div>
+                        <div class="profile-name">Student User</div>
+                        <div class="profile-status">Computer Science, 3rd Year</div>
+                        <div class="profile-stats">
+
+                        </div>
+                    </div>
+                    <div class="profile-links">
+                        <a href="#" class="profile-link"><i class="fas fa-user-circle"></i> View Profile</a>
+                        <a href="#" class="profile-link"><i class="fas fa-cog"></i> Account Settings</a>
+                        <a href="#" class="profile-link" id="loginLink"><i class="fas fa-sign-in-alt"></i> Login / Sign
+                            Up</a>
+                    </div>
+                </div>
+
+                <div class="div6">
+                    <h3 class="notifications-title">Recent Notifications</h3>
+                    <div class="notification-item unread">
+                        <div class="notification-title">New answer to your question</div>
+                        <div class="notification-content">Prof. Rodriguez answered your question about calculus
+                            integration.</div>
+                        <div class="notification-time">10 minutes ago</div>
+                    </div>
+                    <div class="notification-item unread">
+                        <div class="notification-title">Your answer was upvoted</div>
+                        <div class="notification-content">Maria Chen upvoted your answer on Python resources.</div>
+                        <div class="notification-time">2 hours ago</div>
+                    </div>
+                    <div class="notification-item">
+                        <div class="notification-title">New relevant question</div>
+                        <div class="notification-content">"How to implement binary trees in Python?" might interest you.
+                        </div>
+                        <div class="notification-time">5 hours ago</div>
+                    </div>
+                    <div class="notification-item">
+                        <div class="notification-title">Study group invitation</div>
+                        <div class="notification-content">You've been invited to join "Advanced Algorithms Study Group".
+                        </div>
+                        <div class="notification-time">1 day ago</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ask Question Modal -->
+    <div id="askQuestionModal" class="modal-overlay hidden">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Ask a Question</h2>
+                <button class="modal-close" id="closeAskModal">&times;</button>
+            </div>
+            <form id="askQuestionForm" method="POST" action="/ask-question" enctype="multipart/form-data">
+                <div class="modal-body">
+                    <label class="modal-label" for="questionTitle">Title</label>
+                    <input type="text" id="questionTitle" name="title" class="modal-input"
+                        placeholder="What's your question? Be specific.">
+
+                    <label class="modal-label" for="questionDetails">Details</label>
+                    <textarea id="questionDetails" name="details" class="modal-textarea"
+                        placeholder="Provide more details about your question..."></textarea>
+
+                    <label class="modal-label" for="questionTags">Tags</label>
+                    <input type="text" id="questionTags" name="tags" class="modal-input"
+                        placeholder="Add tags separated by comma (e.g., admission, fees, hostel)">
+
+                    <label class="modal-label">Attachments</label>
+                    <div class="modal-attachments">
+                        <label class="file-label">
+                            <i class="fas fa-image"></i> Add Image
+                            <input type="file" id="questionImages" name="images" accept="image/*" multiple>
+                        </label>
+                        <label class="file-label">
+                            <i class="fas fa-paperclip"></i> Attach File
+                            <input type="file" id="questionFiles" name="files" multiple>
+                        </label>
+                        <span class="file-info" id="questionFileInfo"></span>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn" id="cancelAskBtn">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Post Question</button>
+                </div>
+            </form>
+        </div>
+    </div>
     <script src="script/home.js"></script>
-    </html>
+</body>
+
+</html>
