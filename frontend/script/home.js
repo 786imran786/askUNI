@@ -225,11 +225,37 @@ async function loadAnswers(questionId) {
     }
 }
 
+// Custom Alert Function
+function showCustomAlert(message) {
+    const alertOverlay = document.getElementById('customAlert');
+    const alertMessage = document.getElementById('customAlertMessage');
+    const alertBtn = document.getElementById('customAlertBtn');
+
+    if (alertOverlay && alertMessage) {
+        alertMessage.textContent = message;
+        alertOverlay.classList.add('active');
+
+        alertBtn.onclick = function () {
+            alertOverlay.classList.remove('active');
+        };
+
+        // Close on overlay click
+        alertOverlay.onclick = function (e) {
+            if (e.target === alertOverlay) {
+                alertOverlay.classList.remove('active');
+            }
+        };
+    } else {
+        // Fallback
+        alert(message);
+    }
+}
+
 async function handleVote(targetType, targetId, voteType) {
     try {
         const token = getToken();
         if (!token) {
-            alert('Please login to vote');
+            showCustomAlert('Please login to vote');
             return;
         }
 
@@ -256,11 +282,11 @@ async function handleVote(targetType, targetId, voteType) {
             if (upvoteCount) upvoteCount.textContent = data.upvotes;
             if (downvoteCount) downvoteCount.textContent = data.downvotes;
         } else {
-            alert(data.message || 'Failed to record vote');
+            showCustomAlert(data.message || 'Failed to record vote');
         }
     } catch (error) {
         console.error('Error voting:', error);
-        alert('Failed to record vote. Please try again.');
+        showCustomAlert('Failed to record vote. Please try again.');
     }
 }
 
@@ -268,45 +294,66 @@ async function submitAnswer(event, questionId) {
     event.preventDefault();
 
     const form = event.target;
+    // Capture content and files
     const content = form.answer_content.value;
+    const imageInput = form.querySelector('input[name="answer_images"]');
+    // If you have a separate file input for generic files, capture it too:
+    // const fileInput = form.querySelector('input[name="answer_files"]'); 
 
     if (!content.trim()) {
-        alert('Please enter your answer');
+        showCustomAlert('Please enter your answer');
         return;
     }
 
     try {
         const token = getToken();
         if (!token) {
-            alert('Please login to post an answer');
+            showCustomAlert('Please login to post an answer');
             return;
         }
 
-        const response = await fetch(`https://askunibackend.onrender.com/api/questions/${questionId
+        const formData = new FormData();
+        formData.append('content', content);
 
+        if (imageInput && imageInput.files.length > 0) {
+            for (let i = 0; i < imageInput.files.length; i++) {
+                formData.append('images', imageInput.files[i]);
+            }
+        }
 
-            }/answers`, {
+        /* 
+        if (fileInput && fileInput.files.length > 0) {
+            for (let i = 0; i < fileInput.files.length; i++) {
+                formData.append('files', fileInput.files[i]);
+            }
+        }
+        */
+
+        const response = await fetch(`https://askunibackend.onrender.com/api/questions/${questionId}/answers`, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
+                // 'Content-Type': 'application/json', <--- REMOVED
                 'Authorization': `Bearer ${token}`
             },
-            body: JSON.stringify({ content })
+            body: formData // Using FormData
         });
 
         const data = await response.json();
 
         if (data.success) {
             form.reset();
-            alert('Answer posted successfully!');
-            // Reload answers
+            // Clear file info text if present
+            const infoSpan = form.querySelector('.answer-file-info');
+            if (infoSpan) infoSpan.textContent = '';
+
+            // alert('Answer posted successfully!');
             await loadAnswers(questionId);
         } else {
-            alert(data.message || 'Failed to post answer');
+            showCustomAlert(data.message || 'Failed to post answer');
         }
     } catch (error) {
         console.error('Error posting answer:', error);
-        alert('Failed to post answer. Please try again.');
+        showCustomAlert('Failed to post answer. Please try again.');
     }
 }
 
@@ -319,21 +366,47 @@ document.getElementById('askQuestionForm')?.addEventListener('submit', async e =
     const titleInput = document.getElementById('questionTitle');
     const detailsInput = document.getElementById('questionDetails');
     const tagsInput = document.getElementById('questionTags');
+    const imageInput = document.getElementById('questionImages');
+    const fileInput = document.getElementById('questionFiles');
 
     const title = titleInput?.value;
     const content = detailsInput?.value;
-    const tags = tagsInput?.value.split(',').map(t => t.trim()).filter(Boolean);
+    const tags = tagsInput?.value;
 
     if (!title || !content) {
-        alert('Please fill in title and details');
+        showCustomAlert('Please fill in title and details');
         return;
     }
 
     try {
         const token = getToken();
         if (!token) {
-            alert('Please login to ask a question');
+            showCustomAlert('Please login to ask a question');
             return;
+        }
+
+        const formData = new FormData();
+        formData.append('title', title);
+        formData.append('content', content);
+        if (tags) {
+            // Backend likely expects a comma-separated string or multiple values. 
+            // If backend expects JSON string for tags:
+            // formData.append('tags', JSON.stringify(tags.split(',').map(t => t.trim()).filter(Boolean)));
+            // But usually for multipart, straight text or array is better. 
+            // Let's assume backend parses 'tags' string.
+            formData.append('tags', tags);
+        }
+
+        if (imageInput && imageInput.files.length > 0) {
+            for (let i = 0; i < imageInput.files.length; i++) {
+                formData.append('images', imageInput.files[i]);
+            }
+        }
+
+        if (fileInput && fileInput.files.length > 0) {
+            for (let i = 0; i < fileInput.files.length; i++) {
+                formData.append('files', fileInput.files[i]);
+            }
         }
 
         const res = await fetch(
@@ -341,10 +414,10 @@ document.getElementById('askQuestionForm')?.addEventListener('submit', async e =
             {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
+                    // 'Content-Type': 'application/json', <-- REMOVED
                     'Authorization': `Bearer ${token}`
                 },
-                body: JSON.stringify({ title, content, tags })
+                body: formData // Using FormData
             }
         );
 
@@ -353,14 +426,18 @@ document.getElementById('askQuestionForm')?.addEventListener('submit', async e =
             // Close modal
             closeAskModal();
             e.target.reset(); // Reset form
+            // Clear file info
+            const fileInfo = document.getElementById('fileInfo');
+            if (fileInfo) fileInfo.textContent = '';
+
             loadQuestions();
-            alert('Question posted successfully!');
+            // alert('Question posted successfully!'); 
         } else {
-            alert(data.message || 'Error posting question');
+            showCustomAlert(data.message || 'Error posting question');
         }
     } catch (err) {
         console.error(err);
-        alert('Failed to connect to server');
+        showCustomAlert('Failed to connect to server');
     }
 });
 

@@ -59,8 +59,8 @@
             <!-- Desktop Header -->
             <div class="desktop-header">
                 <div class="logo-container">
-                    <div class="logo">CQ</div>
-                    <div class="site-name">College Q&A</div>
+                    <div class="logo"><img id="modelogo" src="media/logo.png" style="height:100px"></div>
+                    <div class="site-name">askUNI</div>
                 </div>
 
                 <div class="search-container">
@@ -278,6 +278,18 @@
             </form>
         </div>
     </div>
+
+    <!-- Custom Alert Modal -->
+    <div class="custom-alert-overlay" id="customAlert">
+        <div class="custom-alert-box">
+            <div class="custom-alert-icon">
+                <i class="fas fa-info-circle"></i>
+            </div>
+            <div class="custom-alert-message" id="customAlertMessage">Alert message goes here</div>
+            <button class="custom-alert-btn" id="customAlertBtn">OK</button>
+        </div>
+    </div>
+
     <script src="script/home.js"></script>
 </body>
 

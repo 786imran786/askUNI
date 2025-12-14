@@ -188,9 +188,9 @@ body {
 }
 
 .logo {
-    width: 45px;
-    height: 45px;
-    background-color: var(--accent-secondary);
+    width: 30px;
+    height: 30px;
+
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -1489,9 +1489,75 @@ body {
         border: 1px solid #ccc;
     }
 
-    .answer-form,
-    .vote-container .comment-btn,
     .file-label {
         display: none;
     }
+}
+
+/* Custom Alert Modal */
+.custom-alert-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(5px);
+}
+
+.custom-alert-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.custom-alert-box {
+    background-color: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 25px;
+    width: 90%;
+    max-width: 400px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    transform: translateY(20px);
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    text-align: center;
+}
+
+.custom-alert-overlay.active .custom-alert-box {
+    transform: translateY(0);
+}
+
+.custom-alert-icon {
+    font-size: 40px;
+    color: var(--accent-secondary);
+    margin-bottom: 15px;
+}
+
+.custom-alert-message {
+    color: var(--text);
+    font-size: 16px;
+    margin-bottom: 25px;
+    line-height: 1.5;
+}
+
+.custom-alert-btn {
+    background-color: var(--accent-secondary);
+    color: var(--accent);
+    border: none;
+    padding: 10px 25px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+    font-size: 15px;
+}
+
+.custom-alert-btn:hover {
+    background-color: var(--text-heading);
+    color: var(--accent);
+    transform: translateY(-2px);
 }
