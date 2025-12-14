@@ -564,6 +564,25 @@ function closeMobileSidebar() {
     document.body.style.overflow = ''; // Restore scrolling
 }
 
+// Fallback when API fails
+function showFallbackQuestions() {
+    console.warn("Using fallback questions");
+    const fallbackData = [
+        {
+            id: 'demo-1',
+            title: 'Welcome to College Q&A',
+            content: 'We are currently unable to reach the server. This is a demo question to show the layout. Please check your connection or try again later.',
+            author: { full_name: 'System' },
+            created_at: new Date().toISOString(),
+            tags: ['System', 'Offline'],
+            upvotes: 0,
+            downvotes: 0,
+            answer_count: 0
+        }
+    ];
+    renderQuestions(fallbackData);
+}
+
 // DOMContentLoaded
 document.addEventListener('DOMContentLoaded', () => {
     initializePage();
