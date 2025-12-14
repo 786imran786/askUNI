@@ -329,16 +329,38 @@ async function submitAnswer(event, questionId) {
         }
         */
 
-        const response = await fetch(`https://askunibackend.onrender.com/api/questions/${questionId}/answers`, {
+        let response = await fetch(`https://askunibackend.onrender.com/api/questions/${questionId}/answers`, {
             method: 'POST',
             headers: {
-                // 'Content-Type': 'application/json', <--- REMOVED
                 'Authorization': `Bearer ${token}`
             },
-            body: formData // Using FormData
+            body: formData
         });
 
-        const data = await response.json();
+        if (response.status === 415) {
+            console.warn('Backend rejected FormData (415). Retrying with JSON...');
+            response = await fetch(`https://askunibackend.onrender.com/api/questions/${questionId}/answers`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ content })
+            });
+            if (response.ok) {
+                showCustomAlert('Answer posted (Image upload skipped - Backend needs update)');
+            }
+        }
+
+        let data;
+        const contentType = response.headers.get("content-type");
+        if (contentType && contentType.indexOf("application/json") !== -1) {
+            data = await response.json();
+        } else {
+            const text = await response.text();
+            if (!response.ok) throw new Error(`Server error (${response.status}): ${text.slice(0, 100)}`);
+            data = { success: response.ok };
+        }
 
         if (data.success) {
             form.reset();
@@ -409,19 +431,46 @@ document.getElementById('askQuestionForm')?.addEventListener('submit', async e =
             }
         }
 
-        const res = await fetch(
+        let res = await fetch(
             'https://askunibackend.onrender.com/api/questions',
             {
                 method: 'POST',
                 headers: {
-                    // 'Content-Type': 'application/json', <-- REMOVED
                     'Authorization': `Bearer ${token}`
                 },
-                body: formData // Using FormData
+                body: formData
             }
         );
 
-        const data = await res.json();
+        // Fallback for 415 (Unsupported Media Type)
+        if (res.status === 415) {
+            console.warn('Backend rejected FormData (415). Retrying with JSON...');
+            res = await fetch(
+                'https://askunibackend.onrender.com/api/questions',
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ title, content, tags: tags ? tags.split(',').map(t => t.trim()).filter(Boolean) : [] })
+                }
+            );
+
+            if (res.ok) {
+                showCustomAlert('Question posted (Image upload skipped - Backend needs update)');
+            }
+        }
+
+        let data;
+        const contentType = res.headers.get("content-type");
+        if (contentType && contentType.includes("application/json")) {
+            data = await res.json();
+        } else {
+            const text = await res.text();
+            if (!res.ok) throw new Error(`Server error (${res.status}): ${text.slice(0, 100)}`);
+            data = { success: res.ok };
+        }
         if (data.success) {
             // Close modal
             closeAskModal();
