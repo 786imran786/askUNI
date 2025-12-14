@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,6 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style/detail.css">
 </head>
+
 <body>
     <meta name="theme-color" content="#1A237E" id="meta-theme-color">
 
@@ -14,17 +16,17 @@
         <!-- Header -->
         <div class="div1">
             <div class="logo-section">
-                <div >
-                 
+                <div>
+
                 </div>
-              
+
             </div>
-            
+
             <!-- Menu Toggle Button (Mobile) -->
             <button class="menu-toggle" id="menuToggle" aria-label="Toggle sidebar menu" aria-expanded="false">
                 <i class="fas fa-bars" id="menuIcon"></i>
             </button>
-            
+
             <div class="top-controls">
                 <button id="themeToggle" class="theme-toggle" title="Toggle theme" aria-pressed="false">
                     <i id="themeIcon" class="fas fa-moon"></i>
@@ -35,7 +37,7 @@
 
         <!-- Sidebar -->
         <div class="div2">
-            
+
             <div class="profile-picture-container">
                 <div class="profile-picture" id="profile-picture">
                     <i class="fas fa-user"></i>
@@ -78,28 +80,33 @@
                 <div class="form-content">
                     <div class="form-group">
                         <label for="full-name"><i class="fas fa-signature"></i> Full Name *</label>
-                        <input type="text" id="full-name" name="full_name" class="form-control"  placeholder="Enter your full name">
+                        <input type="text" id="full-name" name="full_name" class="form-control"
+                            placeholder="Enter your full name">
                     </div>
                     <div class="form-group">
                         <label for="username"><i class="fas fa-at"></i> Username *</label>
-                        <input type="text" id="username" name="username" class="form-control"  placeholder="Choose a username">
+                        <input type="text" id="username" name="username" class="form-control"
+                            placeholder="Choose a username">
                     </div>
                     <div class="form-group">
                         <label for="email"><i class="fas fa-envelope"></i> Email *</label>
-                        <input type="email" id="email" name="email" class="form-control"  placeholder="Enter your email address">
+                        <input type="email" id="email" name="email" class="form-control"
+                            placeholder="Enter your email address">
                     </div>
                     <div class="form-group">
                         <label for="phone"><i class="fas fa-phone"></i> Phone No. (Optional)</label>
-                        <input type="tel" id="phone" name="phone" class="form-control" placeholder="Enter your phone number">
+                        <input type="tel" id="phone" name="phone" class="form-control"
+                            placeholder="Enter your phone number">
                     </div>
                     <div class="form-row">
                         <div class="form-group">
                             <label for="age"><i class="fas fa-birthday-cake"></i> Age *</label>
-                            <input type="number" id="age" name="age" class="form-control"  min="1" max="120" placeholder="Your age">
+                            <input type="number" id="age" name="age" class="form-control" min="1" max="120"
+                                placeholder="Your age">
                         </div>
                         <div class="form-group">
                             <label for="gender"><i class="fas fa-venus-mars"></i> Gender *</label>
-                            <select id="gender" name="gender" class="form-control" >
+                            <select id="gender" name="gender" class="form-control">
                                 <option value="">Select Gender</option>
                                 <option value="male">Male</option>
                                 <option value="female">Female</option>
@@ -145,12 +152,13 @@
                     <div id="student-form" class="designation-form">
                         <div class="form-group">
                             <label for="registration-no"><i class="fas fa-id-card"></i> Registration No. *</label>
-                            <input type="text" id="registration-no" name="registration_no" class="form-control"  placeholder="Enter registration number">
+                            <input type="text" id="registration-no" name="registration_no" class="form-control"
+                                placeholder="Enter registration number">
                         </div>
                         <div class="form-row">
                             <div class="form-group">
                                 <label for="program"><i class="fas fa-graduation-cap"></i> Program *</label>
-                                <select id="program" name="program" class="form-control" >
+                                <select id="program" name="program" class="form-control">
                                     <option value="">Select Program</option>
                                     <option value="btech">B.Tech</option>
                                     <option value="bba">BBA</option>
@@ -160,7 +168,7 @@
                             </div>
                             <div class="form-group">
                                 <label for="department"><i class="fas fa-building"></i> Department *</label>
-                                <select id="department" name="department" class="form-control" >
+                                <select id="department" name="department" class="form-control">
                                     <option value="">Select Department</option>
                                 </select>
                             </div>
@@ -168,33 +176,41 @@
                         <div class="form-row">
                             <div class="form-group">
                                 <label for="current-year"><i class="fas fa-calendar-alt"></i> Current Year *</label>
-                                <input type="number" id="current-year" name="current_year" class="form-control"  min="1" max="5" placeholder="Current year">
+                                <input type="number" id="current-year" name="current_year" class="form-control" min="1"
+                                    max="5" placeholder="Current year">
                             </div>
                             <div class="form-group">
-                                <label for="graduation-year"><i class="fas fa-calendar-check"></i> Graduation Year *</label>
-                                <input type="number" id="graduation-year" name="graduation_year" class="form-control"  min="2000" max="2030" placeholder="Graduation year">
+                                <label for="graduation-year"><i class="fas fa-calendar-check"></i> Graduation Year
+                                    *</label>
+                                <input type="number" id="graduation-year" name="graduation_year" class="form-control"
+                                    min="2000" max="2030" placeholder="Graduation year">
                             </div>
                         </div>
-                        
+
                         <!-- College Email with OTP Verification -->
                         <div class="college-email-section">
-                            <h3 class="section-title"><i class="fas fa-envelope-open-text"></i> College Email Verification</h3>
+                            <h3 class="section-title"><i class="fas fa-envelope-open-text"></i> College Email
+                                Verification</h3>
                             <div class="form-group">
-                                <label for="college-email"><i class="fas fa-university"></i> College Email Address (optional) </label>
+                                <label for="college-email"><i class="fas fa-university"></i> College Email Address
+                                    (optional) </label>
                                 <div class="email-input-group">
-                                    <input type="email" id="college-email" name="college_email" class="form-control"  placeholder="Enter your college email">
+                                    <input type="email" id="college-email" name="college_email" class="form-control"
+                                        placeholder="Enter your college email">
                                     <button type="button" class="btn btn-small" id="send-otp-btn">
                                         <i class="fas fa-paper-plane"></i> <span>Send OTP</span>
                                     </button>
                                 </div>
-                                <small class="form-text">Your college email will be used for official communications</small>
+                                <small class="form-text">Your college email will be used for official
+                                    communications</small>
                             </div>
-                            
+
                             <div class="otp-verification hidden" id="otp-verification">
                                 <div class="form-group">
                                     <label for="otp-code"><i class="fas fa-shield-alt"></i> Enter OTP *</label>
                                     <div class="otp-input-group">
-                                        <input type="text" id="otp-code" name="otp_code" class="form-control" maxlength="6" placeholder="Enter 6-digit OTP">
+                                        <input type="text" id="otp-code" name="otp_code" class="form-control"
+                                            maxlength="6" placeholder="Enter 6-digit OTP">
                                         <div class="otp-timer" id="otp-timer">
                                             <i class="fas fa-clock"></i> <span id="timer">02:00</span>
                                         </div>
@@ -217,44 +233,53 @@
                     <div id="faculty-form" class="designation-form hidden">
                         <div class="form-group">
                             <label for="faculty-id"><i class="fas fa-id-badge"></i> ID *</label>
-                            <input type="text" id="faculty-id" name="faculty_id" class="form-control"  placeholder="Enter faculty ID">
+                            <input type="text" id="faculty-id" name="faculty_id" class="form-control"
+                                placeholder="Enter faculty ID">
                         </div>
                         <div class="form-group">
                             <label for="faculty-department"><i class="fas fa-building"></i> Department *</label>
-                            <input type="text" id="faculty-department" name="faculty_department" class="form-control"  placeholder="Enter department">
+                            <input type="text" id="faculty-department" name="faculty_department" class="form-control"
+                                placeholder="Enter department">
                         </div>
                         <div class="form-group">
                             <label for="post"><i class="fas fa-user-tie"></i> Post *</label>
-                            <input type="text" id="post" name="post" class="form-control"  placeholder="Enter your position">
+                            <input type="text" id="post" name="post" class="form-control"
+                                placeholder="Enter your position">
                         </div>
                         <div class="form-group">
                             <label for="courses-taught"><i class="fas fa-book"></i> Courses Taught *</label>
-                            <input type="text" id="courses-taught" name="courses_taught" class="form-control"  placeholder="Enter courses you teach">
+                            <input type="text" id="courses-taught" name="courses_taught" class="form-control"
+                                placeholder="Enter courses you teach">
                         </div>
                         <div class="form-group">
                             <label for="office-location"><i class="fas fa-map-marker-alt"></i> Office Location *</label>
-                            <input type="text" id="office-location" name="office_location" class="form-control"  placeholder="Enter office location">
+                            <input type="text" id="office-location" name="office_location" class="form-control"
+                                placeholder="Enter office location">
                         </div>
                         <div class="form-group">
                             <label for="experience"><i class="fas fa-clock"></i> Years of Experience *</label>
-                            <input type="number" id="experience" name="experience" class="form-control"  min="0" max="50" placeholder="Years of experience">
+                            <input type="number" id="experience" name="experience" class="form-control" min="0" max="50"
+                                placeholder="Years of experience">
                         </div>
                         <div class="form-group">
                             <label for="research"><i class="fas fa-flask"></i> Research Done (Optional)</label>
-                            <textarea id="research" name="research" class="form-control" rows="3" placeholder="Describe your research"></textarea>
+                            <textarea id="research" name="research" class="form-control" rows="3"
+                                placeholder="Describe your research"></textarea>
                         </div>
                     </div>
 
                     <!-- Alumni Form -->
                     <div id="alumni-form" class="designation-form hidden">
                         <div class="form-group">
-                            <label for="alumni-graduation-year"><i class="fas fa-calendar-check"></i> Graduation Year *</label>
-                            <input type="number" id="alumni-graduation-year" name="graduation_year" class="form-control"  min="2000" max="2030" placeholder="Graduation year">
+                            <label for="alumni-graduation-year"><i class="fas fa-calendar-check"></i> Graduation Year
+                                *</label>
+                            <input type="number" id="alumni-graduation-year" name="graduation_year" class="form-control"
+                                min="2000" max="2030" placeholder="Graduation year">
                         </div>
                         <div class="form-row">
                             <div class="form-group">
                                 <label for="alumni-program"><i class="fas fa-graduation-cap"></i> Program *</label>
-                                <select id="alumni-program" name="program" class="form-control" >
+                                <select id="alumni-program" name="program" class="form-control">
                                     <option value="">Select Program</option>
                                     <option value="btech">B.Tech</option>
                                     <option value="bba">BBA</option>
@@ -264,22 +289,25 @@
                             </div>
                             <div class="form-group">
                                 <label for="alumni-department"><i class="fas fa-building"></i> Department *</label>
-                                <select id="alumni-department" name="department" class="form-control" >
+                                <select id="alumni-department" name="department" class="form-control">
                                     <option value="">Select Department</option>
                                 </select>
                             </div>
                         </div>
                         <div class="form-group">
                             <label for="job-title"><i class="fas fa-user-tie"></i> Current Job Title *</label>
-                            <input type="text" id="job-title" name="job_title" class="form-control"  placeholder="Enter your job title">
+                            <input type="text" id="job-title" name="job_title" class="form-control"
+                                placeholder="Enter your job title">
                         </div>
                         <div class="form-group">
                             <label for="company-name"><i class="fas fa-building"></i> Company Name *</label>
-                            <input type="text" id="company-name" name="company_name" class="form-control"  placeholder="Enter company name">
+                            <input type="text" id="company-name" name="company_name" class="form-control"
+                                placeholder="Enter company name">
                         </div>
                         <div class="form-group">
                             <label for="linkedin"><i class="fab fa-linkedin"></i> LinkedIn Profile</label>
-                            <input type="url" id="linkedin" name="linkedin" class="form-control" placeholder="Enter LinkedIn profile URL">
+                            <input type="url" id="linkedin" name="linkedin" class="form-control"
+                                placeholder="Enter LinkedIn profile URL">
                         </div>
                     </div>
 
@@ -300,29 +328,35 @@
                 <div class="form-content">
                     <div class="form-group">
                         <label for="short-bio"><i class="fas fa-pen"></i> Short Bio *</label>
-                        <textarea id="short-bio" name="short_bio" class="form-control"  rows="4" placeholder="Tell us about yourself"></textarea>
+                        <textarea id="short-bio" name="short_bio" class="form-control" rows="4"
+                            placeholder="Tell us about yourself"></textarea>
                     </div>
                     <div class="form-group">
                         <label for="skills"><i class="fas fa-tools"></i> Skills *</label>
-                        <input type="text" id="skills" name="skills" class="form-control"  placeholder="Add skills separated by commas">
+                        <input type="text" id="skills" name="skills" class="form-control"
+                            placeholder="Add skills separated by commas">
                         <div class="tag-container" id="skills-tags"></div>
                     </div>
                     <div class="form-group">
                         <label for="interests"><i class="fas fa-heart"></i> Interests *</label>
-                        <input type="text" id="interests" name="interests" class="form-control"  placeholder="Add interests separated by commas">
+                        <input type="text" id="interests" name="interests" class="form-control"
+                            placeholder="Add interests separated by commas">
                         <div class="tag-container" id="interests-tags"></div>
                     </div>
                     <div class="form-group">
                         <label for="general-linkedin"><i class="fab fa-linkedin"></i> LinkedIn</label>
-                        <input type="url" id="general-linkedin" name="linkedin" class="form-control" placeholder="Enter LinkedIn profile URL">
+                        <input type="url" id="general-linkedin" name="linkedin" class="form-control"
+                            placeholder="Enter LinkedIn profile URL">
                     </div>
                     <div class="form-group">
                         <label for="github"><i class="fab fa-github"></i> GitHub</label>
-                        <input type="url" id="github" name="github" class="form-control" placeholder="Enter GitHub profile URL">
+                        <input type="url" id="github" name="github" class="form-control"
+                            placeholder="Enter GitHub profile URL">
                     </div>
                     <div class="form-group">
                         <label for="portfolio"><i class="fas fa-globe"></i> Portfolio</label>
-                        <input type="url" id="portfolio" name="portfolio" class="form-control" placeholder="Enter portfolio website URL">
+                        <input type="url" id="portfolio" name="portfolio" class="form-control"
+                            placeholder="Enter portfolio website URL">
                     </div>
                     <div class="btn-group">
                         <button type="submit" class="btn btn-primary" id="general-submit">
@@ -342,7 +376,8 @@
                         <i class="fas fa-check-circle"></i>
                     </div>
                     <h2>Profile Setup Complete!</h2>
-                    <p>Your profile has been successfully created. You can now explore all the features of our platform.</p>
+                    <p>Your profile has been successfully created. You can now explore all the features of our platform.
+                    </p>
                     <div class="btn-group" style="justify-content: center; margin-top: 30px;">
                         <button type="button" class="btn btn-primary" id="view-profile">
                             <i class="fas fa-eye"></i> <span>View Profile</span>
@@ -385,4 +420,5 @@
 
     <script src="script/detail.js"></script>
 </body>
+
 </html>

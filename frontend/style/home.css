@@ -1,29 +1,37 @@
-/* CSS Variables for Themes */
+/* CSS Variables for Light/Dark Themes - BLACK & GREY FUTURISTIC THEME */
 :root {
-    /* Dark mode theme - Navy + Sky Blue */
-    --primary-dark: #0A0F27;
-    --secondary-dark: #151A33;
-    --accent-dark: #303F9F;
-    --accent-secondary-dark: #90CAF9;
-    --text-dark: #E3E9FF;
-    --text-heading-dark: #FFFFFF;
-    --text-muted-dark: #A8B2CC;
-    --border-dark: #262C4A;
-    --surface-dark: #151A33;
-
-    /* Light mode theme - Navy + Sky Blue */
-    --primary-light: #F4F7FA;
+    /* Light mode (Graphite + Soft Grey + Neon Blue Accent) */
+    --primary-light: #F2F3F5;
+    /* soft grey background */
     --secondary-light: #FFFFFF;
-    --accent-light: #1A237E;
-    --accent-secondary-light: #64B5F6;
-    --text-light: #1A1A1A;
-    --text-heading-light: #FFFFFF;
-    --text-muted-light: #666666;
-    --border-light: #D7DFEA;
-    --surface-light: #FFFFFF;
+    /* card bg */
+    --accent-light: #2D2D2D;
+    /* graphite accent */
+    --accent-secondary-light: #1c303f;
+    /* neon blue highlight */
+    --text-light: #111317;
+    --text-heading-light: #ffffff;
+    --text-muted-light: #7A7A7A;
+    --border-light: #000000;
+    --surface-light: #bfbebe;
 
-    /* Default to light mode */
-    --primary: var(--primary-light);
+    /* Dark mode (Black + Steel Grey + Cyan/Blue neon accents) */
+    --primary-dark: #0B0B0D;
+    /* pure black-ish bg */
+    --secondary-dark: #151515;
+    /* deep grey card */
+    --accent-dark: #2F2F2F;
+    /* graphite */
+    --accent-secondary-dark: #00AEEF;
+    /* neon cyan accent (modern AF) */
+    --text-dark: #E6E6E6;
+    --text-heading-dark: #FFFFFF;
+    --text-muted-dark: #9A9A9A;
+    --border-dark: #2A2A2A;
+    --surface-dark: #151515;
+
+    /* Apply light theme by default */
+    --primary: linear-gradient(135deg, #d1d4da 0%, #887777 40%, #d3d3d3 100%);
     --secondary: var(--secondary-light);
     --accent: var(--accent-light);
     --accent-secondary: var(--accent-secondary-light);
@@ -33,13 +41,21 @@
     --border: var(--border-light);
     --surface: var(--surface-light);
 
+    /* Common variables */
+    --borderRadius: 8px;
+    /* detail.css uses --border-radius but home.css might simply use local values. detail.css has --border-radius: 8px. home.css uses 12px often. I will add --border-radius here. */
+    --border-radius: 8px;
+    --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --transition: all 0.3s ease;
+    --success-color: #4caf50;
+
     /* Viewport height for mobile calculations */
     --vh: 1vh;
 }
 
-/* Dark mode class */
-.dark-mode {
-    --primary: var(--primary-dark);
+/* Apply dark theme when dark class is present */
+body.dark {
+    --primary: linear-gradient(135deg, #0b0b0d 0%, #111113 25%, #1a1a1d 50%, #0d0d10 100%);
     --secondary: var(--secondary-dark);
     --accent: var(--accent-dark);
     --accent-secondary: var(--accent-secondary-dark);
@@ -54,16 +70,17 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }
 
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: var(--primary);
+    background: var(--primary) !important;
     color: var(--text);
+    transition: background 0.6s ease;
     line-height: 1.6;
-    overflow-x: hidden;
     min-height: 100vh;
+    overflow-x: hidden;
     min-height: calc(var(--vh, 1vh) * 100);
 }
 

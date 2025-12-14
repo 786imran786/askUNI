@@ -1,8 +1,8 @@
 // Initialize page
 async function initializePage() {
-    const savedTheme = localStorage.getItem('collegeQATheme');
+    const savedTheme = localStorage.getItem('college_portal_theme_v3');
     if (savedTheme === 'dark') {
-        document.body.classList.add('dark-mode');
+        document.body.classList.add('dark');
         const desktopThemeToggle = document.getElementById('themeToggleHeader');
         const mobileThemeToggle = document.getElementById('themeToggleHeaderMobile');
         if (desktopThemeToggle) desktopThemeToggle.innerHTML = '<i class="fas fa-sun"></i>';
@@ -476,16 +476,16 @@ function toggleTheme() {
     const body = document.body;
     const desktopThemeToggle = document.getElementById('themeToggleHeader');
     const mobileThemeToggle = document.getElementById('themeToggleHeaderMobile');
-    const isDarkMode = body.classList.toggle('dark-mode');
+    const isDarkMode = body.classList.toggle('dark');
 
     if (isDarkMode) {
         if (desktopThemeToggle) desktopThemeToggle.innerHTML = '<i class="fas fa-sun"></i>';
         if (mobileThemeToggle) mobileThemeToggle.innerHTML = '<i class="fas fa-sun"></i>';
-        localStorage.setItem('collegeQATheme', 'dark');
+        localStorage.setItem('college_portal_theme_v3', 'dark');
     } else {
         if (desktopThemeToggle) desktopThemeToggle.innerHTML = '<i class="fas fa-moon"></i>';
         if (mobileThemeToggle) mobileThemeToggle.innerHTML = '<i class="fas fa-moon"></i>';
-        localStorage.setItem('collegeQATheme', 'light');
+        localStorage.setItem('college_portal_theme_v3', 'light');
     }
 }
 
