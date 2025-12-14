@@ -312,34 +312,64 @@ async function submitAnswer(event, questionId) {
             return;
         }
 
-        const formData = new FormData();
-        formData.append('content', content);
+        const hasImages = imageInput && imageInput.files.length > 0;
+        // const hasFiles = fileInput && fileInput.files.length > 0;
+        const hasFiles = false; // Set to true if you enable fileInput
 
-        if (imageInput && imageInput.files.length > 0) {
-            for (let i = 0; i < imageInput.files.length; i++) {
-                formData.append('images', imageInput.files[i]);
+        if (hasImages || hasFiles) {
+            // Send as FormData (Multipart)
+            const formData = new FormData();
+            formData.append('content', content);
+
+            if (hasImages) {
+                for (let i = 0; i < imageInput.files.length; i++) {
+                    formData.append('images', imageInput.files[i]);
+                }
             }
-        }
 
-        /* 
-        if (fileInput && fileInput.files.length > 0) {
-            for (let i = 0; i < fileInput.files.length; i++) {
-                formData.append('files', fileInput.files[i]);
+            /*
+            if (hasFiles) {
+                for (let i = 0; i < fileInput.files.length; i++) {
+                    formData.append('files', fileInput.files[i]);
+                }
             }
-        }
-        */
+            */
 
-        let response = await fetch(`https://askunibackend.onrender.com/api/questions/${questionId}/answers`, {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${token}`
-            },
-            body: formData
-        });
+            let response = await fetch(`https://askunibackend.onrender.com/api/questions/${questionId}/answers`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                },
+                body: formData
+            });
 
-        if (response.status === 415) {
-            console.warn('Backend rejected FormData (415). Retrying with JSON...');
-            response = await fetch(`https://askunibackend.onrender.com/api/questions/${questionId}/answers`, {
+            if (response.status === 415) {
+                console.warn('Backend rejected FormData (415). Retrying with JSON...');
+                // Retry with JSON
+                response = await fetch(`https://askunibackend.onrender.com/api/questions/${questionId}/answers`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ content })
+                });
+
+                if (response.ok) {
+                    showCustomAlert('Answer posted (Image upload skipped - Backend needs update)');
+                }
+            }
+
+            // Assign response for downstream processing
+            // (We need to declare 'response' outside or handle it here. 
+            // The original code assigned to 'let response'. 
+            // Here we can just use a shared logic or return the response.)
+
+            // To minimize code changes, I will structure this so 'response' is available below.
+            var fetchResponse = response;
+        } else {
+            // No files - Send as JSON directly
+            var fetchResponse = await fetch(`https://askunibackend.onrender.com/api/questions/${questionId}/answers`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -347,10 +377,9 @@ async function submitAnswer(event, questionId) {
                 },
                 body: JSON.stringify({ content })
             });
-            if (response.ok) {
-                showCustomAlert('Answer posted (Image upload skipped - Backend needs update)');
-            }
         }
+
+        let response = fetchResponse;
 
         let data;
         const contentType = response.headers.get("content-type");
@@ -407,44 +436,62 @@ document.getElementById('askQuestionForm')?.addEventListener('submit', async e =
             return;
         }
 
-        const formData = new FormData();
-        formData.append('title', title);
-        formData.append('content', content);
-        if (tags) {
-            // Backend likely expects a comma-separated string or multiple values. 
-            // If backend expects JSON string for tags:
-            // formData.append('tags', JSON.stringify(tags.split(',').map(t => t.trim()).filter(Boolean)));
-            // But usually for multipart, straight text or array is better. 
-            // Let's assume backend parses 'tags' string.
-            formData.append('tags', tags);
-        }
+        const hasImages = imageInput && imageInput.files.length > 0;
+        const hasFiles = fileInput && fileInput.files.length > 0;
+        let res;
 
-        if (imageInput && imageInput.files.length > 0) {
-            for (let i = 0; i < imageInput.files.length; i++) {
-                formData.append('images', imageInput.files[i]);
+        if (hasImages || hasFiles) {
+            const formData = new FormData();
+            formData.append('title', title);
+            formData.append('content', content);
+            if (tags) {
+                formData.append('tags', tags);
             }
-        }
 
-        if (fileInput && fileInput.files.length > 0) {
-            for (let i = 0; i < fileInput.files.length; i++) {
-                formData.append('files', fileInput.files[i]);
+            if (hasImages) {
+                for (let i = 0; i < imageInput.files.length; i++) {
+                    formData.append('images', imageInput.files[i]);
+                }
             }
-        }
 
-        let res = await fetch(
-            'https://askunibackend.onrender.com/api/questions',
-            {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                },
-                body: formData
+            if (hasFiles) {
+                for (let i = 0; i < fileInput.files.length; i++) {
+                    formData.append('files', fileInput.files[i]);
+                }
             }
-        );
 
-        // Fallback for 415 (Unsupported Media Type)
-        if (res.status === 415) {
-            console.warn('Backend rejected FormData (415). Retrying with JSON...');
+            res = await fetch(
+                'https://askunibackend.onrender.com/api/questions',
+                {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: formData
+                }
+            );
+
+            // Fallback for 415 (Unsupported Media Type)
+            if (res.status === 415) {
+                console.warn('Backend rejected FormData (415). Retrying with JSON...');
+                res = await fetch(
+                    'https://askunibackend.onrender.com/api/questions',
+                    {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify({ title, content, tags: tags ? tags.split(',').map(t => t.trim()).filter(Boolean) : [] })
+                    }
+                );
+
+                if (res.ok) {
+                    showCustomAlert('Question posted (Image upload skipped - Backend needs update)');
+                }
+            }
+        } else {
+            // Send as JSON directly
             res = await fetch(
                 'https://askunibackend.onrender.com/api/questions',
                 {
@@ -456,10 +503,6 @@ document.getElementById('askQuestionForm')?.addEventListener('submit', async e =
                     body: JSON.stringify({ title, content, tags: tags ? tags.split(',').map(t => t.trim()).filter(Boolean) : [] })
                 }
             );
-
-            if (res.ok) {
-                showCustomAlert('Question posted (Image upload skipped - Backend needs update)');
-            }
         }
 
         let data;
