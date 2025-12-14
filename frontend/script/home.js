@@ -116,6 +116,11 @@ function createQuestionElement(question) {
         </div>
         <h3 class="question-title">${escapeHtml(question.title)}</h3>
         <div class="question-content">${escapeHtml(question.content)}</div>
+        ${question.images && question.images.length > 0 ? `
+            <div class="question-images" style="margin-top: 10px;">
+                ${question.images.map(url => `<img src="${url}" alt="Attachment" style="max-width: 100%; max-height: 400px; border-radius: 8px; margin-bottom: 5px; cursor: pointer;" onclick="window.open(this.src, '_blank')">`).join('')}
+            </div>
+        ` : ''}
         <div class="question-tags">
             ${question.tags.map(tag => `<span class="tag">${escapeHtml(tag)}</span>`).join('')}
         </div>
@@ -192,6 +197,11 @@ async function loadAnswers(questionId) {
                         <div class="question-date">${formatTimeAgo(answer.created_at)}</div>
                     </div>
                     <div class="question-content">${escapeHtml(answer.content)}</div>
+                    ${answer.images && answer.images.length > 0 ? `
+                        <div class="answer-images" style="margin-top: 10px;">
+                            ${answer.images.map(url => `<img src="${url}" alt="Attachment" style="max-width: 100%; max-height: 300px; border-radius: 8px; margin-bottom: 5px; cursor: pointer;" onclick="window.open(this.src, '_blank')">`).join('')}
+                        </div>
+                    ` : ''}
                     <div class="vote-container">
                         <button class="vote-btn upvote-btn" onclick="handleVote('answer', '${answer.id}', 'upvote')">
                             <i class="fas fa-arrow-up"></i> Upvote
