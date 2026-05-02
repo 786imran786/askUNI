@@ -4,1070 +4,103 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-    <title>askUNI — College Q&amp;A Forum</title>
+    <title>askUNI — College Q&A Forum</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=DM+Sans:wght@300;400;500&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Outfit:wght@300;400;500;600&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="style/home.css" rel="stylesheet">
-
-    <style>
-        /* ===== DESIGN TOKENS ===== */
-        :root {
-            --navy: #0f1f3d;
-            --navy-mid: #1a3260;
-            --navy-light: #243d75;
-            --gold: #c9a84c;
-            --gold-light: #e2c47a;
-            --gold-pale: #f5edd6;
-            --cream: #faf7f2;
-            --cream-dark: #f0ebe0;
-            --ivory: #fffdf9;
-            --text-primary: #0f1f3d;
-            --text-secondary: #4a5568;
-            --text-muted: #8a96a8;
-            --border: rgba(15, 31, 61, 0.1);
-            --border-gold: rgba(201, 168, 76, 0.3);
-            --shadow-soft: 0 2px 20px rgba(15, 31, 61, 0.07);
-            --shadow-card: 0 4px 32px rgba(15, 31, 61, 0.10);
-            --radius-sm: 6px;
-            --radius-md: 12px;
-            --radius-lg: 18px;
-            --font-display: 'Cormorant Garamond', Georgia, serif;
-            --font-body: 'DM Sans', sans-serif;
-            --transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        [data-theme="dark"] {
-            --navy: #e8edf5;
-            --navy-mid: #d0d8e8;
-            --navy-light: #b8c4d8;
-            --gold: #c9a84c;
-            --gold-light: #e2c47a;
-            --gold-pale: #1e1a12;
-            --cream: #111827;
-            --cream-dark: #1a2235;
-            --ivory: #141c2e;
-            --text-primary: #e8edf5;
-            --text-secondary: #94a3b8;
-            --text-muted: #64748b;
-            --border: rgba(255, 255, 255, 0.08);
-            --border-gold: rgba(201, 168, 76, 0.25);
-            --shadow-soft: 0 2px 20px rgba(0, 0, 0, 0.3);
-            --shadow-card: 0 4px 32px rgba(0, 0, 0, 0.35);
-        }
-
-        /* ===== RESET & BASE ===== */
-        *,
-        *::before,
-        *::after {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        html {
-            scroll-behavior: smooth;
-        }
-
-        body {
-            font-family: var(--font-body);
-            font-size: 15px;
-            font-weight: 400;
-            line-height: 1.6;
-            background: var(--cream);
-            color: var(--text-primary);
-            transition: background 0.3s, color 0.3s;
-            min-height: 100vh;
-        }
-
-        /* ===== DECORATIVE BG TEXTURE ===== */
-        body::before {
-            content: '';
-            position: fixed;
-            inset: 0;
-            background-image:
-                radial-gradient(ellipse 80% 50% at 20% 0%, rgba(201, 168, 76, 0.06) 0%, transparent 60%),
-                radial-gradient(ellipse 60% 40% at 80% 100%, rgba(15, 31, 61, 0.04) 0%, transparent 60%);
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        /* ===== LAYOUT WRAPPER ===== */
-        .parent {
-            position: relative;
-            z-index: 1;
-        }
-
-        /* ===== HEADER ===== */
-        .div1 {
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            background: rgba(250, 247, 242, 0.92);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-bottom: 1px solid var(--border-gold);
-            transition: background 0.3s;
-        }
-
-        [data-theme="dark"] .div1 {
-            background: rgba(17, 24, 39, 0.92);
-        }
-
-        .desktop-header {
-            max-width: 1320px;
-            margin: 0 auto;
-            padding: 0 2rem;
-            height: 70px;
-            display: flex;
-            align-items: center;
-            gap: 2rem;
-        }
-
-        /* Logo */
-        .logo-container {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            flex-shrink: 0;
-        }
-
-        .logo-wordmark {
-            font-family: var(--font-display);
-            font-size: 28px;
-            font-weight: 600;
-            color: var(--navy-mid);
-            letter-spacing: -0.02em;
-            line-height: 1;
-        }
-
-        .logo-wordmark span {
-            color: var(--gold);
-        }
-
-        #modelogo {
-            height: 42px;
-            width: auto;
-        }
-
-        /* Search */
-        .search-container {
-            flex: 1;
-            max-width: 480px;
-        }
-
-        .search-container form {
-            position: relative;
-        }
-
-        .search-bar {
-            width: 100%;
-            height: 42px;
-            padding: 0 1rem 0 2.8rem;
-            font-family: var(--font-body);
-            font-size: 14px;
-            color: var(--text-primary);
-            background: var(--ivory);
-            border: 1px solid var(--border);
-            border-radius: 100px;
-            outline: none;
-            transition: var(--transition);
-        }
-
-        .search-bar::placeholder {
-            color: var(--text-muted);
-        }
-
-        .search-bar:focus {
-            border-color: var(--gold);
-            box-shadow: 0 0 0 3px rgba(201, 168, 76, 0.15);
-            background: var(--ivory);
-        }
-
-        .search-container form::before {
-            content: '\f002';
-            font-family: 'Font Awesome 6 Free';
-            font-weight: 900;
-            position: absolute;
-            left: 1rem;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--text-muted);
-            font-size: 13px;
-            pointer-events: none;
-        }
-
-        /* Header right */
-        .header-right {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-left: auto;
-        }
-
-        /* Buttons */
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 0 18px;
-            height: 38px;
-            font-family: var(--font-body);
-            font-size: 13.5px;
-            font-weight: 500;
-            border-radius: 100px;
-            border: 1px solid var(--border);
-            background: transparent;
-            color: var(--text-primary);
-            cursor: pointer;
-            transition: var(--transition);
-            white-space: nowrap;
-            letter-spacing: 0.01em;
-        }
-
-        .btn:hover {
-            background: var(--cream-dark);
-            border-color: var(--border);
-        }
-
-        .btn-primary {
-            background: var(--navy-mid);
-            color: #fff;
-            border-color: var(--navy-mid);
-        }
-
-        .btn-primary:hover {
-            background: var(--navy-light);
-            border-color: var(--navy-light);
-        }
-
-        .btn-primary i {
-            color: var(--gold-light);
-        }
-
-        /* Icon buttons */
-        .icon-btn {
-            width: 38px;
-            height: 38px;
-            border-radius: 50%;
-            border: 1px solid var(--border);
-            background: transparent;
-            color: var(--text-secondary);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 15px;
-            transition: var(--transition);
-        }
-
-        .icon-btn:hover {
-            background: var(--cream-dark);
-            color: var(--text-primary);
-        }
-
-        .notification-container {
-            position: relative;
-        }
-
-        .notification-badge {
-            position: absolute;
-            top: -2px;
-            right: -2px;
-            width: 17px;
-            height: 17px;
-            border-radius: 50%;
-            background: var(--gold);
-            color: var(--ivory);
-            font-size: 10px;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 2px solid var(--cream);
-        }
-
-        .theme-toggle-header {
-            width: 38px;
-            height: 38px;
-            border-radius: 50%;
-            border: 1px solid var(--border);
-            background: transparent;
-            color: var(--text-secondary);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 15px;
-            transition: var(--transition);
-        }
-
-        .theme-toggle-header:hover {
-            background: var(--cream-dark);
-            color: var(--gold);
-        }
-
-        /* ===== MAIN LAYOUT ===== */
-        .layout {
-            max-width: 1320px;
-            margin: 0 auto;
-            padding: 2rem;
-            display: grid;
-            grid-template-columns: 220px 1fr 280px;
-            gap: 1.75rem;
-            align-items: start;
-        }
-
-        /* ===== LEFT COLUMN ===== */
-        .left-column {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-            position: sticky;
-            top: 90px;
-        }
-
-        .div2,
-        .div5 {
-            background: var(--ivory);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-lg);
-            padding: 1.4rem 1.25rem;
-            box-shadow: var(--shadow-soft);
-        }
-
-        .nav-title,
-        .tags-title {
-            font-family: var(--font-display);
-            font-size: 11px;
-            font-weight: 500;
-            letter-spacing: 0.14em;
-            text-transform: uppercase;
-            color: var(--gold);
-            margin-bottom: 1rem;
-        }
-
-        .nav-links {
-            list-style: none;
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-        }
-
-        .nav-links a {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 9px 12px;
-            border-radius: var(--radius-sm);
-            font-size: 14px;
-            font-weight: 400;
-            color: var(--text-secondary);
-            text-decoration: none;
-            transition: var(--transition);
-        }
-
-        .nav-links a:hover {
-            background: var(--gold-pale);
-            color: var(--navy-mid);
-        }
-
-        .nav-icon {
-            width: 18px;
-            text-align: center;
-            color: var(--text-muted);
-            font-size: 13px;
-        }
-
-        .nav-links a:hover .nav-icon {
-            color: var(--gold);
-        }
-
-        /* Tags */
-        .tags-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 6px;
-        }
-
-        .tag {
-            font-size: 12px;
-            font-weight: 400;
-            padding: 4px 10px;
-            border-radius: 100px;
-            background: var(--cream-dark);
-            color: var(--text-secondary);
-            border: 1px solid var(--border);
-            cursor: pointer;
-            transition: var(--transition);
-        }
-
-        .tag:hover {
-            background: var(--gold-pale);
-            border-color: var(--border-gold);
-            color: var(--navy-mid);
-        }
-
-        /* ===== MIDDLE COLUMN ===== */
-        .middle-column {}
-
-        .div4 {
-            background: var(--ivory);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-lg);
-            min-height: 520px;
-            box-shadow: var(--shadow-soft);
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .div4 video {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
-        }
-
-        /* ===== RIGHT COLUMN ===== */
-        .right-column {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-            position: sticky;
-            top: 90px;
-        }
-
-        .div3,
-        .div6 {
-            background: var(--ivory);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-lg);
-            padding: 1.4rem 1.25rem;
-            box-shadow: var(--shadow-soft);
-        }
-
-        .profile-title,
-        .notifications-title {
-            font-family: var(--font-display);
-            font-size: 11px;
-            font-weight: 500;
-            letter-spacing: 0.14em;
-            text-transform: uppercase;
-            color: var(--gold);
-            margin-bottom: 1.2rem;
-        }
-
-        /* Profile */
-        .profile-info {
-            text-align: center;
-            padding-bottom: 1.25rem;
-            border-bottom: 1px solid var(--border);
-            margin-bottom: 1.2rem;
-        }
-
-        .profile-avatar {
-            width: 64px;
-            height: 64px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--navy-mid), var(--navy-light));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 0.9rem;
-            font-size: 22px;
-            color: var(--gold-light);
-            border: 3px solid var(--gold-pale);
-        }
-
-        .profile-name {
-            font-family: var(--font-display);
-            font-size: 17px;
-            font-weight: 600;
-            color: var(--text-primary);
-            margin-bottom: 3px;
-        }
-
-        .profile-status {
-            font-size: 12.5px;
-            color: var(--text-muted);
-        }
-
-        .profile-links {
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-        }
-
-        .profile-link {
-            display: flex;
-            align-items: center;
-            gap: 9px;
-            padding: 8px 12px;
-            border-radius: var(--radius-sm);
-            font-size: 13.5px;
-            color: var(--text-secondary);
-            text-decoration: none;
-            transition: var(--transition);
-        }
-
-        .profile-link:hover {
-            background: var(--gold-pale);
-            color: var(--navy-mid);
-        }
-
-        .profile-link i {
-            color: var(--text-muted);
-            font-size: 13px;
-            width: 16px;
-            text-align: center;
-        }
-
-        .profile-link:hover i {
-            color: var(--gold);
-        }
-
-        /* Notifications */
-        .notification-item {
-            padding: 12px 0;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .notification-item:last-child {
-            border-bottom: none;
-            padding-bottom: 0;
-        }
-
-        .notification-item:first-child {
-            padding-top: 0;
-        }
-
-        .notification-item.unread .notification-title::before {
-            content: '';
-            display: inline-block;
-            width: 7px;
-            height: 7px;
-            border-radius: 50%;
-            background: var(--gold);
-            margin-right: 7px;
-            vertical-align: middle;
-            margin-top: -2px;
-        }
-
-        .notification-title {
-            font-size: 13px;
-            font-weight: 500;
-            color: var(--text-primary);
-            margin-bottom: 3px;
-        }
-
-        .notification-content {
-            font-size: 12.5px;
-            color: var(--text-secondary);
-            line-height: 1.5;
-            margin-bottom: 4px;
-        }
-
-        .notification-time {
-            font-size: 11.5px;
-            color: var(--text-muted);
-        }
-
-        /* ===== MODAL ===== */
-        .modal-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(10, 18, 38, 0.55);
-            backdrop-filter: blur(8px);
-            z-index: 1000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 1.5rem;
-            opacity: 1;
-            transition: opacity 0.25s;
-        }
-
-        .modal-overlay.hidden {
-            display: none;
-        }
-
-        .modal {
-            background: var(--ivory);
-            border: 1px solid var(--border-gold);
-            border-radius: var(--radius-lg);
-            width: 100%;
-            max-width: 560px;
-            box-shadow: var(--shadow-card);
-            overflow: hidden;
-        }
-
-        .modal-header {
-            padding: 1.5rem 1.75rem 1.2rem;
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .modal-header h2 {
-            font-family: var(--font-display);
-            font-size: 22px;
-            font-weight: 600;
-            color: var(--text-primary);
-        }
-
-        .modal-close {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            border: 1px solid var(--border);
-            background: transparent;
-            color: var(--text-muted);
-            cursor: pointer;
-            font-size: 18px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: var(--transition);
-        }
-
-        .modal-close:hover {
-            background: var(--cream-dark);
-            color: var(--text-primary);
-        }
-
-        .modal-body {
-            padding: 1.5rem 1.75rem;
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-        }
-
-        .modal-label {
-            display: block;
-            font-size: 12px;
-            font-weight: 500;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-            color: var(--text-muted);
-            margin-bottom: 5px;
-        }
-
-        .modal-input,
-        .modal-textarea {
-            width: 100%;
-            padding: 11px 14px;
-            font-family: var(--font-body);
-            font-size: 14px;
-            color: var(--text-primary);
-            background: var(--cream);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-sm);
-            outline: none;
-            transition: var(--transition);
-            resize: none;
-        }
-
-        .modal-input:focus,
-        .modal-textarea:focus {
-            border-color: var(--gold);
-            box-shadow: 0 0 0 3px rgba(201, 168, 76, 0.15);
-        }
-
-        .modal-textarea {
-            min-height: 120px;
-            resize: vertical;
-        }
-
-        .modal-attachments {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .file-label {
-            display: inline-flex;
-            align-items: center;
-            gap: 7px;
-            padding: 8px 14px;
-            border: 1px dashed var(--border-gold);
-            border-radius: var(--radius-sm);
-            font-size: 13px;
-            color: var(--text-secondary);
-            cursor: pointer;
-            transition: var(--transition);
-        }
-
-        .file-label:hover {
-            border-color: var(--gold);
-            color: var(--navy-mid);
-            background: var(--gold-pale);
-        }
-
-        .file-label input {
-            display: none;
-        }
-
-        .file-info {
-            font-size: 12px;
-            color: var(--text-muted);
-        }
-
-        .modal-footer {
-            padding: 1.2rem 1.75rem 1.5rem;
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-            border-top: 1px solid var(--border);
-        }
-
-        /* ===== CUSTOM ALERT ===== */
-        .custom-alert-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(10, 18, 38, 0.55);
-            backdrop-filter: blur(8px);
-            z-index: 2000;
-            display: none;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .custom-alert-overlay.show {
-            display: flex;
-        }
-
-        .custom-alert-box {
-            background: var(--ivory);
-            border: 1px solid var(--border-gold);
-            border-radius: var(--radius-lg);
-            padding: 2rem;
-            text-align: center;
-            max-width: 340px;
-            width: 90%;
-            box-shadow: var(--shadow-card);
-        }
-
-        .custom-alert-icon {
-            font-size: 32px;
-            color: var(--gold);
-            margin-bottom: 1rem;
-        }
-
-        .custom-alert-message {
-            font-size: 14.5px;
-            color: var(--text-secondary);
-            margin-bottom: 1.5rem;
-        }
-
-        .custom-alert-btn {
-            @extend .btn;
-        }
-
-        .custom-alert-btn {
-            display: inline-flex;
-            align-items: center;
-            padding: 0 24px;
-            height: 40px;
-            background: var(--navy-mid);
-            color: #fff;
-            border: none;
-            border-radius: 100px;
-            font-family: var(--font-body);
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-
-        .custom-alert-btn:hover {
-            background: var(--navy-light);
-        }
-
-        /* ===== MOBILE SIDEBAR ===== */
-        .mobile-sidebar-overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(10, 18, 38, 0.5);
-            backdrop-filter: blur(4px);
-            z-index: 200;
-        }
-
-        .mobile-sidebar {
-            position: fixed;
-            top: 0;
-            left: -100%;
-            width: 300px;
-            height: 100dvh;
-            background: var(--ivory);
-            z-index: 300;
-            overflow-y: auto;
-            transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            border-right: 1px solid var(--border-gold);
-        }
-
-        .mobile-sidebar.open {
-            left: 0;
-        }
-
-        .mobile-sidebar-overlay.open {
-            display: block;
-        }
-
-        .mobile-sidebar-header {
-            padding: 1.25rem 1.25rem 1rem;
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .mobile-sidebar-title {
-            font-family: var(--font-display);
-            font-size: 18px;
-            font-weight: 600;
-            color: var(--text-primary);
-        }
-
-        .close-sidebar {
-            background: none;
-            border: none;
-            font-size: 22px;
-            color: var(--text-muted);
-            cursor: pointer;
-            line-height: 1;
-        }
-
-        .mobile-sidebar-profile {
-            padding: 1.25rem;
-        }
-
-        /* ===== MOBILE HEADER ===== */
-        .mobile-header {
-            display: none;
-        }
-
-        .mobile-header-top {
-            padding: 0.75rem 1rem;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .mobile-header-left .logo-wordmark {
-            font-size: 22px;
-        }
-
-        .mobile-header-right {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .mobile-search-container {
-            padding: 0 1rem 0.75rem;
-        }
-
-        .mobile-search-wrapper {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .mobile-menu-btn {
-            width: 38px;
-            height: 38px;
-            flex-shrink: 0;
-            border-radius: var(--radius-sm);
-            border: 1px solid var(--border);
-            background: transparent;
-            color: var(--text-secondary);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 15px;
-            transition: var(--transition);
-        }
-
-        .mobile-menu-btn:hover {
-            background: var(--cream-dark);
-        }
-
-        /* ===== DIVIDER LINE ===== */
-        .section-divider {
-            width: 40px;
-            height: 2px;
-            background: var(--gold);
-            margin: 0 auto 1rem;
-            border-radius: 2px;
-        }
-
-        /* ===== RESPONSIVE ===== */
-        @media (max-width: 1100px) {
-            .layout {
-                grid-template-columns: 200px 1fr 260px;
-                gap: 1.25rem;
-            }
-        }
-
-        @media (max-width: 860px) {
-            .desktop-header {
-                display: none;
-            }
-
-            .mobile-header {
-                display: block;
-            }
-
-            .layout {
-                grid-template-columns: 1fr;
-                padding: 1rem;
-            }
-
-            .left-column,
-            .right-column {
-                display: none;
-            }
-
-            .div4 {
-                min-height: 300px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .layout {
-                padding: 0.75rem;
-            }
-
-            .modal {
-                max-width: 100%;
-                margin: 0 0.5rem;
-            }
-        }
-    </style>
 </head>
 
 <body>
-    <!-- Mobile Sidebar -->
     <div class="mobile-sidebar-overlay" id="mobileSidebarOverlay"></div>
     <div class="mobile-sidebar" id="mobileSidebar">
         <div class="mobile-sidebar-header">
             <h3 class="mobile-sidebar-title">Menu</h3>
             <button class="close-sidebar" id="closeSidebar">&times;</button>
         </div>
-
-        <div class="div3 mobile-sidebar-profile">
-            <h3 class="profile-title">Your Profile</h3>
+        <div class="sidebar-profile-block">
+            <h3 class="section-label">Your Profile</h3>
             <div class="profile-info">
-                <div class="profile-avatar">
-                    <i class="fas fa-user-graduate"></i>
-                </div>
+                <div class="profile-avatar"><i class="fas fa-user-graduate"></i></div>
                 <div class="profile-name">Student User</div>
                 <div class="profile-status">Computer Science, 3rd Year</div>
-                <div class="profile-stats"></div>
             </div>
             <div class="profile-links">
                 <a href="#" class="profile-link"><i class="fas fa-user-circle"></i> View Profile</a>
                 <a href="#" class="profile-link"><i class="fas fa-cog"></i> Account Settings</a>
                 <a href="#" class="profile-link" id="loginLinkMobile"><i class="fas fa-sign-in-alt"></i> Login / Sign
                     Up</a>
-                <ul class="nav-links" style="margin-top: 1rem;">
-                    <li><a href="#"><span class="nav-icon"><i class="fas fa-home"></i></span> Home</a></li>
-                    <li><a href="#"><span class="nav-icon"><i class="fas fa-question-circle"></i></span> My
-                            Questions</a></li>
-                    <li><a href="#"><span class="nav-icon"><i class="fas fa-comments"></i></span> My Answers</a></li>
-                    <li><a href="#"><span class="nav-icon"><i class="fas fa-book"></i></span> Courses</a></li>
-                    <li><a href="#"><span class="nav-icon"><i class="fas fa-calendar-alt"></i></span> Events</a></li>
-                    <li><a href="#"><span class="nav-icon"><i class="fas fa-graduation-cap"></i></span> Resources</a>
-                    </li>
-                    <li><a href="#"><span class="nav-icon"><i class="fas fa-chart-line"></i></span> Rankings</a></li>
-                </ul>
             </div>
+            <ul class="nav-links" style="margin-top:1rem;">
+                <li><a href="#"><span class="nav-icon"><i class="fas fa-home"></i></span> Home</a></li>
+                <li><a href="#"><span class="nav-icon"><i class="fas fa-question-circle"></i></span> My Questions</a>
+                </li>
+                <li><a href="#"><span class="nav-icon"><i class="fas fa-comments"></i></span> My Answers</a></li>
+                <li><a href="#"><span class="nav-icon"><i class="fas fa-book"></i></span> Courses</a></li>
+                <li><a href="#"><span class="nav-icon"><i class="fas fa-calendar-alt"></i></span> Events</a></li>
+                <li><a href="#"><span class="nav-icon"><i class="fas fa-graduation-cap"></i></span> Resources</a></li>
+                <li><a href="#"><span class="nav-icon"><i class="fas fa-chart-line"></i></span> Rankings</a></li>
+            </ul>
         </div>
     </div>
 
     <div class="parent">
-        <!-- Header -->
         <div class="div1">
-            <!-- Desktop Header -->
             <div class="desktop-header">
                 <div class="logo-container">
-                    <!-- If logo image exists: <img id="modelogo" src="media/logo.png"> -->
                     <div class="logo-wordmark">ask<span>UNI</span></div>
                 </div>
-
                 <div class="search-container">
                     <form action="/search" method="GET">
                         <input type="text" name="q" class="search-bar"
                             placeholder="Search questions, courses, or topics...">
                     </form>
                 </div>
-
                 <div class="header-right">
                     <button class="btn btn-primary" id="askQuestionBtn">
                         <i class="fas fa-plus-circle"></i> Ask Question
                     </button>
                     <div class="notification-container">
-                        <button class="icon-btn" id="notificationBtn">
-                            <i class="fas fa-bell"></i>
-                        </button>
+                        <button class="icon-btn" id="notificationBtn"><i class="fas fa-bell"></i></button>
                         <span class="notification-badge">3</span>
                     </div>
-                    <button class="theme-toggle-header" id="themeToggleHeader">
-                        <i class="fas fa-moon"></i>
-                    </button>
+                    <button class="theme-toggle-header" id="themeToggleHeader"><i class="fas fa-moon"></i></button>
                 </div>
             </div>
 
-            <!-- Mobile Header -->
             <div class="mobile-header">
                 <div class="mobile-header-top">
-                    <div class="mobile-header-left">
-                        <div class="logo-wordmark">ask<span>UNI</span></div>
-                    </div>
+                    <div class="logo-wordmark">ask<span>UNI</span></div>
                     <div class="mobile-header-right">
-                        <button class="btn btn-primary" id="askQuestionBtnMobile">
+                        <button class="btn btn-primary" id="askQuestionBtnMobile"
+                            style="padding:0 14px;height:36px;font-size:13px;">
                             <i class="fas fa-plus-circle"></i> Ask
                         </button>
                         <div class="notification-container">
-                            <button class="icon-btn" id="notificationBtnMobile">
-                                <i class="fas fa-bell"></i>
-                            </button>
+                            <button class="icon-btn" id="notificationBtnMobile"><i class="fas fa-bell"></i></button>
                             <span class="notification-badge">3</span>
                         </div>
-                        <button class="theme-toggle-header" id="themeToggleHeaderMobile">
-                            <i class="fas fa-moon"></i>
-                        </button>
+                        <button class="theme-toggle-header" id="themeToggleHeaderMobile"><i
+                                class="fas fa-moon"></i></button>
                     </div>
                 </div>
-                <div class="mobile-search-container">
-                    <div class="mobile-search-wrapper">
-                        <button class="mobile-menu-btn" id="mobileMenuBtn">
-                            <i class="fas fa-bars"></i>
-                        </button>
-                        <form action="/search" method="GET" style="flex: 1;">
-                            <input type="text" name="q" class="search-bar"
-                                placeholder="Search questions, courses, or topics...">
-                        </form>
-                    </div>
+                <div class="mobile-search-row">
+                    <button class="mobile-menu-btn" id="mobileMenuBtn"><i class="fas fa-bars"></i></button>
+                    <form action="/search" method="GET" style="flex:1;">
+                        <input type="text" name="q" class="search-bar"
+                            placeholder="Search questions, courses, or topics...">
+                    </form>
                 </div>
             </div>
         </div>
 
-        <!-- Main Layout -->
         <div class="layout">
-            <!-- LEFT: Navigation + Popular Tags -->
             <div class="left-column">
-                <div class="div2">
-                    <h3 class="nav-title">Navigation</h3>
+                <div class="sidebar-card div2">
+                    <h3 class="section-label">Navigation</h3>
                     <ul class="nav-links">
                         <li><a href="#"><span class="nav-icon"><i class="fas fa-home"></i></span> Home</a></li>
                         <li><a href="#"><span class="nav-icon"><i class="fas fa-question-circle"></i></span> My
@@ -1083,31 +116,21 @@
                         </li>
                     </ul>
                 </div>
-
-                <div class="div5">
-                    <h3 class="tags-title">Popular Tags</h3>
+                <div class="sidebar-card div5">
+                    <h3 class="section-label">Popular Tags</h3>
                     <div class="tags-container">
-                        <span class="tag">Computer Science</span>
-                        <span class="tag">Mathematics</span>
-                        <span class="tag">Engineering</span>
-                        <span class="tag">Physics</span>
-                        <span class="tag">Calculus</span>
-                        <span class="tag">Programming</span>
-                        <span class="tag">Data Structures</span>
-                        <span class="tag">Algorithms</span>
-                        <span class="tag">Chemistry</span>
-                        <span class="tag">Biology</span>
-                        <span class="tag">Economics</span>
-                        <span class="tag">Literature</span>
-                        <span class="tag">Psychology</span>
-                        <span class="tag">Statistics</span>
-                        <span class="tag">Linear Algebra</span>
-                        <span class="tag">Database</span>
+                        <span class="tag">Computer Science</span><span class="tag">Mathematics</span>
+                        <span class="tag">Engineering</span><span class="tag">Physics</span>
+                        <span class="tag">Calculus</span><span class="tag">Programming</span>
+                        <span class="tag">Data Structures</span><span class="tag">Algorithms</span>
+                        <span class="tag">Chemistry</span><span class="tag">Biology</span>
+                        <span class="tag">Economics</span><span class="tag">Literature</span>
+                        <span class="tag">Psychology</span><span class="tag">Statistics</span>
+                        <span class="tag">Linear Algebra</span><span class="tag">Database</span>
                     </div>
                 </div>
             </div>
 
-            <!-- MIDDLE: Q&A Main content -->
             <div class="middle-column">
                 <div class="div4">
                     <video id="loadingLight" autoplay muted loop playsinline>
@@ -1116,14 +139,11 @@
                 </div>
             </div>
 
-            <!-- RIGHT: Profile + Notifications -->
             <div class="right-column">
-                <div class="div3">
-                    <h3 class="profile-title">Your Profile</h3>
+                <div class="sidebar-card div3">
+                    <h3 class="section-label">Your Profile</h3>
                     <div class="profile-info">
-                        <div class="profile-avatar">
-                            <i class="fas fa-user-graduate"></i>
-                        </div>
+                        <div class="profile-avatar"><i class="fas fa-user-graduate"></i></div>
                         <div class="profile-name">Student User</div>
                         <div class="profile-status">Computer Science, 3rd Year</div>
                         <div class="profile-stats"></div>
@@ -1135,9 +155,8 @@
                             Up</a>
                     </div>
                 </div>
-
-                <div class="div6">
-                    <h3 class="notifications-title">Recent Notifications</h3>
+                <div class="sidebar-card div6">
+                    <h3 class="section-label">Recent Notifications</h3>
                     <div class="notification-item unread">
                         <div class="notification-title">New answer to your question</div>
                         <div class="notification-content">Prof. Rodriguez answered your question about calculus
@@ -1175,22 +194,22 @@
             </div>
             <form id="askQuestionForm" method="POST" action="/ask-question" enctype="multipart/form-data">
                 <div class="modal-body">
-                    <div>
+                    <div class="form-group">
                         <label class="modal-label" for="questionTitle">Title</label>
                         <input type="text" id="questionTitle" name="title" class="modal-input"
                             placeholder="What's your question? Be specific.">
                     </div>
-                    <div>
+                    <div class="form-group">
                         <label class="modal-label" for="questionDetails">Details</label>
                         <textarea id="questionDetails" name="details" class="modal-textarea"
                             placeholder="Provide more details about your question..."></textarea>
                     </div>
-                    <div>
+                    <div class="form-group">
                         <label class="modal-label" for="questionTags">Tags</label>
                         <input type="text" id="questionTags" name="tags" class="modal-input"
-                            placeholder="Add tags separated by comma (e.g., admission, fees, hostel)">
+                            placeholder="e.g., admission, fees, hostel (comma separated)">
                     </div>
-                    <div>
+                    <div class="form-group">
                         <label class="modal-label">Attachments</label>
                         <div class="modal-attachments">
                             <label class="file-label">
@@ -1206,58 +225,21 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn" id="cancelAskBtn">Cancel</button>
+                    <button type="button" class="btn btn-ghost" id="cancelAskBtn">Cancel</button>
                     <button type="submit" class="btn btn-primary">Post Question</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- Custom Alert Modal -->
+    <!-- Custom Alert -->
     <div class="custom-alert-overlay" id="customAlert">
         <div class="custom-alert-box">
-            <div class="custom-alert-icon">
-                <i class="fas fa-info-circle"></i>
-            </div>
+            <div class="custom-alert-icon"><i class="fas fa-info-circle"></i></div>
             <div class="custom-alert-message" id="customAlertMessage">Alert message goes here</div>
             <button class="custom-alert-btn" id="customAlertBtn">OK</button>
         </div>
     </div>
-
-    <!-- Dark mode toggle logic (persists existing JS) -->
-    <script>
-        // Apply saved theme before page renders
-        (function () {
-            const saved = localStorage.getItem('theme') || 'light';
-            if (saved === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
-        })();
-
-        // Hook theme toggles after DOM loads
-        document.addEventListener('DOMContentLoaded', function () {
-            const toggles = [
-                document.getElementById('themeToggleHeader'),
-                document.getElementById('themeToggleHeaderMobile')
-            ];
-
-            function setTheme(dark) {
-                document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
-                localStorage.setItem('theme', dark ? 'dark' : 'light');
-                toggles.forEach(btn => {
-                    if (btn) btn.querySelector('i').className = dark ? 'fas fa-sun' : 'fas fa-moon';
-                });
-            }
-
-            const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-            setTheme(isDark);
-
-            toggles.forEach(btn => {
-                if (btn) btn.addEventListener('click', function () {
-                    const currentlyDark = document.documentElement.getAttribute('data-theme') === 'dark';
-                    setTheme(!currentlyDark);
-                });
-            });
-        });
-    </script>
 
     <script src="script/home.js"></script>
 </body>
