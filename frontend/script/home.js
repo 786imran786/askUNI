@@ -30,7 +30,7 @@ async function initializePage() {
 async function loadQuestions() {
     try {
         console.log("Fetching questions from backend...");
-        const response = await fetch('http://localhost:5000/api/questions', {
+        const response = await fetch('https://askunibackend.onrender.com/api/questions', {
             headers: {
                 'Authorization': `Bearer ${getToken()}`
             }
@@ -60,7 +60,7 @@ async function loadQuestions() {
 
 async function loadPopularTags() {
     try {
-        const response = await fetch('http://localhost:5000/api/tags');
+        const response = await fetch('https://askunibackend.onrender.com/api/tags');
         const data = await response.json();
 
         if (data.success && data.tags) {
@@ -204,7 +204,7 @@ async function toggleAnswers(questionId) {
 
 async function loadAnswers(questionId) {
     try {
-        const response = await fetch(`http://localhost:5000/api/questions/${questionId}`, {
+        const response = await fetch(`https://askunibackend.onrender.com/api/questions/${questionId}`, {
             headers: {
                 'Authorization': `Bearer ${getToken()}`
             }
@@ -316,7 +316,7 @@ async function handleVote(targetType, targetId, voteType) {
             return;
         }
 
-        const response = await fetch('http://localhost:5000/api/vote', {
+        const response = await fetch('https://askunibackend.onrender.com/api/vote', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -392,7 +392,7 @@ async function submitAnswer(event, questionId) {
             }
             */
 
-            let response = await fetch(`http://localhost:5000/api/questions/${questionId}/answers`, {
+            let response = await fetch(`https://askunibackend.onrender.com/api/questions/${questionId}/answers`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -403,7 +403,7 @@ async function submitAnswer(event, questionId) {
             if (response.status === 415) {
                 console.warn('Backend rejected FormData (415). Retrying with JSON...');
                 // Retry with JSON
-                response = await fetch(`http://localhost:5000/api/questions/${questionId}/answers`, {
+                response = await fetch(`https://askunibackend.onrender.com/api/questions/${questionId}/answers`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -426,7 +426,7 @@ async function submitAnswer(event, questionId) {
             var fetchResponse = response;
         } else {
             // No files - Send as JSON directly
-            var fetchResponse = await fetch(`http://localhost:5000/api/questions/${questionId}/answers`, {
+            var fetchResponse = await fetch(`https://askunibackend.onrender.com/api/questions/${questionId}/answers`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -518,7 +518,7 @@ document.getElementById('askQuestionForm')?.addEventListener('submit', async e =
             }
 
             res = await fetch(
-                'http://localhost:5000/api/questions',
+                'https://askunibackend.onrender.com/api/questions',
                 {
                     method: 'POST',
                     headers: {
@@ -532,7 +532,7 @@ document.getElementById('askQuestionForm')?.addEventListener('submit', async e =
             if (res.status === 415) {
                 console.warn('Backend rejected FormData (415). Retrying with JSON...');
                 res = await fetch(
-                    'http://localhost:5000/api/questions',
+                    'https://askunibackend.onrender.com/api/questions',
                     {
                         method: 'POST',
                         headers: {
@@ -550,7 +550,7 @@ document.getElementById('askQuestionForm')?.addEventListener('submit', async e =
         } else {
             // Send as JSON directly
             res = await fetch(
-                'http://localhost:5000/api/questions',
+                'https://askunibackend.onrender.com/api/questions',
                 {
                     method: 'POST',
                     headers: {
