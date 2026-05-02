@@ -1,10 +1,15 @@
 // Initialize page
 async function initializePage() {
     const savedTheme = localStorage.getItem('college_portal_theme_v3');
-    if (savedTheme === 'dark') {
-        document.body.classList.add('dark');
-        const desktopThemeToggle = document.getElementById('themeToggleHeader');
-        const mobileThemeToggle = document.getElementById('themeToggleHeaderMobile');
+    const desktopThemeToggle = document.getElementById('themeToggleHeader');
+    const mobileThemeToggle = document.getElementById('themeToggleHeaderMobile');
+
+    if (savedTheme === 'light') {
+        document.body.classList.add('light');
+        if (desktopThemeToggle) desktopThemeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+        if (mobileThemeToggle) mobileThemeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+    } else {
+        document.body.classList.remove('light');
         if (desktopThemeToggle) desktopThemeToggle.innerHTML = '<i class="fas fa-sun"></i>';
         if (mobileThemeToggle) mobileThemeToggle.innerHTML = '<i class="fas fa-sun"></i>';
     }
@@ -655,16 +660,16 @@ function toggleTheme() {
     const body = document.body;
     const desktopThemeToggle = document.getElementById('themeToggleHeader');
     const mobileThemeToggle = document.getElementById('themeToggleHeaderMobile');
-    const isDarkMode = body.classList.toggle('dark');
+    const isLightMode = body.classList.toggle('light');
 
-    if (isDarkMode) {
-        if (desktopThemeToggle) desktopThemeToggle.innerHTML = '<i class="fas fa-sun"></i>';
-        if (mobileThemeToggle) mobileThemeToggle.innerHTML = '<i class="fas fa-sun"></i>';
-        localStorage.setItem('college_portal_theme_v3', 'dark');
-    } else {
+    if (isLightMode) {
         if (desktopThemeToggle) desktopThemeToggle.innerHTML = '<i class="fas fa-moon"></i>';
         if (mobileThemeToggle) mobileThemeToggle.innerHTML = '<i class="fas fa-moon"></i>';
         localStorage.setItem('college_portal_theme_v3', 'light');
+    } else {
+        if (desktopThemeToggle) desktopThemeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+        if (mobileThemeToggle) mobileThemeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+        localStorage.setItem('college_portal_theme_v3', 'dark');
     }
 }
 
