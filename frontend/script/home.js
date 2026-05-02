@@ -30,7 +30,7 @@ async function initializePage() {
 async function loadQuestions() {
     try {
         console.log("Fetching questions from backend...");
-        const response = await fetch('https://askunibackend.onrender.com/api/questions', {
+        const response = await fetch('http://localhost:5000/api/questions', {
             headers: {
                 'Authorization': `Bearer ${getToken()}`
             }
@@ -60,7 +60,7 @@ async function loadQuestions() {
 
 async function loadPopularTags() {
     try {
-        const response = await fetch('https://askunibackend.onrender.com/api/tags');
+        const response = await fetch('http://localhost:5000/api/tags');
         const data = await response.json();
 
         if (data.success && data.tags) {
@@ -114,6 +114,31 @@ function createQuestionElement(question) {
 
     const timeAgo = formatTimeAgo(question.created_at);
 
+        let imagesHtml = '';
+        if (question.images) {
+            let imagesArray = [];
+            if (Array.isArray(question.images)) {
+                imagesArray = question.images;
+            } else if (typeof question.images === 'string') {
+                try {
+                    let str = question.images.trim();
+                    if (str.startsWith('{') && str.endsWith('}')) {
+                        str = '[' + str.slice(1, -1) + ']';
+                    }
+                    imagesArray = JSON.parse(str.replace(/'/g, '"'));
+                } catch(e) {
+                    imagesArray = [question.images];
+                }
+            }
+            if (imagesArray.length > 0) {
+                imagesHtml = `
+                    <div class="question-images" style="margin-top: 10px;">
+                        ${imagesArray.map(url => `<img src="${url}" alt="Attachment" style="max-width: 100%; max-height: 400px; border-radius: 8px; margin-bottom: 5px; cursor: pointer;" onclick="window.open(this.src, '_blank')">`).join('')}
+                    </div>
+                `;
+            }
+        }
+
     questionDiv.innerHTML = `
         <div class="question-header">
             <div class="question-author"><i class="fas fa-user"></i> ${question.author?.full_name || 'Anonymous'}</div>
@@ -121,11 +146,7 @@ function createQuestionElement(question) {
         </div>
         <h3 class="question-title">${escapeHtml(question.title)}</h3>
         <div class="question-content">${escapeHtml(question.content)}</div>
-        ${question.images && question.images.length > 0 ? `
-            <div class="question-images" style="margin-top: 10px;">
-                ${question.images.map(url => `<img src="${url}" alt="Attachment" style="max-width: 100%; max-height: 400px; border-radius: 8px; margin-bottom: 5px; cursor: pointer;" onclick="window.open(this.src, '_blank')">`).join('')}
-            </div>
-        ` : ''}
+        ${imagesHtml}
         <div class="question-tags">
             ${question.tags.map(tag => `<span class="tag">${escapeHtml(tag)}</span>`).join('')}
         </div>
@@ -183,7 +204,7 @@ async function toggleAnswers(questionId) {
 
 async function loadAnswers(questionId) {
     try {
-        const response = await fetch(`https://askunibackend.onrender.com/api/questions/${questionId}`, {
+        const response = await fetch(`http://localhost:5000/api/questions/${questionId}`, {
             headers: {
                 'Authorization': `Bearer ${getToken()}`
             }
@@ -195,18 +216,39 @@ async function loadAnswers(questionId) {
         const answersList = document.getElementById(`answers-list-${questionId}`);
 
         if (data.success && data.answers && data.answers.length > 0) {
-            answersList.innerHTML = data.answers.map(answer => `
+            answersList.innerHTML = data.answers.map(answer => {
+                let imagesHtml = '';
+                if (answer.images) {
+                    let imagesArray = [];
+                    if (Array.isArray(answer.images)) {
+                        imagesArray = answer.images;
+                    } else if (typeof answer.images === 'string') {
+                        try {
+                            let str = answer.images.trim();
+                            if (str.startsWith('{') && str.endsWith('}')) {
+                                str = '[' + str.slice(1, -1) + ']';
+                            }
+                            imagesArray = JSON.parse(str.replace(/'/g, '"'));
+                        } catch(e) {
+                            imagesArray = [answer.images];
+                        }
+                    }
+                    if (imagesArray.length > 0) {
+                        imagesHtml = `
+                            <div class="answer-images" style="margin-top: 10px;">
+                                ${imagesArray.map(url => `<img src="${url}" alt="Attachment" style="max-width: 100%; max-height: 300px; border-radius: 8px; margin-bottom: 5px; cursor: pointer;" onclick="window.open(this.src, '_blank')">`).join('')}
+                            </div>
+                        `;
+                    }
+                }
+                return `
                 <div class="answer" id="answer-${answer.id}">
                     <div class="question-header">
                         <div class="question-author"><i class="fas fa-user"></i> ${answer.author?.full_name || 'Anonymous'}</div>
                         <div class="question-date">${formatTimeAgo(answer.created_at)}</div>
                     </div>
                     <div class="question-content">${escapeHtml(answer.content)}</div>
-                    ${answer.images && answer.images.length > 0 ? `
-                        <div class="answer-images" style="margin-top: 10px;">
-                            ${answer.images.map(url => `<img src="${url}" alt="Attachment" style="max-width: 100%; max-height: 300px; border-radius: 8px; margin-bottom: 5px; cursor: pointer;" onclick="window.open(this.src, '_blank')">`).join('')}
-                        </div>
-                    ` : ''}
+                    ${imagesHtml}
                     <div class="vote-container">
                         <button class="vote-btn upvote-btn" onclick="handleVote('answer', '${answer.id}', 'upvote')">
                             <i class="fas fa-arrow-up"></i> Upvote
@@ -221,7 +263,7 @@ async function loadAnswers(questionId) {
                         </button>
                     </div>
                 </div>
-            `).join('');
+            `}).join('');
         } else {
             answersList.innerHTML = `
                 <div style="text-align: center; padding: 15px; color: var(--text-muted); font-style: italic;">
@@ -274,7 +316,7 @@ async function handleVote(targetType, targetId, voteType) {
             return;
         }
 
-        const response = await fetch('https://askunibackend.onrender.com/api/vote', {
+        const response = await fetch('http://localhost:5000/api/vote', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -350,7 +392,7 @@ async function submitAnswer(event, questionId) {
             }
             */
 
-            let response = await fetch(`https://askunibackend.onrender.com/api/questions/${questionId}/answers`, {
+            let response = await fetch(`http://localhost:5000/api/questions/${questionId}/answers`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -361,7 +403,7 @@ async function submitAnswer(event, questionId) {
             if (response.status === 415) {
                 console.warn('Backend rejected FormData (415). Retrying with JSON...');
                 // Retry with JSON
-                response = await fetch(`https://askunibackend.onrender.com/api/questions/${questionId}/answers`, {
+                response = await fetch(`http://localhost:5000/api/questions/${questionId}/answers`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -384,7 +426,7 @@ async function submitAnswer(event, questionId) {
             var fetchResponse = response;
         } else {
             // No files - Send as JSON directly
-            var fetchResponse = await fetch(`https://askunibackend.onrender.com/api/questions/${questionId}/answers`, {
+            var fetchResponse = await fetch(`http://localhost:5000/api/questions/${questionId}/answers`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -476,7 +518,7 @@ document.getElementById('askQuestionForm')?.addEventListener('submit', async e =
             }
 
             res = await fetch(
-                'https://askunibackend.onrender.com/api/questions',
+                'http://localhost:5000/api/questions',
                 {
                     method: 'POST',
                     headers: {
@@ -490,7 +532,7 @@ document.getElementById('askQuestionForm')?.addEventListener('submit', async e =
             if (res.status === 415) {
                 console.warn('Backend rejected FormData (415). Retrying with JSON...');
                 res = await fetch(
-                    'https://askunibackend.onrender.com/api/questions',
+                    'http://localhost:5000/api/questions',
                     {
                         method: 'POST',
                         headers: {
@@ -508,7 +550,7 @@ document.getElementById('askQuestionForm')?.addEventListener('submit', async e =
         } else {
             // Send as JSON directly
             res = await fetch(
-                'https://askunibackend.onrender.com/api/questions',
+                'http://localhost:5000/api/questions',
                 {
                     method: 'POST',
                     headers: {
