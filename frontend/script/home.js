@@ -45,9 +45,6 @@ async function initializePage() {
 
     // Setup navigation listeners
     setupNavigationListeners();
-
-    // Connect to real-time SSE feed
-    connectSSE();
 }
 
 function setupNavigationListeners() {
@@ -63,7 +60,7 @@ function setupNavigationListeners() {
             if (el) {
                 el.addEventListener('click', (e) => {
                     e.preventDefault();
-                    if(filter.hash) {
+                    if (filter.hash) {
                         window.history.pushState(null, null, filter.hash);
                     } else {
                         window.history.pushState(null, null, window.location.pathname);
@@ -75,45 +72,13 @@ function setupNavigationListeners() {
     });
 }
 
-// ============================================================
-// 🔴 SSE – Real-time feed updates
-// ============================================================
-let _sseSource = null;
-let _sseReconnectDelay = 3000;
-
-function connectSSE() {
-    if (_sseSource) _sseSource.close();
-
-    _sseSource = new EventSource(`${window.API_BASE_URL}/api/stream`, { withCredentials: true });
-
-    _sseSource.addEventListener('connected', () => {
-        console.log('✅ SSE connected – real-time feed active');
-        _sseReconnectDelay = 3000; // reset backoff on success
-    });
-
-    _sseSource.addEventListener('new_question', (e) => {
-        const currentHash = window.location.hash;
-        // Only auto-refresh the main feed, not personal filtered views
-        if (!currentHash || currentHash === '#home') {
-            loadQuestions('/api/questions', 'Recent Questions');
-        }
-    });
-
-    _sseSource.onerror = () => {
-        console.warn('⚠️ SSE disconnected – reconnecting in', _sseReconnectDelay / 1000, 's');
-        _sseSource.close();
-        setTimeout(connectSSE, _sseReconnectDelay);
-        _sseReconnectDelay = Math.min(_sseReconnectDelay * 2, 60000); // exponential backoff, max 60s
-    };
-}
-
 async function checkAuthStatus() {
     const token = getToken();
     if (!token) {
         window.location.href = 'login_signup.html';
         return false;
     }
-    
+
     try {
         const response = await fetch(`${window.API_BASE_URL}/api/verify-token`, {
             method: 'POST',
@@ -140,7 +105,7 @@ async function loadQuestions(endpoint = '/api/questions', feedTitle = 'Recent Qu
         // Show feed title header if it's a specific feed
         const feedHeaderContainer = document.getElementById('feed-header-container');
         const feedTitleEl = document.getElementById('feed-title');
-        
+
         if (feedHeaderContainer && feedTitleEl) {
             if (endpoint !== '/api/questions') {
                 feedTitleEl.textContent = feedTitle;
@@ -199,11 +164,11 @@ async function loadUserProfile() {
             }
         });
         const data = await response.json();
-        
+
         if (data.success) {
             // Get Name
             const name = data.personal_info?.full_name || data.user_info?.full_name || 'Student User';
-            
+
             // Format designation
             let status = 'Student';
             if (data.designation?.designation_type === 'student') {
@@ -221,7 +186,7 @@ async function loadUserProfile() {
             // Update DOM
             document.querySelectorAll('.profile-name').forEach(el => el.textContent = name);
             document.querySelectorAll('.profile-status').forEach(el => el.textContent = status);
-            
+
             // Profile photo
             if (data.personal_info?.profile_photo) {
                 let photoHtml = '';
@@ -230,7 +195,7 @@ async function loadUserProfile() {
                 } else {
                     photoHtml = `<i class="${data.personal_info.profile_photo}"></i>`;
                 }
-                
+
                 document.querySelectorAll('.profile-avatar').forEach(el => {
                     el.innerHTML = photoHtml;
                 });
