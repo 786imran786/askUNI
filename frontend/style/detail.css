@@ -1,64 +1,58 @@
-/* CSS Variables for Light/Dark Themes - BLACK & GREY FUTURISTIC THEME */
+/* CSS Variables for Light/Dark Themes - PARROT GREEN THEME */
 :root {
-    /* Light mode (Graphite + Soft Grey + Neon Blue Accent) */
-    --primary-light: #F2F3F5;        /* soft grey background */
-    --secondary-light: #FFFFFF;      /* card bg */
-    --accent-light: #2D2D2D;         /* graphite accent */
-    --accent-secondary-light: #1c303f; /* neon blue highlight */
-    --text-light: #111317;          
-    --text-heading-light: #000000;
-    --text-muted-light: #7A7A7A;
-    --border-light: #000000;
-    --surface-light: #bfbebe;
-
-    /* Dark mode (Black + Steel Grey + Cyan/Blue neon accents) */
-    --primary-dark: #0B0B0D;         /* pure black-ish bg */
-    --secondary-dark: #151515;       /* deep grey card */
-    --accent-dark: #2F2F2F;          /* graphite */
-    --accent-secondary-dark: #00AEEF; /* neon cyan accent (modern AF) */
-    --text-dark: #E6E6E6;
-    --text-heading-dark: #FFFFFF;
-    --text-muted-dark: #9A9A9A;
-    --border-dark: #2A2A2A;
-    --surface-dark: #151515;
-
-    /* Apply light theme by default */
-    --primary: linear-gradient(135deg, #d1d4da 0%, #887777 40%, #d3d3d3 100%);
-    --secondary: var(--secondary-light);
-    --accent: var(--accent-light);
-    --accent-secondary: var(--accent-secondary-light);
-    --text: var(--text-light);
-    --text-heading: var(--text-heading-light);
-    --text-muted: var(--text-muted-light);
-    --border: var(--border-light);
-    --surface: var(--surface-light);
+    /* Default Dark Mode (Parrot Green) */
+    --primary: #0b0f16;
+    --secondary: #111820;
+    --accent: #18202e;
+    --accent-secondary: #3ddc6a;
+    --text: #8fa0b8;
+    --text-heading: #e2eaf4;
+    --text-muted: #495a70;
+    --border: rgba(255, 255, 255, 0.12);
+    --surface: #111820;
 
     /* Common variables */
-    --border-radius: 8px;
-    --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --border-radius: 12px;
+    --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
     --transition: all 0.3s ease;
-    --success-color: #4caf50;
+    --success-color: #3ddc6a;
     --sidebar-width: 280px;
+    
+    --font-ui: 'Outfit', system-ui, sans-serif;
+    --font-display: 'Playfair Display', Georgia, serif;
 }
 
-/* Apply dark theme when dark class is present */
+body.light {
+    --primary: #f2f7f2;
+    --secondary: #ffffff;
+    --accent: #eaf4ec;
+    --accent-secondary: #1fa83a;
+    --text: #3a5c3e;
+    --text-heading: #0d1f0f;
+    --text-muted: #7a9c7e;
+    --border: rgba(0, 0, 0, 0.14);
+    --surface: #ffffff;
+    --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.08);
+}
+
 body.dark {
-    --primary: linear-gradient(135deg, #0b0b0d 0%, #111113 25%, #1a1a1d 50%, #0d0d10 100%);
-    --secondary: var(--secondary-dark);
-    --accent: var(--accent-dark);
-    --accent-secondary: var(--accent-secondary-dark);
-    --text: var(--text-dark);
-    --text-heading: var(--text-heading-dark);
-    --text-muted: var(--text-muted-dark);
-    --border: var(--border-dark);
-    --surface: var(--surface-dark);
+    --primary: #0b0f16;
+    --secondary: #111820;
+    --accent: #18202e;
+    --accent-secondary: #3ddc6a;
+    --text: #8fa0b8;
+    --text-heading: #e2eaf4;
+    --text-muted: #495a70;
+    --border: rgba(255, 255, 255, 0.12);
+    --surface: #111820;
+    --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
 }
 
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: var(--font-ui);
     transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }
 
@@ -124,8 +118,9 @@ body {
 }
 
 .logo-text {
+    font-family: var(--font-display);
     font-size: 24px;
-    font-weight: bold;
+    font-weight: 700;
     white-space: nowrap;
     color: var(--text-heading);
 }
