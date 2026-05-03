@@ -814,6 +814,28 @@ function showFallbackQuestions() {
 
 // DOMContentLoaded
 document.addEventListener('DOMContentLoaded', () => {
+    // Check URL parameters for authentication and new user redirection
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlToken = urlParams.get('token');
+    
+    if (urlToken) {
+        // Save token
+        localStorage.setItem('token', urlToken);
+        document.cookie = `auth_token=${urlToken}; path=/; max-age=604800`; // 7 days
+        
+        // Check if it's a new user from Google Login
+        if (urlParams.get('new_user') === 'true') {
+            window.location.href = `detail.html?token=${urlToken}&new_user=true`;
+            return; // Stop initialization
+        }
+        
+        // Clean up URL
+        const newUrl = new URL(window.location);
+        newUrl.searchParams.delete('token');
+        newUrl.searchParams.delete('new_user');
+        window.history.replaceState({}, '', newUrl);
+    }
+
     initializePage();
 
     // Theme toggle for both desktop and mobile
