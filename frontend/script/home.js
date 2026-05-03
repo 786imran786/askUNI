@@ -21,6 +21,10 @@ async function initializePage() {
     detectTouchDevice();
     adjustForScreenHeight();
 
+    // 🔒 Auth Guard
+    const isAuthenticated = await checkAuthStatus();
+    if (!isAuthenticated) return;
+
     await showWelcomeMessage();
 
     // Load user profile
@@ -31,6 +35,34 @@ async function initializePage() {
 
     // Load popular tags from backend
     await loadPopularTags();
+}
+
+async function checkAuthStatus() {
+    const token = getToken();
+    if (!token) {
+        window.location.href = 'login_signup.html';
+        return false;
+    }
+    
+    try {
+        const response = await fetch(`${window.API_BASE_URL}/api/verify-token`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        const data = await response.json();
+        if (!data.success) {
+            localStorage.removeItem('token');
+            document.cookie = "auth_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+            window.location.href = 'login_signup.html';
+            return false;
+        }
+        return true;
+    } catch (error) {
+        console.error("Auth check failed:", error);
+        return false;
+    }
 }
 
 async function loadQuestions() {

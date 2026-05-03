@@ -389,4 +389,38 @@ if(googleBtn2){
     googleBtn2.addEventListener("click", handleGoogleLogin);
 }
 
+// ==========================================
+// 🔒 Auth Guard: Redirect to home if logged in
+// ==========================================
+(async function checkLoginState() {
+    const cookies = document.cookie.split(';');
+    const authCookie = cookies.find(cookie => cookie.trim().startsWith('auth_token='));
+    let token = authCookie ? authCookie.split('=')[1] : null;
+    
+    if (!token) {
+        token = localStorage.getItem('auth_token') || localStorage.getItem('token');
+    }
 
+    if (token) {
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/verify-token`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            const data = await response.json();
+            if (data.success) {
+                // Token is valid, go to home
+                window.location.href = 'home.html';
+            } else {
+                // Token is invalid, clean up
+                localStorage.removeItem('token');
+                localStorage.removeItem('auth_token');
+                document.cookie = "auth_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+            }
+        } catch(e) {
+            console.error("Token verification failed", e);
+        }
+    }
+})();
