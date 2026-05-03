@@ -892,4 +892,29 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         lastTouchEnd = now;
     }, false);
+
+    // Logout Logic
+    const handleLogout = async (e) => {
+        e.preventDefault();
+        try {
+            await fetch(`${window.API_BASE_URL}/api/logout`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" }
+            });
+        } catch (error) {
+            console.error("Logout failed", error);
+        } finally {
+            // Clear cookies/localStorage
+            document.cookie = "auth_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+            localStorage.removeItem('auth_token');
+            localStorage.removeItem('token');
+            window.location.href = "login_signup.html";
+        }
+    };
+
+    const loginLinkDesktop = document.getElementById('loginLink');
+    const loginLinkMobile = document.getElementById('loginLinkMobile');
+
+    if (loginLinkDesktop) loginLinkDesktop.addEventListener('click', handleLogout);
+    if (loginLinkMobile) loginLinkMobile.addEventListener('click', handleLogout);
 });
