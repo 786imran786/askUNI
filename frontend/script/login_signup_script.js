@@ -1,3 +1,6 @@
+const isLocalEnv = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.hostname.startsWith('192.168.');
+const API_BASE_URL = isLocalEnv ? "http://" + window.location.hostname + ":5000" : "https://askunibackend.onrender.com";
+
 // script.js
 function showToast(message, type = "info") {
     const container = document.getElementById("toast-container");
@@ -201,7 +204,7 @@ if(signupForm){
         submitBtn.style.opacity = '0.7';
         submitBtn.style.cursor = 'not-allowed';
 
-const res = await fetch("https://askunibackend.onrender.com/api/register", {
+const res = await fetch(`${API_BASE_URL}/api/register`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
@@ -267,7 +270,7 @@ async function verifyOTP() {
 
     const payload = { email, otp };
 
-const res = await fetch("https://askunibackend.onrender.com/api/verify-otp", {
+const res = await fetch(`${API_BASE_URL}/api/verify-otp`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
@@ -332,7 +335,7 @@ loginForm.addEventListener("submit", async function (e) {
         submitBtn.style.opacity = '0.7';
         submitBtn.style.cursor = 'not-allowed';
 
-  const res = await fetch("https://askunibackend.onrender.com/api/login", {
+  const res = await fetch(`${API_BASE_URL}/api/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
@@ -368,28 +371,22 @@ loginForm.addEventListener("submit", async function (e) {
 // ============================
 // GOOGLE LOGIN
 // ============================
+function handleGoogleLogin(e) {
+    if (e) e.preventDefault();
+    const backendURL = API_BASE_URL;
+    const redirectTo = `${window.location.origin}/home.html`;
+    window.location.href = `${backendURL}/auth/google?redirect_to=${encodeURIComponent(redirectTo)}`;
+}
+
 const googleBtn1 = document.getElementById("googleLogin");
 const googleBtn2 = document.getElementById("googleSignup");
 
 if(googleBtn1){
-    googleBtn1.addEventListener("click", () => {
-        window.location.href = "https://askunibackend.onrender.com/auth/google";
-    });
+    googleBtn1.addEventListener("click", handleGoogleLogin);
 }
 
 if(googleBtn2){
-    googleBtn2.addEventListener("click", () => {
-        window.location.href = "https://askunibackend.onrender.com/auth/google";
-    });
+    googleBtn2.addEventListener("click", handleGoogleLogin);
 }
-document.getElementById("googleLogin").addEventListener("click", (e) => {
-    e.preventDefault();
-    window.location.href = "https://askunibackend.onrender.com/auth/google";
-});
-
-document.getElementById("googleSignup").addEventListener("click", (e) => {
-    e.preventDefault();
-    window.location.href = "https://askunibackend.onrender.com/auth/google";
-});
 
 

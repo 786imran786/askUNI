@@ -161,7 +161,8 @@
 
 
 <script>
-const API_BASE_URL = "https://askunibackend.onrender.com";
+const isLocalEnv = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.hostname.startsWith('192.168.');
+const API_BASE_URL = isLocalEnv ? "http://" + window.location.hostname + ":5000" : "https://askunibackend.onrender.com";
 
 let token = localStorage.getItem("token");
 

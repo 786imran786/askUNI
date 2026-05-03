@@ -58,6 +58,9 @@ if (!pendingEmail) {
 }
 
 // script.js
+const isLocalEnv = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.hostname.startsWith('192.168.');
+const API_BASE_URL = isLocalEnv ? "http://" + window.location.hostname + ":5000" : "https://askunibackend.onrender.com";
+
 function showToast(message, type = "info") {
     const container = document.getElementById("toast-container");
     const toast = document.createElement("div");
@@ -80,7 +83,7 @@ async function verifyOTP() {
 
     const payload = { email, otp };
 
-    const res = await fetch("https://askunibackend.onrender.com/api/verify-otp", {
+    const res = await fetch(`${API_BASE_URL}/api/verify-otp`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -114,7 +117,7 @@ document.getElementById("resendOtpBtn").addEventListener("click", async () => {
         return;
     }
 
-    const res = await fetch("https://askunibackend.onrender.com/api/resend-otp", {
+    const res = await fetch(`${API_BASE_URL}/api/resend-otp`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),

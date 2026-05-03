@@ -1,3 +1,6 @@
+const isLocalEnv = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.hostname.startsWith('192.168.');
+window.API_BASE_URL = isLocalEnv ? "http://" + window.location.hostname + ":5000" : "https://askunibackend.onrender.com";
+
 // Initialize page
 async function initializePage() {
     const savedTheme = localStorage.getItem('college_portal_theme_v3');
@@ -30,7 +33,7 @@ async function initializePage() {
 async function loadQuestions() {
     try {
         console.log("Fetching questions from backend...");
-        const response = await fetch('https://askunibackend.onrender.com/api/questions', {
+        const response = await fetch(`${window.API_BASE_URL}/api/questions`, {
             headers: {
                 'Authorization': `Bearer ${getToken()}`
             }
@@ -60,7 +63,7 @@ async function loadQuestions() {
 
 async function loadPopularTags() {
     try {
-        const response = await fetch('https://askunibackend.onrender.com/api/tags');
+        const response = await fetch(`${window.API_BASE_URL}/api/tags`);
         const data = await response.json();
 
         if (data.success && data.tags) {
@@ -204,7 +207,7 @@ async function toggleAnswers(questionId) {
 
 async function loadAnswers(questionId) {
     try {
-        const response = await fetch(`https://askunibackend.onrender.com/api/questions/${questionId}`, {
+        const response = await fetch(`${window.API_BASE_URL}/api/questions/${questionId}`, {
             headers: {
                 'Authorization': `Bearer ${getToken()}`
             }
@@ -316,7 +319,7 @@ async function handleVote(targetType, targetId, voteType) {
             return;
         }
 
-        const response = await fetch('https://askunibackend.onrender.com/api/vote', {
+        const response = await fetch(`${window.API_BASE_URL}/api/vote`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -392,7 +395,7 @@ async function submitAnswer(event, questionId) {
             }
             */
 
-            let response = await fetch(`https://askunibackend.onrender.com/api/questions/${questionId}/answers`, {
+            let response = await fetch(`${window.API_BASE_URL}/api/questions/${questionId}/answers`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -403,7 +406,7 @@ async function submitAnswer(event, questionId) {
             if (response.status === 415) {
                 console.warn('Backend rejected FormData (415). Retrying with JSON...');
                 // Retry with JSON
-                response = await fetch(`https://askunibackend.onrender.com/api/questions/${questionId}/answers`, {
+                response = await fetch(`${window.API_BASE_URL}/api/questions/${questionId}/answers`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -426,7 +429,7 @@ async function submitAnswer(event, questionId) {
             var fetchResponse = response;
         } else {
             // No files - Send as JSON directly
-            var fetchResponse = await fetch(`https://askunibackend.onrender.com/api/questions/${questionId}/answers`, {
+            var fetchResponse = await fetch(`${window.API_BASE_URL}/api/questions/${questionId}/answers`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -518,7 +521,7 @@ document.getElementById('askQuestionForm')?.addEventListener('submit', async e =
             }
 
             res = await fetch(
-                'https://askunibackend.onrender.com/api/questions',
+                `${window.API_BASE_URL}/api/questions`,
                 {
                     method: 'POST',
                     headers: {
@@ -532,7 +535,7 @@ document.getElementById('askQuestionForm')?.addEventListener('submit', async e =
             if (res.status === 415) {
                 console.warn('Backend rejected FormData (415). Retrying with JSON...');
                 res = await fetch(
-                    'https://askunibackend.onrender.com/api/questions',
+                    `${window.API_BASE_URL}/api/questions`,
                     {
                         method: 'POST',
                         headers: {
@@ -550,7 +553,7 @@ document.getElementById('askQuestionForm')?.addEventListener('submit', async e =
         } else {
             // Send as JSON directly
             res = await fetch(
-                'https://askunibackend.onrender.com/api/questions',
+                `${window.API_BASE_URL}/api/questions`,
                 {
                     method: 'POST',
                     headers: {

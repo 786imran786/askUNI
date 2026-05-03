@@ -2,9 +2,8 @@
 // BACKEND API INTEGRATION
 // ============================================
 
-const API_BASE_URL = window.location.hostname === 'localhost' 
-    ? 'https://askunibackend.onrender.com/' 
-    : 'https://askunibackend.onrender.com'; // Update with your Render/backend URL
+const isLocalEnv = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.hostname.startsWith('192.168.');
+const API_BASE_URL = isLocalEnv ? "http://" + window.location.hostname + ":5000" : "https://askunibackend.onrender.com";
 
 // JWT Token Management
 let authToken = null;

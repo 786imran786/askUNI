@@ -497,6 +497,9 @@
     // ============================
     // FORGOT PASSWORD LOGIC (UNCHANGED)
     // ============================
+    const isLocalEnv = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.hostname.startsWith('192.168.');
+    const API_BASE_URL = isLocalEnv ? "http://" + window.location.hostname + ":5000" : "https://askunibackend.onrender.com";
+
     let globalEmail = "";
 
     // STEP 1: SEND OTP
@@ -506,7 +509,7 @@
 
       globalEmail = email;
 
-      const res = await fetch("https://askunibackend.onrender.com/api/forgot-password", {
+      const res = await fetch(`${API_BASE_URL}/api/forgot-password`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email })
@@ -526,7 +529,7 @@
       const otp = document.getElementById("otp").value.trim();
       if (!otp) return showToast("Enter OTP!", "error");
 
-      const res = await fetch("https://askunibackend.onrender.com/api/verify-reset-otp", {
+      const res = await fetch(`${API_BASE_URL}/api/verify-reset-otp`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: globalEmail, otp }),
@@ -549,7 +552,7 @@
       if (!p1 || !p2) return showToast("Fill all fields!", "error");
       if (p1 !== p2) return showToast("Passwords do not match!", "error");
 
-      const res = await fetch("https://askunibackend.onrender.com/api/reset-password", {
+      const res = await fetch(`${API_BASE_URL}/api/reset-password`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: globalEmail, new_password: p1 }),
