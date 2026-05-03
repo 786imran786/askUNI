@@ -30,11 +30,46 @@ async function initializePage() {
     // Load user profile
     await loadUserProfile();
 
-    // Load questions from backend
-    await loadQuestions();
+    // Load questions based on hash
+    const hash = window.location.hash;
+    if (hash === '#my-questions') {
+        await loadQuestions('/api/my-questions', 'My Questions');
+    } else if (hash === '#my-answers') {
+        await loadQuestions('/api/my-answers', 'My Answers');
+    } else {
+        await loadQuestions();
+    }
 
     // Load popular tags from backend
     await loadPopularTags();
+
+    // Setup navigation listeners
+    setupNavigationListeners();
+}
+
+function setupNavigationListeners() {
+    const filters = [
+        { ids: ['nav-home', 'nav-home-mobile'], endpoint: '/api/questions', title: 'Recent Questions', hash: '' },
+        { ids: ['nav-my-questions', 'nav-my-questions-mobile'], endpoint: '/api/my-questions', title: 'My Questions', hash: '#my-questions' },
+        { ids: ['nav-my-answers', 'nav-my-answers-mobile'], endpoint: '/api/my-answers', title: 'My Answers', hash: '#my-answers' }
+    ];
+
+    filters.forEach(filter => {
+        filter.ids.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    if(filter.hash) {
+                        window.history.pushState(null, null, filter.hash);
+                    } else {
+                        window.history.pushState(null, null, window.location.pathname);
+                    }
+                    loadQuestions(filter.endpoint, filter.title);
+                });
+            }
+        });
+    });
 }
 
 async function checkAuthStatus() {
@@ -65,10 +100,33 @@ async function checkAuthStatus() {
     }
 }
 
-async function loadQuestions() {
+async function loadQuestions(endpoint = '/api/questions', feedTitle = 'Recent Questions') {
     try {
-        console.log("Fetching questions from backend...");
-        const response = await fetch(`${window.API_BASE_URL}/api/questions`, {
+        // Show feed title header if it's a specific feed
+        const feedHeaderContainer = document.getElementById('feed-header-container');
+        const feedTitleEl = document.getElementById('feed-title');
+        
+        if (feedHeaderContainer && feedTitleEl) {
+            if (endpoint !== '/api/questions') {
+                feedTitleEl.textContent = feedTitle;
+                feedHeaderContainer.style.display = 'block';
+            } else {
+                feedHeaderContainer.style.display = 'none';
+            }
+        }
+
+        // Show loading spinner
+        const questionsContainer = document.querySelector('.div4');
+        if (questionsContainer) {
+            questionsContainer.innerHTML = `
+                <video id="loadingLight" autoplay muted loop playsinline>
+                    <source src="media/video_loading.mp4" type="video/mp4">
+                </video>
+            `;
+        }
+
+        console.log("Fetching questions from backend: " + endpoint);
+        const response = await fetch(`${window.API_BASE_URL}${endpoint}`, {
             headers: {
                 'Authorization': `Bearer ${getToken()}`
             }

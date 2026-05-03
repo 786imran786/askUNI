@@ -34,10 +34,9 @@
                 <a href="#" class="profile-link" id="loginLinkMobile"><i class="fas fa-sign-in-alt"></i> Logout</a>
             </div>
             <ul class="nav-links" style="margin-top:1rem;">
-                <li><a href="#"><span class="nav-icon"><i class="fas fa-home"></i></span> Home</a></li>
-                <li><a href="#"><span class="nav-icon"><i class="fas fa-question-circle"></i></span> My Questions</a>
-                </li>
-                <li><a href="#"><span class="nav-icon"><i class="fas fa-comments"></i></span> My Answers</a></li>
+                <li><a href="home.html" id="nav-home-mobile"><span class="nav-icon"><i class="fas fa-home"></i></span> Home</a></li>
+                <li><a href="#" id="nav-my-questions-mobile"><span class="nav-icon"><i class="fas fa-question-circle"></i></span> My Questions</a></li>
+                <li><a href="#" id="nav-my-answers-mobile"><span class="nav-icon"><i class="fas fa-comments"></i></span> My Answers</a></li>
                 <li><a href="#"><span class="nav-icon"><i class="fas fa-book"></i></span> Courses</a></li>
                 <li><a href="#"><span class="nav-icon"><i class="fas fa-calendar-alt"></i></span> Events</a></li>
                 <li><a href="#"><span class="nav-icon"><i class="fas fa-graduation-cap"></i></span> Resources</a></li>
@@ -101,11 +100,9 @@
                 <div class="sidebar-card div2">
                     <h3 class="section-label">Navigation</h3>
                     <ul class="nav-links">
-                        <li><a href="#"><span class="nav-icon"><i class="fas fa-home"></i></span> Home</a></li>
-                        <li><a href="#"><span class="nav-icon"><i class="fas fa-question-circle"></i></span> My
-                                Questions</a></li>
-                        <li><a href="#"><span class="nav-icon"><i class="fas fa-comments"></i></span> My Answers</a>
-                        </li>
+                        <li><a href="home.html" id="nav-home"><span class="nav-icon"><i class="fas fa-home"></i></span> Home</a></li>
+                        <li><a href="#" id="nav-my-questions"><span class="nav-icon"><i class="fas fa-question-circle"></i></span> My Questions</a></li>
+                        <li><a href="#" id="nav-my-answers"><span class="nav-icon"><i class="fas fa-comments"></i></span> My Answers</a></li>
                         <li><a href="#"><span class="nav-icon"><i class="fas fa-book"></i></span> Courses</a></li>
                         <li><a href="#"><span class="nav-icon"><i class="fas fa-calendar-alt"></i></span> Events</a>
                         </li>
@@ -131,6 +128,9 @@
             </div>
 
             <div class="middle-column">
+                <div id="feed-header-container" style="display: none; margin-bottom: 20px; padding: 0 10px;">
+                    <h2 id="feed-title" style="color: var(--text-heading); font-family: 'Playfair Display', serif; font-size: 1.8rem; border-bottom: 2px solid var(--green); display: inline-block; padding-bottom: 5px;">My Feed</h2>
+                </div>
                 <div class="div4">
                     <video id="loadingLight" autoplay muted loop playsinline>
                         <source src="media/video_loading.mp4" type="video/mp4">
