@@ -45,6 +45,9 @@ async function initializePage() {
 
     // Setup navigation listeners
     setupNavigationListeners();
+
+    // Connect to real-time SSE feed
+    connectSSE();
 }
 
 function setupNavigationListeners() {
@@ -70,6 +73,38 @@ function setupNavigationListeners() {
             }
         });
     });
+}
+
+// ============================================================
+// 🔴 SSE – Real-time feed updates
+// ============================================================
+let _sseSource = null;
+let _sseReconnectDelay = 3000;
+
+function connectSSE() {
+    if (_sseSource) _sseSource.close();
+
+    _sseSource = new EventSource(`${window.API_BASE_URL}/api/stream`, { withCredentials: true });
+
+    _sseSource.addEventListener('connected', () => {
+        console.log('✅ SSE connected – real-time feed active');
+        _sseReconnectDelay = 3000; // reset backoff on success
+    });
+
+    _sseSource.addEventListener('new_question', (e) => {
+        const currentHash = window.location.hash;
+        // Only auto-refresh the main feed, not personal filtered views
+        if (!currentHash || currentHash === '#home') {
+            loadQuestions('/api/questions', 'Recent Questions');
+        }
+    });
+
+    _sseSource.onerror = () => {
+        console.warn('⚠️ SSE disconnected – reconnecting in', _sseReconnectDelay / 1000, 's');
+        _sseSource.close();
+        setTimeout(connectSSE, _sseReconnectDelay);
+        _sseReconnectDelay = Math.min(_sseReconnectDelay * 2, 60000); // exponential backoff, max 60s
+    };
 }
 
 async function checkAuthStatus() {
