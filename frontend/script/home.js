@@ -23,6 +23,9 @@ async function initializePage() {
 
     await showWelcomeMessage();
 
+    // Load user profile
+    await loadUserProfile();
+
     // Load questions from backend
     await loadQuestions();
 
@@ -58,6 +61,58 @@ async function loadQuestions() {
     } catch (error) {
         console.error('Error loading questions:', error);
         showFallbackQuestions();
+    }
+}
+async function loadUserProfile() {
+    try {
+        const token = getToken();
+        if (!token) return;
+
+        const response = await fetch(`${window.API_BASE_URL}/api/get-profile-data`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        const data = await response.json();
+        
+        if (data.success) {
+            // Get Name
+            const name = data.personal_info?.full_name || data.user_info?.full_name || 'Student User';
+            
+            // Format designation
+            let status = 'Student';
+            if (data.designation?.designation_type === 'student') {
+                const program = data.designation.program || '';
+                const currentYear = data.designation.current_year || '';
+                status = program && currentYear ? `${program}, ${currentYear} Year` : 'Student';
+            } else if (data.designation?.designation_type === 'faculty') {
+                status = data.designation.post || 'Faculty';
+            } else if (data.designation?.designation_type === 'alumni') {
+                status = data.designation.job_title || 'Alumni';
+            } else if (data.user_info?.email) {
+                status = data.user_info.email;
+            }
+
+            // Update DOM
+            document.querySelectorAll('.profile-name').forEach(el => el.textContent = name);
+            document.querySelectorAll('.profile-status').forEach(el => el.textContent = status);
+            
+            // Profile photo
+            if (data.personal_info?.profile_photo) {
+                let photoHtml = '';
+                if (data.personal_info.profile_photo.startsWith('data:image') || data.personal_info.profile_photo.startsWith('http')) {
+                    photoHtml = `<img src="${data.personal_info.profile_photo}" alt="Profile" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+                } else {
+                    photoHtml = `<i class="${data.personal_info.profile_photo}"></i>`;
+                }
+                
+                document.querySelectorAll('.profile-avatar').forEach(el => {
+                    el.innerHTML = photoHtml;
+                });
+            }
+        }
+    } catch (error) {
+        console.error("Error loading user profile:", error);
     }
 }
 
@@ -117,34 +172,51 @@ function createQuestionElement(question) {
 
     const timeAgo = formatTimeAgo(question.created_at);
 
-        let imagesHtml = '';
-        if (question.images) {
-            let imagesArray = [];
-            if (Array.isArray(question.images)) {
-                imagesArray = question.images;
-            } else if (typeof question.images === 'string') {
-                try {
-                    let str = question.images.trim();
-                    if (str.startsWith('{') && str.endsWith('}')) {
-                        str = '[' + str.slice(1, -1) + ']';
-                    }
-                    imagesArray = JSON.parse(str.replace(/'/g, '"'));
-                } catch(e) {
-                    imagesArray = [question.images];
+    let imagesHtml = '';
+    if (question.images) {
+        let imagesArray = [];
+        if (Array.isArray(question.images)) {
+            imagesArray = question.images;
+        } else if (typeof question.images === 'string') {
+            try {
+                let str = question.images.trim();
+                if (str.startsWith('{') && str.endsWith('}')) {
+                    str = '[' + str.slice(1, -1) + ']';
                 }
+                imagesArray = JSON.parse(str.replace(/'/g, '"'));
+            } catch (e) {
+                imagesArray = [question.images];
             }
-            if (imagesArray.length > 0) {
-                imagesHtml = `
+        }
+        if (imagesArray.length > 0) {
+            imagesHtml = `
                     <div class="question-images" style="margin-top: 10px;">
                         ${imagesArray.map(url => `<img src="${url}" alt="Attachment" style="max-width: 100%; max-height: 400px; border-radius: 8px; margin-bottom: 5px; cursor: pointer;" onclick="window.open(this.src, '_blank')">`).join('')}
                     </div>
                 `;
-            }
         }
+    }
+
+    let avatarHtml = '<i class="fas fa-user-circle" style="font-size: 24px; color: var(--text-muted);"></i>';
+    if (question.author?.profile_photo) {
+        if (question.author.profile_photo.startsWith('data:image') || question.author.profile_photo.startsWith('http')) {
+            avatarHtml = `<img src="${question.author.profile_photo}" alt="Author" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;">`;
+        } else {
+            avatarHtml = `<i class="${question.author.profile_photo}" style="font-size: 24px; color: var(--primary-color);"></i>`;
+        }
+    }
+
+    let verifiedHtml = '';
+    if (question.author?.is_verified) {
+        verifiedHtml = `<i class="fas fa-check-circle" title="This user is college verified" style="color: #4CAF50; margin-left: 5px; font-size: 0.9em; cursor: help;"></i>`;
+    }
 
     questionDiv.innerHTML = `
         <div class="question-header">
-            <div class="question-author"><i class="fas fa-user"></i> ${question.author?.full_name || 'Anonymous'}</div>
+            <div class="question-author" style="display: flex; align-items: center; gap: 8px;">
+                ${avatarHtml}
+                <span style="font-weight: 500;">${question.author?.full_name || 'Anonymous'}${verifiedHtml}</span>
+            </div>
             <div class="question-date">${timeAgo}</div>
         </div>
         <h3 class="question-title">${escapeHtml(question.title)}</h3>
@@ -195,8 +267,8 @@ async function toggleAnswers(questionId) {
     const answersList = document.getElementById(`answers-list-${questionId}`);
 
     if (answersSection.style.display === 'none') {
-        // Load answers if not already loaded
-        if (answersList.innerHTML === '') {
+        // Load answers if not already loaded (check for empty or just the comment)
+        if (answersList.innerHTML.trim() === '' || answersList.innerHTML.trim() === '<!-- Answers will be loaded here -->') {
             await loadAnswers(questionId);
         }
         answersSection.style.display = 'block';
@@ -232,7 +304,7 @@ async function loadAnswers(questionId) {
                                 str = '[' + str.slice(1, -1) + ']';
                             }
                             imagesArray = JSON.parse(str.replace(/'/g, '"'));
-                        } catch(e) {
+                        } catch (e) {
                             imagesArray = [answer.images];
                         }
                     }
@@ -244,10 +316,27 @@ async function loadAnswers(questionId) {
                         `;
                     }
                 }
+                let avatarHtml = '<i class="fas fa-user-circle" style="font-size: 20px; color: var(--text-muted);"></i>';
+                if (answer.author?.profile_photo) {
+                    if (answer.author.profile_photo.startsWith('data:image') || answer.author.profile_photo.startsWith('http')) {
+                        avatarHtml = `<img src="${answer.author.profile_photo}" alt="Author" style="width: 20px; height: 20px; border-radius: 50%; object-fit: cover;">`;
+                    } else {
+                        avatarHtml = `<i class="${answer.author.profile_photo}" style="font-size: 20px; color: var(--primary-color);"></i>`;
+                    }
+                }
+
+                let verifiedHtml = '';
+                if (answer.author?.is_verified) {
+                    verifiedHtml = `<i class="fas fa-check-circle" title="This user is college verified" style="color: #4CAF50; margin-left: 5px; font-size: 0.9em; cursor: help;"></i>`;
+                }
+
                 return `
                 <div class="answer" id="answer-${answer.id}">
                     <div class="question-header">
-                        <div class="question-author"><i class="fas fa-user"></i> ${answer.author?.full_name || 'Anonymous'}</div>
+                        <div class="question-author" style="display: flex; align-items: center; gap: 8px;">
+                            ${avatarHtml}
+                            <span style="font-weight: 500;">${answer.author?.full_name || 'Anonymous'}${verifiedHtml}</span>
+                        </div>
                         <div class="question-date">${formatTimeAgo(answer.created_at)}</div>
                     </div>
                     <div class="question-content">${escapeHtml(answer.content)}</div>
@@ -261,7 +350,7 @@ async function loadAnswers(questionId) {
                             <i class="fas fa-arrow-down"></i> Downvote
                             <span class="vote-count">${answer.downvotes || 0}</span>
                         </button>
-                        <button class="comment-btn">
+                        <button class="comment-btn" onclick="document.getElementById('answerForm-${questionId}').querySelector('textarea').focus()">
                             <i class="fas fa-comment"></i> Reply
                         </button>
                     </div>
@@ -817,18 +906,18 @@ document.addEventListener('DOMContentLoaded', () => {
     // Check URL parameters for authentication and new user redirection
     const urlParams = new URLSearchParams(window.location.search);
     const urlToken = urlParams.get('token');
-    
+
     if (urlToken) {
         // Save token
         localStorage.setItem('token', urlToken);
         document.cookie = `auth_token=${urlToken}; path=/; max-age=604800`; // 7 days
-        
+
         // Check if it's a new user from Google Login
         if (urlParams.get('new_user') === 'true') {
             window.location.href = `detail.html?token=${urlToken}&new_user=true`;
             return; // Stop initialization
         }
-        
+
         // Clean up URL
         const newUrl = new URL(window.location);
         newUrl.searchParams.delete('token');
