@@ -761,8 +761,10 @@ document.getElementById('askQuestionForm')?.addEventListener('submit', async e =
             const fileInfo = document.getElementById('fileInfo');
             if (fileInfo) fileInfo.textContent = '';
 
-            loadQuestions();
-            // alert('Question posted successfully!'); 
+            // NOTE: We no longer call loadQuestions() here.
+            // The SSE new_question event will prepend the card
+            // for ALL users (including the poster) automatically.
+            // This avoids a redundant full-reload for the posting user.
         } else {
             showCustomAlert(data.message || 'Error posting question');
         }
@@ -1118,4 +1120,93 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (loginLinkDesktop) loginLinkDesktop.addEventListener('click', handleLogout);
     if (loginLinkMobile) loginLinkMobile.addEventListener('click', handleLogout);
+
+    // ── Realtime SSE event handlers ───────────────────────────────
+    // AskUNIRealtime is loaded via realtime.js (loaded before this script in HTML)
+    if (window.AskUNIRealtime) {
+
+        // 1. NEW QUESTION — prepend to feed instantly for all users
+        AskUNIRealtime.onEvent('new_question', (data) => {
+            const container = document.querySelector('.div4');
+            if (!container) return;
+
+            // Don't duplicate if the question card already exists (poster's own)
+            if (document.getElementById(`question-${data.question_id}`)) return;
+
+            // Build a question object from the SSE payload and prepend it
+            const questionObj = {
+                id: data.question_id,
+                title: data.title || 'New Question',
+                content: data.content || '',
+                tags: data.tags || [],
+                author: data.author || { full_name: 'Someone' },
+                images: data.images || [],
+                created_at: data.created_at || new Date().toISOString(),
+                upvotes: data.upvotes || 0,
+                downvotes: data.downvotes || 0,
+                answer_count: data.answer_count || 0,
+            };
+
+            const el = createQuestionElement(questionObj);
+
+            // Flash animation so users notice the new card
+            el.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(-12px)';
+
+            // Remove the empty-state placeholder if present
+            const emptyState = container.querySelector('.no-questions');
+            if (emptyState) emptyState.remove();
+
+            container.prepend(el);
+
+            // Animate in
+            requestAnimationFrame(() => {
+                el.style.opacity = '1';
+                el.style.transform = 'translateY(0)';
+            });
+
+            console.log('[SSE] New question prepended:', data.question_id);
+        });
+
+        // 2. NEW ANSWER — increment answer count badge on the question card
+        AskUNIRealtime.onEvent('new_answer', (data) => {
+            const qId = data.question_id;
+            const commentBtn = document.querySelector(
+                `#question-${qId} .comment-btn`
+            );
+            if (!commentBtn) return;
+
+            // Parse current count and increment
+            const match = commentBtn.textContent.match(/(\d+)/);
+            const current = match ? parseInt(match[1], 10) : 0;
+            commentBtn.innerHTML =
+                `<i class="fas fa-comment"></i> ${current + 1} Answers`;
+
+            // If answers are already open for this question, reload them
+            const answersSection = document.getElementById(`answers-${qId}`);
+            if (answersSection && answersSection.style.display !== 'none') {
+                loadAnswers(qId);
+            }
+
+            console.log('[SSE] Answer count updated for question:', qId);
+        });
+
+        // 3. VOTE UPDATE — patch vote counts in-place without reload
+        AskUNIRealtime.onEvent('vote_update', (data) => {
+            const { target_type, target_id, upvotes, downvotes } = data;
+
+            const upEl   = document.getElementById(`votes-up-${target_type}-${target_id}`);
+            const downEl = document.getElementById(`votes-down-${target_type}-${target_id}`);
+
+            if (upEl)   upEl.textContent   = upvotes;
+            if (downEl) downEl.textContent = downvotes;
+
+            console.log('[SSE] Vote updated:', target_type, target_id, upvotes, downvotes);
+        });
+
+        console.log('[SSE] Realtime handlers registered on home page');
+    } else {
+        console.warn('[SSE] AskUNIRealtime not available — realtime.js may not be loaded');
+    }
 });

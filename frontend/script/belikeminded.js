@@ -278,10 +278,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     let messagePollInterval = null;
     let lastMessageCount = 0;
+    let _sseForumHandler = null; // track our SSE handler so we can remove it
 
     async function openChat(forumId) {
         currentForumId = forumId;
-        lastMessageCount = 0; // reset for auto-scroll
+        lastMessageCount = 0;
         const forum = forums.find(f => f.id === forumId);
         
         chatForumTitle.textContent = forum.title;
@@ -291,17 +292,60 @@ document.addEventListener('DOMContentLoaded', async () => {
         forumRequestsView.classList.remove('active');
         forumChatView.classList.add('active');
 
+        // Initial message load
         await fetchAndRenderMessages();
 
-        if (messagePollInterval) clearInterval(messagePollInterval);
-        messagePollInterval = setInterval(fetchAndRenderMessages, 3000);
+        // ── Replace polling with SSE ─────────────────────────────
+        // Clear old poll interval if any (legacy fallback)
+        if (messagePollInterval) {
+            clearInterval(messagePollInterval);
+            messagePollInterval = null;
+        }
+
+        // Remove previous SSE handler for this page
+        if (_sseForumHandler && window.AskUNIRealtime) {
+            AskUNIRealtime.offEvent('new_forum_message', _sseForumHandler);
+        }
+
+        if (window.AskUNIRealtime) {
+            // Connect to forum-specific SSE stream
+            AskUNIRealtime.connectForum(forumId);
+
+            // Register handler — appends the message card instantly
+            _sseForumHandler = (data) => {
+                // Only handle messages for the currently open forum
+                if (data.forum_id !== forumId && String(data.forum_id) !== String(forumId)) return;
+
+                const isMine = String(data.authorId) === String(currentUser?.id);
+
+                // Avoid duplicates (poster already sees it via optimistic UI)
+                if (document.querySelector(`[data-msg-id="${data.id}"]`)) return;
+
+                _appendMessage(data, isMine);
+                console.log('[SSE] Forum message received:', data.id);
+            };
+
+            AskUNIRealtime.onEvent('new_forum_message', _sseForumHandler);
+            console.log('[SSE] Forum SSE listener registered for forum:', forumId);
+        } else {
+            // Fallback to polling if realtime.js not loaded
+            console.warn('[SSE] AskUNIRealtime not available, falling back to 3s poll');
+            messagePollInterval = setInterval(fetchAndRenderMessages, 3000);
+        }
     }
 
     backToForumsBtn.addEventListener('click', () => {
         currentForumId = null;
+
+        // Clean up SSE and polling on exit
         if (messagePollInterval) {
             clearInterval(messagePollInterval);
             messagePollInterval = null;
+        }
+        if (_sseForumHandler && window.AskUNIRealtime) {
+            AskUNIRealtime.offEvent('new_forum_message', _sseForumHandler);
+            AskUNIRealtime.disconnectForum();
+            _sseForumHandler = null;
         }
 
         forumChatView.classList.remove('active');
@@ -332,11 +376,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Prevent unnecessary re-renders that cause flickering
         const msgsString = JSON.stringify(msgs);
         if (msgsString === chatMessages.dataset.lastMsgs) {
-            return; // no changes
+            return;
         }
         chatMessages.dataset.lastMsgs = msgsString;
 
-        // Check if user is scrolled to bottom before we replace HTML
         const isScrolledToBottom = chatMessages.scrollHeight - chatMessages.clientHeight <= chatMessages.scrollTop + 10;
 
         chatMessages.innerHTML = '';
@@ -348,41 +391,59 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         msgs.forEach(msg => {
             const isMine = msg.authorId === currentUser.id;
-            const el = document.createElement('div');
-            el.className = `chat-message ${isMine ? 'mine' : ''}`;
-            const likeClass = msg.likedByMe ? 'liked' : '';
-            
-            el.innerHTML = `
-                <div class="message-avatar">${msg.author ? msg.author.charAt(0).toUpperCase() : 'U'}</div>
-                <div class="message-content">
-                    <div class="message-header">
-                        <span class="message-author">${msg.author}</span>
-                        <span class="message-time">${msg.time}</span>
-                    </div>
-                    <div class="message-text">${msg.text}</div>
-                    <div class="message-actions">
-                        <button class="btn-like ${likeClass}" data-id="${msg.id}">
-                            <i class="${msg.likedByMe ? 'fas' : 'far'} fa-heart"></i> <span class="like-count">${msg.likes}</span>
-                        </button>
-                    </div>
-                </div>
-            `;
-            chatMessages.appendChild(el);
+            _appendMessage(msg, isMine);
         });
 
-        // Scroll down if they were already at the bottom or if it's the first load
         if (isScrolledToBottom || lastMessageCount === 0) {
             chatMessages.scrollTop = chatMessages.scrollHeight;
         }
         lastMessageCount = msgs.length;
+    }
 
-        document.querySelectorAll('.btn-like').forEach(btn => {
-            btn.addEventListener('click', async (e) => {
-                const btnEl = e.target.closest('.btn-like');
-                const id = btnEl.dataset.id;
-                await toggleLike(id, btnEl);
-            });
+    /**
+     * Append a single message bubble to the chat.
+     * Used both by renderMessages (initial load) and SSE handler (realtime).
+     */
+    function _appendMessage(msg, isMine) {
+        // Guard against duplicates
+        if (document.querySelector(`[data-msg-id="${msg.id}"]`)) return;
+
+        const isScrolledToBottom = chatMessages.scrollHeight - chatMessages.clientHeight <= chatMessages.scrollTop + 10;
+
+        const el = document.createElement('div');
+        el.className = `chat-message ${isMine ? 'mine' : ''}`;
+        el.dataset.msgId = msg.id; // used for dedup check
+        const likeClass = msg.likedByMe ? 'liked' : '';
+        
+        el.innerHTML = `
+            <div class="message-avatar">${msg.author ? msg.author.charAt(0).toUpperCase() : 'U'}</div>
+            <div class="message-content">
+                <div class="message-header">
+                    <span class="message-author">${msg.author}</span>
+                    <span class="message-time">${msg.time}</span>
+                </div>
+                <div class="message-text">${msg.text}</div>
+                <div class="message-actions">
+                    <button class="btn-like ${likeClass}" data-id="${msg.id}">
+                        <i class="${msg.likedByMe ? 'fas' : 'far'} fa-heart"></i> <span class="like-count">${msg.likes || 0}</span>
+                    </button>
+                </div>
+            </div>
+        `;
+        chatMessages.appendChild(el);
+
+        // Attach like handler
+        el.querySelector('.btn-like').addEventListener('click', async (e) => {
+            const btnEl = e.target.closest('.btn-like');
+            await toggleLike(btnEl.dataset.id, btnEl);
         });
+
+        // Auto-scroll if user was at the bottom
+        if (isScrolledToBottom) {
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        lastMessageCount++;
     }
 
     async function toggleLike(msgId, btnEl) {
@@ -419,6 +480,19 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         chatInput.value = ''; // clear immediately for UX
 
+        // Optimistic UI: show the message immediately for the poster
+        // The SSE event will handle delivery to other users
+        const optimisticMsg = {
+            id: `optimistic-${Date.now()}`,
+            text,
+            author: currentUser?.name || 'Me',
+            authorId: currentUser?.id,
+            likes: 0,
+            likedByMe: false,
+            time: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
+        };
+        _appendMessage(optimisticMsg, true);
+
         try {
             const res = await fetch(`${API_BASE_URL}/api/forums/${currentForumId}/messages`, {
                 method: 'POST',
@@ -429,13 +503,17 @@ document.addEventListener('DOMContentLoaded', async () => {
                 body: JSON.stringify({ content: text })
             });
             const data = await res.json();
-            if (data.success) {
-                await fetchAndRenderMessages();
-            } else {
-                showAlert("Failed to send message: " + data.message);
+            if (!data.success) {
+                showAlert('Failed to send message: ' + data.message);
+                // Remove optimistic message on failure
+                const optEl = document.querySelector(`[data-msg-id="${optimisticMsg.id}"]`);
+                if (optEl) optEl.remove();
             }
+            // On success: SSE will deliver the real message to other users.
+            // The poster already sees it via optimistic UI.
         } catch(e) {
-            console.error("Message send failed", e);
+            console.error('Message send failed', e);
+            showAlert('Failed to send message. Please check your connection.');
         }
     });
 
